@@ -1,5 +1,5 @@
 
-name: Observateur Actif AI - Production quotidienne
+name: Observateur Actif AI - Recherche quotidienne
 
 on:
   schedule:
@@ -22,14 +22,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Installer FFmpeg
+      - name: Lancer la recherche Internet
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          python main.py
 
-      - name: Verifier le fonctionnement
-        run: |
-          python --version
-          ffmpeg -version
-          echo "OBSERVATEUR ACTIF AI EST OPERATIONNEL"
-          date -u
+      - name: Sauvegarder les résultats
+        uses: actions/upload-artifact@v4
+        with:
+          name: observateur-actif-recherche
+          path: output/daily_research.json
+          if-no-files-found: error
+          retention-days: 7
