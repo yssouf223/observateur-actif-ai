@@ -1,100 +1,224 @@
 
 import json
-import os
-import random
+import re
+import time
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
 PROJECT = Path(__file__).parent
 DATA = PROJECT / "data"
 OUTPUT = PROJECT / "output"
-
-TOPICS_FILE = DATA / "topics.json"
 HISTORY_FILE = DATA / "published_history.json"
+
+# Toute l'Afrique : priorité aux mystères historiques et archéologiques.
+SEARCHES = [
+    '"lost city" Africa OR African',
+    '"ancient civilization" Africa OR African',
+    '"archaeological discovery" Africa OR African',
+    '"mysterious place" Africa OR African',
+    '"ancient ruins" Africa OR African',
+    '"forgotten kingdom" Africa OR African',
+]
+
+KEYWORDS = [
+    "ancient", "archaeology", "archaeological", "civilization",
+    "civilisation", "ruins", "kingdom", "empire", "mystery",
+    "mysterious", "lost city", "forgotten", "historical",
+    "history", "temple", "pyramid", "tomb", "manuscript",
+    "settlement", "heritage", "africa", "african"
+]
 
 
 def load_json(path, default):
     if not path.exists():
         return default
-
-    with path.open("r", encoding="utf-8") as file:
-        return json.load(file)
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return default
 
 
 def save_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
-
-    with path.open("w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=2)
-
-
-def validate_topic(topic):
-    required = ["id", "title", "summary", "sources"]
-
-    if not all(topic.get(field) for field in required):
-        return False
-
-    # Au moins deux sources documentaires distinctes
-    sources = topic["sources"]
-
-    if len(sources) < 2:
-        return False
-
-    for source in sources:
-        if not source.get("url", "").startswith("https://"):
-            return False
-
-        if not source.get("publisher"):
-            return False
-
-    return True
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
 
 
-def select_topic():
-    topics = load_json(TOPICS_FILE, [])
-    history = load_json(HISTORY_FILE, [])
+def clean_text(value):
+    value = re.sub(r"<[^>]+>", " ", str(value or ""))
+    return re.sub(r"\s+", " ", value).strip()
 
-    used_ids = {item["topic_id"] for item in history}
 
-    eligible = [
-        topic for topic in topics
-        if validate_topic(topic)
-        and topic["id"] not in used_ids
+def fetch_json(url):
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "ObservateurActifAI/1.0 (documentary research bot)"
+        }
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def search_gdelt(query):
+    params = {
+        "query": query,
+        "mode": "ArtList",
+        "format": "json",
+        "maxrecords": "30",
+        "timespan": "7d",
+        "sort": "DateDesc",
+    }
+    url = (
+        "https://api.gdeltproject.org/api/v2/doc/doc?"
+        + urllib.parse.urlencode(params)
+    )
+
+    try:
+        data = fetch_json(url)
+        return data.get("articles", [])
+    except Exception as error:
+        print("Erreur GDELT :", error)
+        return []
+
+
+def search_wikipedia(query):
+    params = {
+        "q": query,
+        "limit": "10"
+    }
+    url = (
+        "https://en.wikipedia.org/w/rest.php/v1/search/page?"
+        + urllib.parse.urlencode(params)
+    )
+
+    try:
+        data = fetch_json(url)
+        return data.get("pages", [])
+    except Exception as error:
+        print("Erreur Wikimedia :", error)
+        return []
+
+
+def relevant(title, description=""):
+    text = (title + " " + description).lower()
+    return any(word in text for word in KEYWORDS)
+
+
+def collect_candidates():
+    candidates = {}
+    print("Recherche Internet : GDELT...")
+
+    for query in SEARCHES:
+        print("Requête :", query)
+        articles = search_gdelt(query)
+
+        for article in articles:
+            title = clean_text(article.get("title"))
+            url = article.get("url", "").strip()
+
+            if not title or not url.startswith("https://"):
+                continue
+
+            if not relevant(title):
+                continue
+
+            candidates[url] = {
+                "title": title,
+                "url": url,
+                "publisher": article.get("domain", "Source inconnue"),
+                "published_at": article.get("seendate", ""),
+                "source_type": "Presse en ligne - GDELT",
+            }
+
+        # Respecter un intervalle entre les requêtes.
+        time.sleep(5)
+
+    print("Recherche documentaire : Wikimedia...")
+
+    wiki_queries = [
+        "ancient African civilizations",
+        "lost cities in Africa",
+        "African archaeological sites",
+        "ancient kingdoms of Africa",
+        "mysterious historical places in Africa",
     ]
 
-    if not eligible:
-        raise RuntimeError(
-            "Aucun sujet inédit et suffisamment documenté."
-        )
+    for query in wiki_queries:
+        for page in search_wikipedia(query):
+            title = clean_text(page.get("title"))
+            key = page.get("key", "")
 
-    # Mélange pour éviter un ordre prévisible
-    random.shuffle(eligible)
-    return eligible[0]
+            if not title or not key:
+                continue
+
+            url = "https://en.wikipedia.org/wiki/" + urllib.parse.quote(
+                key.replace(" ", "_")
+            )
+
+            candidates[url] = {
+                "title": title,
+                "url": url,
+                "publisher": "Wikipedia",
+                "published_at": "",
+                "source_type": "Documentation encyclopédique",
+            }
+
+    return list(candidates.values())
 
 
 def main():
+    print("===================================")
     print("OBSERVATEUR ACTIF AI")
-    print("Démarrage du moteur éditorial...")
+    print("Moteur de recherche africain")
+    print("===================================")
 
     DATA.mkdir(exist_ok=True)
     OUTPUT.mkdir(exist_ok=True)
 
-    topic = select_topic()
-
-    result = {
-        "date": datetime.now(timezone.utc).isoformat(),
-        "channel": "Observateur Actif",
-        "topic": topic,
-        "status": "RESEARCH_VALIDATED",
-        "publication_ready": False
+    history = load_json(HISTORY_FILE, [])
+    used_urls = {
+        item.get("url")
+        for item in history
+        if isinstance(item, dict)
     }
 
-    save_json(OUTPUT / "selected_topic.json", result)
+    candidates = collect_candidates()
 
-    print("Sujet sélectionné :", topic["title"])
-    print("Sources documentaires :", len(topic["sources"]))
-    print("Statut : recherche préliminaire validée")
-    print("Publication : non autorisée à ce stade")
+    new_candidates = [
+        item for item in candidates
+        if item["url"] not in used_urls
+    ]
+
+    result = {
+        "date_recherche": datetime.now(timezone.utc).isoformat(),
+        "chaine": "Observateur Actif",
+        "zone": "Toute l'Afrique",
+        "priorite_editoriale": [
+            "Mystères historiques",
+            "Lieux mystérieux",
+            "Civilisations oubliées"
+        ],
+        "nombre_resultats": len(new_candidates),
+        "statut": "CANDIDATS_A_VERIFIER",
+        "publication_autorisee": False,
+        "avertissement": (
+            "Les résultats sont des pistes documentaires. "
+            "Ils ne sont pas encore vérifiés."
+        ),
+        "sujets": new_candidates
+    }
+
+    save_json(OUTPUT / "daily_research.json", result)
+
+    print("Résultats trouvés :", len(candidates))
+    print("Nouveaux sujets :", len(new_candidates))
+    print("Fichier créé : output/daily_research.json")
+    print("Publication automatique : NON, vérification nécessaire.")
 
 
 if __name__ == "__main__":
