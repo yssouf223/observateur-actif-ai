@@ -18,15 +18,15 @@ from google import genai
 
 
 # ==========================================================
-# OBSERVATEUR ACTIF AI
-# Recherche documentaire quotidienne sur toute l'Afrique
+# OBSERVATEUR ACTIF AI - VERSION 4
+# Recherche documentaire sur toute l'Afrique
 # ==========================================================
 
 CHANNEL = "Observateur Actif"
 MODEL = "gemini-3.8-flash"
 
 MAX_RESULTS_PER_QUERY = 5
-MAX_ARTICLES_TO_OPEN = 12
+MAX_ARTICLES_TO_OPEN = 20
 MIN_ARTICLE_TEXT = 500
 
 OUTPUT_FILE = "output/daily_research.json"
@@ -43,92 +43,104 @@ COOKIE = "CONSENT=YES+cb; SOCS=CAI"
 
 
 # ==========================================================
-# 1. RECHERCHES RÉPARTIES PAR RÉGION
+# 1. RECHERCHES RÉGIONALES
 # ==========================================================
 
 def build_searches():
 
     since = (
-        datetime.now(timezone.utc) - timedelta(days=730)
+        datetime.now(timezone.utc) - timedelta(days=1825)
     ).date().isoformat()
 
     date_filter = f"after:{since}"
+
+    themes_fr = (
+        '"mystère historique" OR archéologie OR '
+        '"cité ancienne" OR "civilisation oubliée" OR '
+        '"royaume ancien" OR "site antique" OR '
+        '"ruines anciennes" OR "lieu mystérieux"'
+    )
+
+    themes_en = (
+        '"historical mystery" OR archaeology OR '
+        '"ancient city" OR "lost civilization" OR '
+        '"ancient kingdom" OR "mysterious place" OR '
+        '"ancient ruins" OR "archaeological site"'
+    )
 
     return [
         (
             "Afrique de l'Ouest - français",
             f"(Mali OR Sénégal OR Burkina Faso OR Niger OR "
-            f"Guinée OR Ghana OR Nigeria OR Bénin OR Togo) "
-            f"(archéologie OR civilisation ancienne OR ruines OR mystère) "
-            f"{date_filter}"
+            f"Guinée OR Ghana OR Nigeria OR Bénin OR Togo OR "
+            f"Côte d'Ivoire OR Gambie OR Mauritanie OR Liberia) "
+            f"({themes_fr}) {date_filter}"
         ),
         (
             "Afrique de l'Ouest - anglais",
-            f"(Mali OR Senegal OR Burkina Faso OR Niger OR Ghana OR "
-            f"Nigeria OR Benin OR Guinea) "
-            f"(archaeology OR ancient civilization OR ruins OR mystery) "
-            f"{date_filter}"
+            f"(Mali OR Senegal OR Burkina Faso OR Niger OR "
+            f"Guinea OR Ghana OR Nigeria OR Benin OR Togo OR "
+            f"Gambia OR Mauritania OR Liberia) "
+            f"({themes_en}) {date_filter}"
         ),
         (
             "Afrique du Nord - français",
-            f"(Égypte OR Maroc OR Algérie OR Tunisie OR Libye OR Soudan) "
-            f"(archéologie OR ruines OR civilisation ancienne OR découverte) "
-            f"{date_filter}"
+            f"(Égypte OR Maroc OR Algérie OR Tunisie OR "
+            f"Libye OR Soudan) ({themes_fr}) {date_filter}"
         ),
         (
             "Afrique du Nord - anglais",
-            f"(Egypt OR Morocco OR Algeria OR Tunisia OR Libya OR Sudan) "
-            f"(archaeology OR ancient ruins OR forgotten civilization) "
-            f"{date_filter}"
+            f"(Egypt OR Morocco OR Algeria OR Tunisia OR "
+            f"Libya OR Sudan) ({themes_en}) {date_filter}"
         ),
         (
             "Afrique centrale - français",
-            f"(RDC OR Congo OR Cameroun OR Gabon OR Tchad OR Angola) "
-            f"(archéologie OR royaume ancien OR civilisation OR ruines) "
-            f"{date_filter}"
+            f"(RDC OR Congo OR Cameroun OR Gabon OR Tchad OR "
+            f"Angola OR Centrafrique OR Burundi OR Rwanda) "
+            f"({themes_fr}) {date_filter}"
         ),
         (
             "Afrique centrale - anglais",
-            f"(DR Congo OR Cameroon OR Gabon OR Chad OR Angola OR Congo) "
-            f"(archaeology OR ancient kingdom OR ruins OR mystery) "
-            f"{date_filter}"
+            f"(DR Congo OR Congo OR Cameroon OR Gabon OR Chad OR "
+            f"Angola OR Central African Republic OR Rwanda OR Burundi) "
+            f"({themes_en}) {date_filter}"
         ),
         (
             "Afrique de l'Est - anglais",
-            f"(Ethiopia OR Kenya OR Tanzania OR Uganda OR Rwanda OR Somalia) "
-            f"(archaeology OR ancient civilization OR lost city OR ruins) "
-            f"{date_filter}"
+            f"(Ethiopia OR Kenya OR Tanzania OR Uganda OR Rwanda OR "
+            f"Somalia OR Eritrea OR Djibouti OR Madagascar OR "
+            f"South Sudan) ({themes_en}) {date_filter}"
         ),
         (
             "Afrique de l'Est - français",
-            f"(Éthiopie OR Kenya OR Tanzanie OR Ouganda OR Rwanda OR Somalie) "
-            f"(archéologie OR civilisation ancienne OR cité perdue) "
-            f"{date_filter}"
+            f"(Éthiopie OR Kenya OR Tanzanie OR Ouganda OR Rwanda OR "
+            f"Somalie OR Djibouti OR Madagascar OR Soudan du Sud) "
+            f"({themes_fr}) {date_filter}"
         ),
         (
             "Afrique australe - anglais",
-            f"(Zimbabwe OR Zambia OR South Africa OR Botswana OR Namibia "
-            f"OR Mozambique) "
-            f"(archaeology OR ancient ruins OR forgotten civilization) "
-            f"{date_filter}"
+            f"(Zimbabwe OR Zambia OR South Africa OR Botswana OR "
+            f"Namibia OR Mozambique OR Malawi OR Lesotho OR "
+            f"Eswatini) ({themes_en}) {date_filter}"
         ),
         (
             "Afrique australe - français",
             f"(Zimbabwe OR Zambie OR Afrique du Sud OR Botswana OR "
-            f"Namibie OR Mozambique) "
-            f"(archéologie OR ruines anciennes OR civilisation oubliée) "
-            f"{date_filter}"
+            f"Namibie OR Mozambique OR Malawi OR Lesotho) "
+            f"({themes_fr}) {date_filter}"
         ),
     ]
 
 
 # ==========================================================
-# 2. OUTILS DE NETTOYAGE ET DE RÉCUPÉRATION
+# 2. OUTILS INTERNET
 # ==========================================================
 
 def clean_text(value):
+
     value = html.unescape(value or "")
     value = re.sub(r"<[^>]+>", " ", value)
+
     return re.sub(r"\s+", " ", value).strip()
 
 
@@ -145,10 +157,16 @@ def fetch_url(url, data=None, headers=None, timeout=25):
         headers=request_headers
     )
 
-    with urllib.request.urlopen(request, timeout=timeout) as response:
+    with urllib.request.urlopen(
+        request,
+        timeout=timeout
+    ) as response:
+
         content = response.read()
         final_url = response.geturl()
-        content_type = response.headers.get("Content-Type", "")
+        content_type = response.headers.get(
+            "Content-Type", ""
+        )
 
     return content, final_url, content_type
 
@@ -159,6 +177,7 @@ def parse_date(value):
         return None
 
     try:
+
         date = parsedate_to_datetime(value)
 
         if date.tzinfo is None:
@@ -171,7 +190,7 @@ def parse_date(value):
 
 
 # ==========================================================
-# 3. RECHERCHE GOOGLE NEWS RSS
+# 3. GOOGLE NEWS RSS
 # ==========================================================
 
 def google_news_search(query, region):
@@ -186,7 +205,7 @@ def google_news_search(query, region):
 
     try:
 
-        content, _, _ = fetch_url(url, timeout=25)
+        content, _, _ = fetch_url(url)
 
         root = ET.fromstring(content)
 
@@ -194,7 +213,9 @@ def google_news_search(query, region):
 
         for item in root.findall(".//item"):
 
-            title = clean_text(item.findtext("title", ""))
+            title = clean_text(
+                item.findtext("title", "")
+            )
 
             link = (
                 item.findtext("link", "") or ""
@@ -231,7 +252,7 @@ def google_news_search(query, region):
                 "publisher_url": None,
                 "article_text": "",
                 "article_full_text_fetched": False,
-                "fetch_status": "NON CONSULTÉ",
+                "fetch_status": "NON CONSULTÉ"
             })
 
         return results
@@ -269,13 +290,12 @@ def resolve_google_news_url(link):
 
     page_headers = {
         "Cookie": COOKIE,
-        "Referer": "https://news.google.com/",
+        "Referer": "https://news.google.com/"
     }
 
     page_content, final_url, _ = fetch_url(
         page_url,
-        headers=page_headers,
-        timeout=25
+        headers=page_headers
     )
 
     page = page_content.decode(
@@ -295,7 +315,6 @@ def resolve_google_news_url(link):
 
     if not signature or not timestamp:
 
-        # Google peut parfois effectuer une redirection normale.
         final_host = (
             urlparse(final_url).hostname or ""
         ).lower()
@@ -308,7 +327,6 @@ def resolve_google_news_url(link):
         )
 
     sg = signature.group(1)
-
     ts = int(timestamp.group(1))
 
     inner = [
@@ -350,15 +368,14 @@ def resolve_google_news_url(link):
         "Referer": "https://news.google.com/",
         "Content-Type": (
             "application/x-www-form-urlencoded;charset=UTF-8"
-        ),
+        )
     }
 
     response_content, _, _ = fetch_url(
         "https://news.google.com/_/DotsSplashUi/data/batchexecute"
         "?rpcids=Fbv4je",
         data=body,
-        headers=post_headers,
-        timeout=25
+        headers=post_headers
     )
 
     raw = response_content.decode(
@@ -366,8 +383,25 @@ def resolve_google_news_url(link):
         errors="replace"
     )
 
-    # La réponse peut contenir plusieurs lignes.
-    # On cherche la ligne contenant la réponse Fbv4je.
+    def find_response(obj):
+
+        if isinstance(obj, list):
+
+            if (
+                len(obj) >= 3
+                and obj[1] == "Fbv4je"
+                and isinstance(obj[2], str)
+            ):
+                return obj[2]
+
+            for child in obj:
+
+                found = find_response(child)
+
+                if found:
+                    return found
+
+        return None
 
     for line in raw.splitlines():
 
@@ -380,26 +414,6 @@ def resolve_google_news_url(link):
             frames = json.loads(line)
         except Exception:
             continue
-
-        def find_response(obj):
-
-            if isinstance(obj, list):
-
-                if (
-                    len(obj) >= 3
-                    and obj[1] == "Fbv4je"
-                    and isinstance(obj[2], str)
-                ):
-                    return obj[2]
-
-                for child in obj:
-
-                    found = find_response(child)
-
-                    if found:
-                        return found
-
-            return None
 
         payload = find_response(frames)
 
@@ -443,7 +457,7 @@ def resolve_google_news_url(link):
 
 
 # ==========================================================
-# 5. EXTRACTION DU TEXTE DES ARTICLES
+# 5. EXTRACTION DES ARTICLES
 # ==========================================================
 
 class ArticleParser(HTMLParser):
@@ -460,7 +474,6 @@ class ArticleParser(HTMLParser):
 
         self.parts = []
         self.skip_stack = []
-
         self.meta_description = ""
         self.meta_og_description = ""
 
@@ -474,9 +487,7 @@ class ArticleParser(HTMLParser):
         if tag == "meta":
 
             name = (attrs.get("name") or "").lower()
-
             prop = (attrs.get("property") or "").lower()
-
             content = attrs.get("content", "")
 
             if name == "description":
@@ -521,8 +532,7 @@ def resolve_and_read_article(item):
         item["publisher_url"] = publisher_url
 
         content, final_url, content_type = fetch_url(
-            publisher_url,
-            timeout=25
+            publisher_url
         )
 
         final_host = (
@@ -555,7 +565,6 @@ def resolve_and_read_article(item):
         )
 
         parser = ArticleParser()
-
         parser.feed(page)
 
         article_text = re.sub(
@@ -578,16 +587,12 @@ def resolve_and_read_article(item):
             return item
 
         item["article_text"] = article_text[:9000]
-
         item["article_full_text_fetched"] = True
-
         item["fetch_status"] = "TEXTE RÉCUPÉRÉ"
 
     except urllib.error.HTTPError as error:
 
-        item["fetch_status"] = (
-            f"ERREUR HTTP {error.code}"
-        )
+        item["fetch_status"] = f"ERREUR HTTP {error.code}"
 
     except Exception as error:
 
@@ -599,7 +604,39 @@ def resolve_and_read_article(item):
 
 
 # ==========================================================
-# 6. ANALYSE GEMINI
+# 6. FILTRAGE ÉDITORIAL
+# ==========================================================
+
+EXCLUDED_TERMS = [
+    "élection", "présidentielle", "ministre",
+    "gouvernement", "parlement", "sanctions",
+    "armée", "rebelles", "conflit armé",
+    "football", "match", "championnat",
+    "transfert", "can 2027", "basketball",
+    "accident", "meurtre", "assassinat",
+    "incendie", "inondation", "manifestation",
+    "politique", "diplomatie", "économie",
+    "élections", "guerre en cours"
+]
+
+
+def editorial_screen(item):
+
+    title = item.get("title", "").lower()
+    description = item.get("description", "").lower()
+
+    combined = title + " " + description
+
+    for term in EXCLUDED_TERMS:
+
+        if term in combined:
+            return False
+
+    return True
+
+
+# ==========================================================
+# 7. ANALYSE GEMINI
 # ==========================================================
 
 def extract_json(text):
@@ -619,7 +656,6 @@ def extract_json(text):
     )
 
     start = text.find("{")
-
     end = text.rfind("}")
 
     if start == -1 or end == -1 or end <= start:
@@ -641,27 +677,15 @@ def get_response_text(response):
 
     collected = []
 
-    output = getattr(
-        response,
-        "output",
-        None
-    ) or []
+    output = getattr(response, "output", None) or []
 
     for item in output:
 
-        content = getattr(
-            item,
-            "content",
-            None
-        ) or []
+        content = getattr(item, "content", None) or []
 
         for part in content:
 
-            value = getattr(
-                part,
-                "text",
-                None
-            )
+            value = getattr(part, "text", None)
 
             if value:
                 collected.append(value)
@@ -678,80 +702,99 @@ def analyze_with_gemini(items):
             "GEMINI_API_KEY est absent des secrets GitHub."
         )
 
-    client = genai.Client(
-        api_key=api_key
-    )
+    # Seuls les articles intégralement récupérés
+    # sont transmis comme sources lues à Gemini.
+
+    readable = [
+        item for item in items
+        if item["article_full_text_fetched"]
+    ]
 
     source_list = []
 
-    for index, item in enumerate(items, start=1):
+    for index, item in enumerate(readable, start=1):
 
         source_list.append({
             "source_id": index,
             "title": item["title"],
             "publisher": item["publisher"],
             "publisher_url": item["publisher_url"],
-            "rss_url": item["rss_url"],
             "published_at": item["published_at"],
-            "search_region": item["search_region"],
-            "description": item["description"][:700],
-            "article_full_text_fetched":
-                item["article_full_text_fetched"],
-            "article_text": item["article_text"][:6500],
-            "fetch_status": item["fetch_status"],
+            "country_region": item["search_region"],
+            "article_text": item["article_text"][:6500]
         })
 
+    client = genai.Client(api_key=api_key)
+
     prompt = f"""
-Tu es le documentaliste de la chaîne YouTube Observateur Actif.
+Tu es le documentaliste et vérificateur historique
+de la chaîne YouTube Observateur Actif.
 
-OBJECTIF :
-Trouver des histoires africaines réelles, historiques et documentées
-pour des vidéos de 45 à 60 secondes.
+MISSION :
+Trouver de véritables mystères africains documentés
+pour des vidéos YouTube Shorts de 45 à 60 secondes.
 
-THÈMES PRIORITAIRES :
+ZONE :
+Les 54 pays d'Afrique.
+
+THÈMES AUTORISÉS :
 1. Mystères historiques.
 2. Lieux mystérieux.
 3. Civilisations oubliées.
+4. Cités anciennes.
+5. Découvertes archéologiques.
+6. Royaumes africains anciens.
+7. Sites historiques dont certains éléments
+   restent inexpliqués.
 
-ZONE :
-Les 54 pays du continent africain.
+SUJETS INTERDITS :
+- Actualités politiques.
+- Élections et sanctions.
+- Guerres et conflits contemporains.
+- Sport.
+- Faits divers sans rapport avec l'histoire.
+- Actualités économiques.
+- Histoires inventées ou sensationnalistes.
 
-CONSIGNES STRICTES :
+RÈGLES ABSOLUES :
 
 1. Ne jamais inventer une histoire.
-2. Ne jamais inventer un pays, une date, un nom ou une découverte.
+2. Ne jamais inventer un pays, une date ou un personnage.
 3. Ne jamais inventer une source ou une URL.
-4. Ne pas confondre une légende et un fait historique.
-5. Ne pas présenter une hypothèse comme une certitude.
-6. Écarter les histoires concernant l'Amérique, l'Europe ou l'Asie,
-   sauf si le sujet porte réellement sur un fait historique africain.
-7. Le pays concerné doit être identifiable.
-8. Utiliser uniquement les sources fournies.
-9. Ne pas prétendre avoir lu un article dont le texte est absent.
-10. Une simple manchette n'est pas une preuve.
-11. Une source ne confirme pas automatiquement une autre source.
-12. Ne jamais inventer une corroboration.
-13. Si les preuves sont insuffisantes, ne proposer aucune histoire.
+4. Ne pas confondre légende et réalité historique.
+5. Une hypothèse doit être présentée comme une hypothèse.
+6. Le sujet doit réellement concerner l'Afrique.
+7. Utiliser uniquement les textes fournis.
+8. Une source non lue ne constitue pas une preuve.
+9. Une manchette ne constitue pas une preuve.
+10. Deux articles qui reprennent le même communiqué
+    ne sont pas nécessairement indépendants.
+11. Ne jamais inventer une corroboration.
+12. Écarter les sujets politiques contemporains.
+13. Ne pas transformer une actualité en mystère historique.
+14. Si les preuves sont insuffisantes, ne proposer
+    aucune histoire.
 
-RÈGLE ESSENTIELLE :
+CONTRÔLE DES SOURCES :
 
-Une source n'est considérée comme lue que si
-article_full_text_fetched = true.
+Une histoire ne peut être proposée que si :
+- Au moins deux articles complets sont disponibles.
+- Les articles proviennent de deux domaines différents.
+- Les textes soutiennent réellement le même sujet.
+- Le pays africain est identifiable.
+- Le sujet correspond aux thèmes autorisés.
 
-Si aucune source n'a son texte intégral disponible,
-retourne obligatoirement une liste histoires vide.
+Même si ces conditions sont remplies,
+la validation humaine reste obligatoire.
 
-Si les sources ne permettent pas d'établir les faits,
-retourne également une liste vide.
-
-SOURCES DISPONIBLES :
+SOURCES :
 
 {json.dumps(source_list, ensure_ascii=False)}
 
-Retourne uniquement un JSON valide avec cette structure :
+Retourne exclusivement un JSON valide :
 
 {{
-  "resume_recherche": "Résumé honnête de la recherche",
+  "resume_recherche": "Résumé honnête",
   "histoires": [
     {{
       "titre": "Titre factuel",
@@ -759,15 +802,11 @@ Retourne uniquement un JSON valide avec cette structure :
       "region_afrique": "Région",
       "periode_historique": "Période connue",
       "resume_factuel": "Résumé des faits documentés",
-      "faits_confirmes": [
-        "Fait directement soutenu par les articles lus"
-      ],
-      "hypotheses_ou_incertitudes": [
-        "Éléments qui restent incertains"
-      ],
+      "faits_confirmes": [],
+      "hypotheses_ou_incertitudes": [],
       "nature": "Mystère historique",
       "source_ids": [1, 2],
-      "raison_decision": "Explication",
+      "raison_decision": "Justification",
       "idee_accroche": "Accroche prudente",
       "potentiel_short": "Faible, moyen ou élevé"
     }}
@@ -776,7 +815,13 @@ Retourne uniquement un JSON valide avec cette structure :
 
 Maximum : 5 histoires.
 
-Ne retourne aucune histoire si les sources ne sont pas suffisantes.
+Si aucune histoire ne respecte toutes les conditions,
+retourne obligatoirement :
+
+{{
+  "resume_recherche": "Aucun sujet suffisamment documenté",
+  "histoires": []
+}}
 """
 
     response = client.interactions.create(
@@ -790,46 +835,53 @@ Ne retourne aucune histoire si les sources ne sont pas suffisantes.
 
 
 # ==========================================================
-# 7. VALIDATION DES SOURCES ET DES HISTOIRES
+# 8. VALIDATION DES HISTOIRES
 # ==========================================================
 
 AFRICAN_COUNTRIES = {
-    "mali", "senegal", "burkina faso", "niger",
-    "guinea", "guinée", "ghana", "nigeria",
+    "mali", "senegal", "sénégal", "burkina faso",
+    "niger", "guinea", "guinée", "ghana", "nigeria",
     "benin", "bénin", "togo", "cote d'ivoire",
     "côte d'ivoire", "liberia", "libéria",
     "sierra leone", "gambia", "gambie",
     "mauritania", "mauritanie", "cape verde",
     "cap vert", "guinea-bissau", "guinée-bissau",
-
     "egypt", "égypte", "morocco", "maroc",
     "algeria", "algérie", "tunisia", "tunisie",
     "libya", "libye", "sudan", "soudan",
-
     "democratic republic of the congo",
     "rdc", "congo", "cameroon", "cameroun",
     "gabon", "chad", "tchad",
     "central african republic",
     "angola", "equatorial guinea",
-    "guinée équatoriale",
-
-    "ethiopia", "éthiopie", "kenya",
-    "tanzania", "tanzanie", "uganda",
-    "rwanda", "burundi", "somalia",
-    "somalie", "eritrea", "érythrée",
-    "djibouti", "south sudan",
-    "soudan du sud",
-
+    "guinée équatoriale", "ethiopia", "éthiopie",
+    "kenya", "tanzania", "tanzanie", "uganda",
+    "rwanda", "burundi", "somalia", "somalie",
+    "eritrea", "érythrée", "djibouti",
+    "south sudan", "soudan du sud",
     "south africa", "afrique du sud",
     "zimbabwe", "zambia", "zambie",
     "botswana", "namibia", "namibie",
-    "mozambique", "madagascar",
-    "malawi", "lesotho", "eswatini",
-    "swaziland"
+    "mozambique", "madagascar", "malawi",
+    "lesotho", "eswatini", "swaziland",
+    "seychelles", "comoros", "comores",
+    "mauritius", "maurice", "sao tome and principe",
+    "são tomé-et-principe"
 }
 
 
-def validate_analysis(analysis, items):
+ALLOWED_NATURES = {
+    "mystère historique",
+    "lieu mystérieux",
+    "civilisation oubliée",
+    "découverte archéologique",
+    "cité ancienne",
+    "royaume ancien",
+    "site historique"
+}
+
+
+def validate_analysis(analysis, readable_items, all_items):
 
     valid_stories = []
 
@@ -845,10 +897,17 @@ def validate_analysis(analysis, items):
         if country not in AFRICAN_COUNTRIES:
             continue
 
+        nature = str(
+            story.get("nature", "")
+        ).strip().lower()
+
+        if nature not in ALLOWED_NATURES:
+            continue
+
         ids = story.get("source_ids", [])
 
         if not isinstance(ids, list):
-            ids = []
+            continue
 
         valid_ids = []
 
@@ -856,25 +915,19 @@ def validate_analysis(analysis, items):
 
             if (
                 isinstance(value, int)
-                and 1 <= value <= len(items)
+                and 1 <= value <= len(readable_items)
                 and value not in valid_ids
             ):
                 valid_ids.append(value)
 
         selected_sources = [
-            items[index - 1]
+            readable_items[index - 1]
             for index in valid_ids
-        ]
-
-        read_sources = [
-            source
-            for source in selected_sources
-            if source["article_full_text_fetched"]
         ]
 
         domains = set()
 
-        for source in read_sources:
+        for source in selected_sources:
 
             host = urlparse(
                 source.get("publisher_url") or ""
@@ -885,58 +938,41 @@ def validate_analysis(analysis, items):
                     host.lower().removeprefix("www.")
                 )
 
-        story["source_ids"] = valid_ids
+        # Deux textes complets et deux domaines
+        # différents sont obligatoires.
+
+        if len(selected_sources) < 2:
+            continue
+
+        if len(domains) < 2:
+            continue
 
         story["sources"] = [
             {
                 "source_id": index,
-                "title": items[index - 1]["title"],
-                "publisher": items[index - 1]["publisher"],
-                "url": (
-                    items[index - 1]["publisher_url"]
-                    or items[index - 1]["rss_url"]
-                ),
-                "article_full_text_fetched":
-                    items[index - 1]["article_full_text_fetched"]
+                "title": source["title"],
+                "publisher": source["publisher"],
+                "url": source["publisher_url"],
+                "article_full_text_fetched": True
             }
-            for index in valid_ids
+            for index, source in enumerate(
+                selected_sources,
+                start=1
+            )
         ]
 
-        story["nombre_articles_lus"] = len(read_sources)
-
+        story["nombre_articles_lus"] = len(selected_sources)
         story["nombre_domaines_distincts"] = len(domains)
 
-        # Aucun sujet n'est automatiquement vérifié.
         story["decision_editoriale"] = (
-            "EN ATTENTE DE VÉRIFICATION"
+            "EN ATTENTE DE VÉRIFICATION HUMAINE"
         )
 
-        if len(read_sources) == 0:
-
-            story["raison_controle"] = (
-                "Aucun texte intégral n'a été récupéré."
-            )
-
-        elif len(read_sources) < 2:
-
-            story["raison_controle"] = (
-                "Une seule source lue : corroboration insuffisante."
-            )
-
-        elif len(domains) < 2:
-
-            story["raison_controle"] = (
-                "Les sources lues ne proviennent pas de "
-                "deux domaines distincts."
-            )
-
-        else:
-
-            story["raison_controle"] = (
-                "Plusieurs articles ont été lus. "
-                "Une vérification humaine de leur indépendance "
-                "et des faits reste obligatoire."
-            )
+        story["raison_controle"] = (
+            "Deux textes complets de domaines distincts "
+            "ont été identifiés. Leur indépendance réelle "
+            "et les faits doivent encore être vérifiés."
+        )
 
         valid_stories.append(story)
 
@@ -944,7 +980,7 @@ def validate_analysis(analysis, items):
 
 
 # ==========================================================
-# 8. PROGRAMME PRINCIPAL
+# 9. PROGRAMME PRINCIPAL
 # ==========================================================
 
 def main():
@@ -954,20 +990,19 @@ def main():
     now = datetime.now(timezone.utc)
 
     print("=" * 60)
-    print("OBSERVATEUR ACTIF AI")
+    print("OBSERVATEUR ACTIF AI - VERSION 4")
     print("RECHERCHE DOCUMENTAIRE AFRICAINE")
     print("Date UTC :", now.isoformat())
     print("=" * 60)
 
     all_results = []
-
     seen = set()
-
     query_stats = []
 
     searches = build_searches()
 
-    # Recherche répartie entre les dix requêtes.
+    # Recherche régionale
+
     for region, query in searches:
 
         print("Recherche :", region)
@@ -987,13 +1022,18 @@ def main():
                 item["title"].lower()
             )
 
-            if key and key not in seen:
+            if not key or key in seen:
+                continue
 
-                seen.add(key)
+            seen.add(key)
 
-                all_results.append(item)
+            # Premier filtrage automatique
 
-                added += 1
+            if not editorial_screen(item):
+                continue
+
+            all_results.append(item)
+            added += 1
 
             if added >= MAX_RESULTS_PER_QUERY:
                 break
@@ -1006,15 +1046,15 @@ def main():
 
         time.sleep(1)
 
-    # Classement par date de publication.
     all_results.sort(
         key=lambda item: item.get("published_at") or "",
         reverse=True
     )
 
-    print("Résultats uniques :", len(all_results))
+    print("Résultats retenus :", len(all_results))
 
-    # Résolution et lecture des articles.
+    # Extraction des textes
+
     for index, item in enumerate(
         all_results[:MAX_ARTICLES_TO_OPEN],
         start=1
@@ -1031,13 +1071,18 @@ def main():
 
         time.sleep(2)
 
-    read_count = sum(
-        1
-        for item in all_results
+    read_items = [
+        item for item in all_results
         if item["article_full_text_fetched"]
-    )
+    ]
+
+    read_count = len(read_items)
+
+    # Rapport initial
 
     report = {
+
+        "version": "4.0",
 
         "date_recherche": now.isoformat(),
 
@@ -1083,7 +1128,8 @@ def main():
         }
     }
 
-    # Analyse Gemini.
+    # Analyse Gemini
+
     try:
 
         analysis = analyze_with_gemini(
@@ -1092,6 +1138,7 @@ def main():
 
         stories = validate_analysis(
             analysis,
+            read_items,
             all_results
         )
 
@@ -1102,8 +1149,7 @@ def main():
             "modele": MODEL,
 
             "resume_recherche": analysis.get(
-                "resume_recherche",
-                ""
+                "resume_recherche", ""
             ),
 
             "nombre_histoires_proposees": len(stories),
@@ -1126,7 +1172,8 @@ def main():
 
         print("Erreur Gemini :", error)
 
-    # Enregistrement du rapport.
+    # Enregistrement
+
     with open(
         OUTPUT_FILE,
         "w",
@@ -1144,6 +1191,12 @@ def main():
     print("RECHERCHE TERMINÉE")
     print("Résultats :", len(all_results))
     print("Articles lus :", read_count)
+    print(
+        "Histoires proposées :",
+        report["analyse_ia"].get(
+            "nombre_histoires_proposees", 0
+        )
+    )
     print(
         "Analyse Gemini :",
         report["analyse_ia"]["status"]
