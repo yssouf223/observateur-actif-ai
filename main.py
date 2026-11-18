@@ -1,406 +1,357 @@
 
+import os
 import json
 import re
-import time
-import html
-import urllib.parse
-import urllib.request
-import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
+
+from google import genai
+from google.genai import types
 
 
 # ==========================================
 # OBSERVATEUR ACTIF AI
-# Recherche quotidienne de mystères africains
+# Moteur de recherche journalistique africain
 # ==========================================
 
 CHANNEL = "Observateur Actif"
-COUNTRY = "Toute l'Afrique"
+MODEL = "gemini-2.5-flash"
 
-THEMES = [
-    "mystère historique",
-    "lieu mystérieux",
-    "civilisation oubliée",
-    "archéologie",
-    "ville ancienne",
-    "royaume ancien",
-    "site archéologique",
-    "ruines anciennes",
-    "art rupestre",
-    "tombe ancienne",
-    "manuscrit historique",
-    "civilisation antique"
-]
+PROMPT = """
+Tu es le journaliste d'investigation et documentaliste
+de la chaîne YouTube Observateur Actif.
 
-# Pays et lieux africains pour le ciblage géographique.
-AFRICA_TERMS = [
-    "africa", "african", "mali", "senegal", "niger",
-    "guinea", "burkina faso", "ivory coast", "cote d'ivoire",
-    "ghana", "togo", "benin", "nigeria", "cameroon",
-    "chad", "sudan", "south sudan", "ethiopia", "eritrea",
-    "somalia", "kenya", "uganda", "tanzania", "rwanda",
-    "burundi", "congo", "democratic republic of the congo",
-    "gabon", "angola", "zambia", "zimbabwe", "botswana",
-    "namibia", "south africa", "mozambique", "malawi",
-    "madagascar", "algeria", "morocco", "tunisia", "libya",
-    "egypt", "mauritania", "gambia", "sierra leone",
-    "liberia", "niger delta", "sahel", "sahara",
-    "timbuktu", "tombouctou", "djenne", "djenné",
-    "gao", "kidal", "segou", "sikasso", "kalana",
-    "great zimbabwe", "aksum", "axum", "nubia",
-    "carthage", "meroe", "kush", "benin city",
-    "ife", "nok", "kilwa", "lalibela", "gobero",
-    "tassili", "jebel irhoud", "mapungubwe",
-    "djenne-djenno", "djenné-djenno"
-]
+MISSION :
+Effectuer une véritable recherche Internet sur toute
+l'Afrique afin de découvrir des histoires mystérieuses,
+réelles et documentées.
 
-HISTORY_TERMS = [
-    "ancient", "archaeology", "archaeological",
-    "excavation", "ruins", "civilization",
-    "civilisation", "kingdom", "empire",
-    "historical", "prehistoric", "medieval",
-    "tomb", "temple", "pyramid", "manuscript",
-    "rock art", "cave", "fossil", "remains",
-    "heritage", "settlement", "lost city",
-    "discovery", "discovered", "century",
-    "years old", "burial", "monument",
-    "fortress", "archaeologists", "relic"
-]
+PRIORITÉS ÉDITORIALES :
+1. Mystères historiques.
+2. Lieux mystérieux.
+3. Civilisations oubliées.
 
-KNOWN_HISTORICAL_PLACES = [
-    "timbuktu", "tombouctou", "djenne", "djenné",
-    "djenne-djenno", "djenné-djenno",
-    "great zimbabwe", "aksum", "axum", "nubia",
-    "carthage", "meroe", "kush", "benin city",
-    "ife", "nok", "kilwa", "lalibela", "gobero",
-    "tassili", "jebel irhoud", "mapungubwe",
-    "olduvai", "giza", "saqqara", "abu simbel",
-    "gondar", "mohenjo", "rhapt a"
-]
+SUJETS À EXPLORER :
+- Cités anciennes et villes disparues.
+- Civilisations et royaumes oubliés.
+- Découvertes archéologiques.
+- Sites historiques mystérieux.
+- Grottes, ruines, monuments et tombeaux.
+- Manuscrits et objets historiques.
+- Disparitions et événements historiques inexpliqués.
+- Mystères africains anciens et contemporains.
 
-GDELT_THEMES = [
-    "archaeology",
-    "excavation",
-    '"ancient ruins"',
-    '"lost city"',
-    '"ancient kingdom"',
-    '"historical mystery"',
-    "pyramid",
-    "temple",
-    "tomb",
-    '"rock art"',
-    "civilization",
-    "prehistoric"
-]
+MÉTHODE OBLIGATOIRE :
 
-AFRICAN_COUNTRIES = [
-    "Mali", "Senegal", "Niger", "Guinea",
-    '"Burkina Faso"', "Ghana", "Togo", "Benin",
-    "Nigeria", "Cameroon", "Chad", "Sudan",
-    "Ethiopia", "Kenya", "Uganda", "Tanzania",
-    "Somalia", "Rwanda", "Burundi", "Congo",
-    '"South Africa"', "Zimbabwe", "Zambia",
-    "Botswana", "Namibia", "Angola",
-    "Mozambique", "Madagascar", "Egypt",
-    "Morocco", "Algeria", "Tunisia", "Libya",
-    "Mauritania", "Gambia", "Liberia",
-    '"Sierra Leone"', "Gabon", "Eritrea",
-    '"South Sudan"', '"Ivory Coast"'
-]
+1. Effectue de véritables recherches Google sur Internet.
+2. Explore toute l'Afrique, pas seulement l'Afrique de l'Ouest.
+3. Recherche en français et en anglais.
+4. Consulte les médias, universités, musées,
+   institutions historiques et archéologiques,
+   UNESCO et publications scientifiques.
+5. Lis les informations disponibles dans les sources.
+6. Compare les informations entre plusieurs sources.
+7. Vérifie les dates, les lieux, les noms et les faits.
+8. Distingue clairement les faits établis,
+   les hypothèses et les légendes.
+9. Ne transforme jamais une légende en fait historique.
+10. N'invente jamais une histoire, une citation,
+    une date ou une source.
+11. Ne donne jamais une URL que tu n'as pas réellement
+    trouvée dans tes recherches.
 
+SÉLECTION :
+Trouve jusqu'à 8 sujets intéressants.
+Privilégie les découvertes récentes et les sujets
+historiques qui méritent une enquête approfondie.
 
-def normalize(text):
-    text = html.unescape(str(text or ""))
-    text = re.sub(r"<[^>]+>", " ", text)
-    return re.sub(r"\s+", " ", text).strip().lower()
+Pour chaque sujet, fournis :
+- titre
+- pays
+- lieu précis si connu
+- catégorie
+- résumé factuel
+- faits confirmés
+- éléments incertains ou controversés
+- intérêt journalistique
+- sources : titre, URL et domaine
+- niveau de corroboration
 
+IMPORTANT :
+Ne prétends pas qu'une histoire est vérifiée si les
+sources sont insuffisantes.
+Deux sites qui recopient le même article ne sont pas
+deux sources indépendantes.
+Si tu ne trouves pas assez de preuves, indique-le.
 
-def contains_term(text, terms):
-    text = normalize(text)
-    return any(normalize(term) in text for term in terms)
+FORMAT DE SORTIE :
+Retourne uniquement un objet JSON valide, sans Markdown,
+avec cette structure :
 
-
-def is_relevant_title(title):
-    """
-    Filtre prudent : un titre doit mentionner
-    un repère africain et un élément historique,
-    ou un lieu historique africain connu.
-    """
-    title = normalize(title)
-
-    has_geography = contains_term(title, AFRICA_TERMS)
-    has_history = contains_term(title, HISTORY_TERMS)
-    has_known_place = contains_term(
-        title, KNOWN_HISTORICAL_PLACES
-    )
-
-    return (
-        (has_geography and has_history)
-        or has_known_place
-    )
-
-
-def fetch_json(url, timeout=30):
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": (
-                "ObservateurActifAI/2.0 "
-                "(African historical research)"
-            ),
-            "Accept": "application/json"
+{
+  "histoires": [
+    {
+      "titre": "",
+      "pays": "",
+      "lieu": "",
+      "categorie": "",
+      "resume": "",
+      "faits_confirmes": [],
+      "elements_inc ertains": [],
+      "interet_journalistique": "",
+      "sources": [
+        {
+          "titre": "",
+          "url": "",
+          "domaine": ""
         }
-    )
-
-    with urllib.request.urlopen(
-        request, timeout=timeout
-    ) as response:
-        return json.loads(response.read().decode("utf-8"))
-
-
-# ==========================================
-# RECHERCHE GDELT
-# ==========================================
-
-def search_gdelt():
-    results = []
-    errors = []
-
-    theme_query = "(" + " OR ".join(GDELT_THEMES) + ")"
-    country_query = "(" + " OR ".join(AFRICAN_COUNTRIES) + ")"
-
-    query = theme_query + " " + country_query
-
-    params = {
-        "query": query,
-        "mode": "ArtList",
-        "format": "json",
-        "maxrecords": "100",
-        "timespan": "30d",
-        "sort": "DateDesc"
+      ],
+      "niveau_corroboration": ""
     }
+  ],
+  "bilan_recherche": "",
+  "pistes_a_approfondir": []
+}
 
-    url = (
-        "https://api.gdeltproject.org/api/v2/doc/doc?"
-        + urllib.parse.urlencode(params)
-    )
+Ne fabrique aucune source.
+"""
 
-    for attempt in range(3):
-        try:
-            data = fetch_json(url, timeout=45)
-            articles = data.get("articles", [])
 
-            for article in articles:
-                title = article.get("title", "").strip()
-                link = article.get("url", "").strip()
+def get_grounding_sources(response):
+    """Récupère les références réellement fournies
+    par les résultats de recherche Google."""
 
-                if not title or not link:
-                    continue
+    sources = []
+    seen = set()
 
-                if not is_relevant_title(title):
-                    continue
+    for candidate in (response.candidates or []):
+        metadata = getattr(
+            candidate, "grounding_metadata", None
+        )
 
-                results.append({
-                    "titre": title,
-                    "url": link,
-                    "source": article.get("domain", ""),
-                    "date": article.get("seendate", ""),
-                    "type": "Article de presse",
-                    "zone": "Afrique - à confirmer",
-                    "verification": "A_VERIFIER",
-                    "origine": "GDELT"
-                })
+        if not metadata:
+            continue
 
-            return results, errors
+        chunks = getattr(
+            metadata, "grounding_chunks", []
+        ) or []
 
-        except urllib.error.HTTPError as error:
-            message = "GDELT HTTP " + str(error.code)
-            errors.append(message)
+        for chunk in chunks:
+            web = getattr(chunk, "web", None)
 
-            if error.code == 429 and attempt < 2:
-                time.sleep(30 * (attempt + 1))
+            if not web:
                 continue
 
-            break
+            url = getattr(web, "uri", "") or ""
+            title = getattr(web, "title", "") or ""
 
-        except Exception as error:
-            errors.append(
-                "GDELT : " + str(error)[:250]
-            )
-            break
+            if not url.startswith("http"):
+                continue
 
-    return results, errors
+            if url in seen:
+                continue
+
+            seen.add(url)
+
+            domain = urlparse(url).netloc.lower()
+
+            sources.append({
+                "titre": title,
+                "url": url,
+                "domaine": domain
+            })
+
+    return sources
 
 
-# ==========================================
-# RECHERCHE WIKIPEDIA
-# ==========================================
+def extract_json(text):
+    """Extrait le JSON même si le modèle ajoute
+    accidentellement des balises Markdown."""
 
-def search_wikipedia():
-    results = []
-    errors = []
+    text = text.strip()
 
-    search_query = (
-        "Africa archaeology ancient kingdoms "
-        "historical sites forgotten civilizations"
+    text = re.sub(
+        r"^```(?:json)?\s*",
+        "",
+        text,
+        flags=re.IGNORECASE
     )
 
-    params = {
-        "action": "query",
-        "list": "search",
-        "srsearch": search_query,
-        "srnamespace": "0",
-        "srlimit": "50",
-        "format": "json"
+    text = re.sub(r"\s*```$", "", text)
+
+    start = text.find("{")
+    end = text.rfind("}")
+
+    if start == -1 or end == -1:
+        raise ValueError("Réponse JSON introuvable")
+
+    return json.loads(text[start:end + 1])
+
+
+def verify_candidate_sources(stories, grounding_sources):
+    """Ne conserve comme références de recherche
+    que les URL effectivement retournées par Google."""
+
+    source_map = {
+        source["url"]: source
+        for source in grounding_sources
     }
 
-    url = (
-        "https://en.wikipedia.org/w/api.php?"
-        + urllib.parse.urlencode(params)
+    for story in stories:
+        original_sources = story.get("sources", [])
+        verified_sources = []
+
+        for source in original_sources:
+            url = source.get("url", "").strip()
+
+            if url in source_map:
+                verified_sources.append(
+                    source_map[url]
+                )
+
+        story["sources"] = verified_sources
+
+        domains = {
+            source["domaine"]
+            for source in verified_sources
+        }
+
+        if len(domains) >= 3:
+            story["statut_sources"] = (
+                "PLUSIEURS_DOMAINES_A_EXAMINER"
+            )
+        elif len(domains) >= 2:
+            story["statut_sources"] = (
+                "CORROBORATION_INSUFFISANTE"
+            )
+        else:
+            story["statut_sources"] = (
+                "SOURCES_INSUFFISANTES"
+            )
+
+        story["publication_autorisee"] = False
+        story["verification_humaine_requise"] = True
+
+    return stories
+
+
+def main():
+    print("======================================")
+    print("OBSERVATEUR ACTIF AI")
+    print("Recherche journalistique sur l'Afrique")
+    print("======================================")
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError(
+            "Le secret GEMINI_API_KEY est introuvable."
+        )
+
+    client = genai.Client(api_key=api_key)
+
+    print("\nRecherche Internet avec Google Search...")
+
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=PROMPT,
+        config=types.GenerateContentConfig(
+            tools=[
+                types.Tool(
+                    google_search=types.GoogleSearch()
+                )
+            ],
+            temperature=0.2
+        )
+    )
+
+    if not response.text:
+        raise RuntimeError(
+            "Gemini n'a retourné aucun texte."
+        )
+
+    print("Recherche terminée.")
+    print("Extraction des sources...")
+
+    grounding_sources = get_grounding_sources(response)
+
+    print(
+        "Sources retournées par Google :",
+        len(grounding_sources)
     )
 
     try:
-        data = fetch_json(url, timeout=30)
-        pages = data.get("query", {}).get("search", [])
+        research = extract_json(response.text)
+        stories = research.get("histoires", [])
 
-        for page in pages:
-            title = page.get("title", "").strip()
-            snippet = page.get("snippet", "")
-            text = title + " " + snippet
+        stories = verify_candidate_sources(
+            stories,
+            grounding_sources
+        )
 
-            has_africa = contains_term(
-                text, AFRICA_TERMS
+        status = (
+            "CANDIDATS_A_VERIFIER"
+            if stories
+            else "AUCUNE_HISTOIRE_EXPLOITABLE"
+        )
+
+        research_result = {
+            "date_recherche": datetime.now(
+                timezone.utc
+            ).isoformat(),
+
+            "chaine": CHANNEL,
+            "zone": "Toute l'Afrique",
+            "moteur_ia": "Google Gemini",
+            "moteur_recherche": "Google Search",
+            "modele": MODEL,
+
+            "priorite_editoriale": [
+                "Mystères historiques",
+                "Lieux mystérieux",
+                "Civilisations oubliées"
+            ],
+
+            "nombre_histoires": len(stories),
+            "nombre_sources_recherche": len(
+                grounding_sources
+            ),
+
+            "histoires": stories,
+            "sources_recherche": grounding_sources,
+
+            "bilan_recherche": research.get(
+                "bilan_recherche", ""
+            ),
+
+            "pistes_a_approfondir": research.get(
+                "pistes_a_approfondir", []
+            ),
+
+            "statut": status,
+            "publication_autorisee": False,
+
+            "avertissement": (
+                "Les résultats sont des pistes "
+                "journalistiques. Les sources et les faits "
+                "doivent être vérifiés avant publication."
             )
-            has_history = contains_term(
-                text, HISTORY_TERMS
-            )
-            has_known_place = contains_term(
-                text, KNOWN_HISTORICAL_PLACES
-            )
-
-            if not (
-                (has_africa and has_history)
-                or has_known_place
-            ):
-                continue
-
-            page_title = urllib.parse.quote(
-                title.replace(" ", "_")
-            )
-
-            results.append({
-                "titre": title,
-                "url": (
-                    "https://en.wikipedia.org/wiki/"
-                    + page_title
-                ),
-                "description": normalize(snippet),
-                "type": "Document encyclopédique",
-                "zone": "Afrique - à confirmer",
-                "verification": "A_VERIFIER",
-                "origine": "Wikimedia"
-            })
+        }
 
     except Exception as error:
-        errors.append(
-            "Wikimedia : " + str(error)[:250]
-        )
+        research_result = {
+            "date_recherche": datetime.now(
+                timezone.utc
+            ).isoformat(),
 
-    return results, errors
-
-
-# ==========================================
-# SUPPRESSION DES DOUBLONS
-# ==========================================
-
-def remove_duplicates(items):
-    unique = []
-    seen_urls = set()
-    seen_titles = set()
-
-    for item in items:
-        url = item.get("url", "").strip()
-        title = normalize(item.get("titre", ""))
-
-        if not url or not title:
-            continue
-
-        if url in seen_urls or title in seen_titles:
-            continue
-
-        seen_urls.add(url)
-        seen_titles.add(title)
-        unique.append(item)
-
-    return unique
-
-
-# ==========================================
-# SAUVEGARDE DES RESULTATS
-# ==========================================
-
-def main():
-    now = datetime.now(timezone.utc).isoformat()
-
-    print("====================================")
-    print("OBSERVATEUR ACTIF AI")
-    print("Recherche quotidienne en Afrique")
-    print("====================================")
-
-    print("\n1. Recherche dans la presse...")
-    press_results, press_errors = search_gdelt()
-
-    print(
-        "Articles de presse retenus :",
-        len(press_results)
-    )
-
-    print("\n2. Recherche documentaire...")
-    wiki_results, wiki_errors = search_wikipedia()
-
-    print(
-        "Documents encyclopédiques retenus :",
-        len(wiki_results)
-    )
-
-    all_results = remove_duplicates(
-        press_results + wiki_results
-    )
-
-    errors = press_errors + wiki_errors
-
-    output = {
-        "date_recherche": now,
-        "chaine": CHANNEL,
-        "zone": COUNTRY,
-        "priorite_editoriale": [
-            "Mystères historiques",
-            "Lieux mystérieux",
-            "Civilisations oubliées"
-        ],
-        "moteurs_utilises": [
-            "GDELT",
-            "Wikimedia"
-        ],
-        "nombre_resultats": len(all_results),
-        "nombre_articles_presse": len(press_results),
-        "nombre_documents": len(wiki_results),
-        "erreurs_recherche": errors,
-        "resultats": all_results,
-        "statut": (
-            "CANDIDATS_A_VERIFIER"
-            if all_results
-            else "AUCUN_RESULTAT"
-        ),
-        "publication_autorisee": False,
-        "avertissement": (
-            "Ces résultats sont des pistes de recherche. "
-            "Les faits, les dates, les lieux et les sources "
-            "doivent être vérifiés indépendamment avant "
-            "toute rédaction ou publication."
-        )
-    }
+            "chaine": CHANNEL,
+            "statut": "ERREUR_FORMAT_REPONSE",
+            "erreur": str(error),
+            "reponse_brute": response.text,
+            "sources_recherche": grounding_sources,
+            "publication_autorisee": False
+        }
 
     output_dir = Path("output")
     output_dir.mkdir(exist_ok=True)
@@ -408,22 +359,32 @@ def main():
     output_file = output_dir / "daily_research.json"
 
     with output_file.open(
-        "w", encoding="utf-8"
+        "w",
+        encoding="utf-8"
     ) as file:
         json.dump(
-            output,
+            research_result,
             file,
             ensure_ascii=False,
             indent=2
         )
 
-    print("\n====================================")
+    print("\n======================================")
     print("RECHERCHE TERMINEE")
-    print("Résultats :", len(all_results))
-    print("Erreurs :", len(errors))
+    print(
+        "Histoires :",
+        research_result.get("nombre_histoires", 0)
+    )
+    print(
+        "Sources :",
+        research_result.get("nombre_sources_recherche", 0)
+    )
+    print(
+        "Statut :",
+        research_result.get("statut")
+    )
     print("Publication : DESACTIVEE")
-    print("Fichier :", output_file)
-    print("====================================")
+    print("======================================")
 
 
 if __name__ == "__main__":
