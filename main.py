@@ -4,41 +4,68 @@ import re
 import json
 import time
 import html
-import urllib.request
 import urllib.parse
+import urllib.request
+import urllib.error
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
 from html.parser import HTMLParser
-from pathlib import Path
+from datetime import datetime, timezone, timedelta
+from email.utils import parsedate_to_datetime
+from urllib.parse import urlparse
 
-# ==========================================================
+from google import genai
+
+
+# ============================================================
 # OBSERVATEUR ACTIF AI
-# Recherche quotidienne de mystères historiques africains
-# Publication YouTube : DÉSACTIVÉE
-# ==========================================================
+# Recherche documentaire quotidienne sur les mystères africains
+# Publication YouTube volontairement désactivée
+# ============================================================
 
+CHANNEL = "Observateur Actif"
 MODEL = "gemini-3.8-flash"
-MAX_RESULTS = 35
-MAX_ARTICLES_TO_READ = 12
-MAX_TEXT_PER_ARTICLE = 5000
+MAX_RESULTS_PER_QUERY = 4
+MAX_ARTICLES_TO_OPEN = 12
+MIN_ARTICLE_TEXT = 500
+OUTPUT_FILE = "output/daily_research.json"
 
-OUTPUT_DIR = Path("output")
-OUTPUT_FILE = OUTPUT_DIR / "daily_research.json"
-
-SEARCHES = [
-    ("Africa ancient archaeology discovery", "en-US", "US", "en"),
-    ("Africa forgotten kingdoms ancient civilizations", "en-US", "US", "en"),
-    ("Africa mysterious historical places ruins", "en-US", "US", "en"),
-    ("African archaeological discoveries ancient cities", "en-US", "US", "en"),
-    ("mystères historiques Afrique civilisations anciennes", "fr-FR", "FR", "fr"),
-    ("sites mystérieux Afrique découvertes archéologiques", "fr-FR", "FR", "fr"),
-    ("royaumes oubliés Afrique histoire archéologie", "fr-FR", "FR", "fr"),
-    ("découverte archéologique Afrique ancienne civilisation", "fr-FR", "FR", "fr"),
-]
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 Chrome/120.0 Safari/537.36"
+    ),
+    "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+}
 
 
-def now_iso():
-    return datetime.now(timezone.utc).isoformat()
+# Recherches réparties sur différentes régions africaines.
+# La date limite est calculée automatiquement.
+def build_searches():
+    since = (datetime.now(timezone.utc) - timedelta(days=730)).date()
+    date_filter = f"after:{since.isoformat()}"
+
+    return [
+        ("Afrique de l'Ouest - français",
+         f"mystère historique découverte archéologique Afrique de l'Ouest {date_filter}"),
+        ("Afrique de l'Ouest - anglais",
+         f"West Africa archaeological discovery ancient civilization mystery {date_filter}"),
+        ("Afrique du Nord - français",
+         f"Égypte Maroc Algérie Tunisie site antique découverte archéologique {date_filter}"),
+        ("Afrique du Nord - anglais",
+         f"North Africa ancient ruins archaeological discovery historical mystery {date_filter}"),
+        ("Afrique centrale - français",
+         f"Afrique centrale civilisation oubliée site historique découverte {date_filter}"),
+        ("Afrique centrale - anglais",
+         f"Central Africa ancient kingdom archaeological discovery historical mystery {date_filter}"),
+        ("Afrique de l'Est - anglais",
+         f"East Africa ancient civilization lost city archaeological discovery {date_filter}"),
+        ("Afrique australe - anglais",
+         f"Southern Africa ancient ruins forgotten civilization archaeological discovery {date_filter}"),
+        ("Afrique - français",
+         f"mystère historique africain civilisation oubliée lieu mystérieux {date_filter}"),
+        ("Afrique - anglais",
+         f"African historical mystery ancient site forgotten civilization discovery {date_filter}"),
+    ]
 
 
 def clean_text(value):
@@ -47,333 +74,466 @@ def clean_text(value):
     return re.sub(r"\s+", " ", value).strip()
 
 
-class ArticleTextParser(HTMLParser):
+def fetch_url(url, timeout=18):
+    request = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        content = response.read()
+        final_url = response.geturl()
+        content_type = response.headers.get("Content-Type", "")
+        return content, final_url, content_type
+
+
+def parse_date(value):
+    if not value:
+        return None
+    try:
+        date = parsedate_to_datetime(value)
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=timezone.utc)
+        return date.astimezone(timezone.utc).isoformat()
+    except Exception:
+        return None
+
+
+def google_news_search(query, region):
+    encoded = urllib.parse.quote(query)
+    url = (
+        "https://news.google.com/rss/search?q="
+        + encoded
+        + "&hl=fr&gl=FR&ceid=FR:fr"
+    )
+
+    try:
+        content, _, _ = fetch_url(url, timeout=20)
+        root = ET.fromstring(content)
+        results = []
+
+        for item in root.findall(".//item"):
+            title = clean_text(item.findtext("title", ""))
+            link = (item.findtext("link", "") or "").strip()
+            description = clean_text(item.findtext("description", ""))
+            pub_date = parse_date(item.findtext("pubDate", ""))
+
+            source_element = item.find("source")
+            publisher = ""
+            if source_element is not None:
+                publisher = clean_text(source_element.text or "")
+
+            if not title or not link:
+                continue
+
+            results.append({
+                "title": title,
+                "rss_url": link,
+                "publisher": publisher,
+                "description": description[:1200],
+                "published_at": pub_date,
+                "search_region": region,
+                "search_query": query,
+                "publisher_url": None,
+                "article_text": "",
+                "article_full_text_fetched": False,
+                "fetch_status": "NON CONSULTÉ",
+            })
+
+        return results
+
+    except Exception as error:
+        print(f"Erreur RSS ({region}) : {error}")
+        return []
+
+
+class ArticleParser(HTMLParser):
     """Extraction simple du texte visible d'une page web."""
 
     def __init__(self):
         super().__init__()
         self.parts = []
         self.skip_depth = 0
-        self.skip_tags = {"script", "style", "noscript", "svg", "nav", "footer"}
+        self.article_depth = 0
+        self.main_depth = 0
+        self.in_article = False
+        self.in_main = False
+        self.meta_description = ""
+        self.meta_og_description = ""
 
     def handle_starttag(self, tag, attrs):
-        if tag.lower() in self.skip_tags:
+        attrs = dict(attrs)
+
+        if tag in ("script", "style", "noscript", "svg", "nav",
+                   "footer", "header", "aside", "form"):
             self.skip_depth += 1
 
+        if tag == "article":
+            self.article_depth += 1
+            self.in_article = True
+
+        if tag == "main":
+            self.main_depth += 1
+            self.in_main = True
+
+        if tag == "meta":
+            name = (attrs.get("name") or "").lower()
+            prop = (attrs.get("property") or "").lower()
+            content = attrs.get("content", "")
+
+            if name == "description":
+                self.meta_description = content
+            if prop == "og:description":
+                self.meta_og_description = content
+
+        if tag in ("p", "br", "div", "h1", "h2", "h3", "li"):
+            self.parts.append(" ")
+
     def handle_endtag(self, tag):
-        if tag.lower() in self.skip_tags and self.skip_depth:
-            self.skip_depth -= 1
+        if tag in ("script", "style", "noscript", "svg", "nav",
+                   "footer", "header", "aside", "form"):
+            self.skip_depth = max(0, self.skip_depth - 1)
+
+        if tag == "article":
+            self.article_depth = max(0, self.article_depth - 1)
+            self.in_article = self.article_depth > 0
+
+        if tag == "main":
+            self.main_depth = max(0, self.main_depth - 1)
+            self.in_main = self.main_depth > 0
+
+        if tag in ("p", "br", "div", "h1", "h2", "h3", "li"):
+            self.parts.append(" ")
 
     def handle_data(self, data):
-        if not self.skip_depth:
-            text = data.strip()
-            if text:
-                self.parts.append(text)
+        if self.skip_depth == 0:
+            self.parts.append(data)
 
 
-def fetch_url(url, timeout=15):
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": (
-                "Mozilla/5.0 (compatible; ObservateurActifAI/1.0; "
-                "+https://github.com/yssouf223/observateur-actif-ai)"
-            )
-        },
-    )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return response.read()
-
-
-def read_rss(query, language, country, edition):
-    params = {
-        "q": query,
-        "hl": language,
-        "gl": country,
-        "ceid": f"{country}:{edition}",
-    }
-    url = "https://news.google.com/rss/search?" + urllib.parse.urlencode(params)
+def resolve_and_read_article(item):
+    """Tente de résoudre le lien Google News puis de lire l'article."""
 
     try:
-        raw = fetch_url(url)
-        root = ET.fromstring(raw)
-    except Exception as exc:
-        print(f"[RSS] Échec pour « {query} » : {exc}")
-        return []
+        content, final_url, content_type = fetch_url(item["rss_url"])
 
-    results = []
+        final_host = (urlparse(final_url).hostname or "").lower()
 
-    for item in root.findall(".//item"):
-        title = clean_text(item.findtext("title", ""))
-        link = (item.findtext("link", "") or "").strip()
-        pub_date = clean_text(item.findtext("pubDate", ""))
-        description = clean_text(item.findtext("description", ""))
+        if final_host.endswith("news.google.com"):
+            item["fetch_status"] = "REDIRECTION GOOGLE NEWS NON RÉSOLUE"
+            return item
 
-        source_element = item.find("source")
-        source = clean_text(source_element.text if source_element is not None else "")
+        if "html" not in content_type.lower() and b"<html" not in content[:1000].lower():
+            item["fetch_status"] = "FORMAT NON HTML"
+            item["publisher_url"] = final_url
+            return item
 
-        if not title or not link:
-            continue
+        charset_match = re.search(
+            r"charset=([a-zA-Z0-9_-]+)", content_type, re.IGNORECASE
+        )
+        encoding = charset_match.group(1) if charset_match else "utf-8"
 
-        results.append({
-            "title": title,
-            "url": link,
-            "date": pub_date,
-            "publisher": source or "Éditeur non précisé",
-            "rss_description": description[:1500],
-            "article_text": "",
-            "article_full_text_fetched": False,
-            "search_query": query,
-        })
+        try:
+            page = content.decode(encoding, errors="replace")
+        except Exception:
+            page = content.decode("utf-8", errors="replace")
 
-    print(f"[RSS] {len(results)} résultat(s) : {query}")
-    return results
-
-
-def deduplicate(items):
-    unique = []
-    seen_urls = set()
-    seen_titles = set()
-
-    for item in items:
-        url = item["url"].split("&utm_")[0].rstrip("/")
-        title_key = re.sub(r"\W+", "", item["title"].lower())
-
-        if url in seen_urls or title_key in seen_titles:
-            continue
-
-        seen_urls.add(url)
-        seen_titles.add(title_key)
-        item["url"] = url
-        unique.append(item)
-
-    return unique
-
-
-def fetch_article_text(item):
-    try:
-        raw = fetch_url(item["url"], timeout=15)
-        content_type = ""
-
-        # Les pages HTML sont généralement encodées en UTF-8.
-        page = raw.decode("utf-8", errors="replace")
-
-        parser = ArticleTextParser()
+        parser = ArticleParser()
         parser.feed(page)
-        text = re.sub(r"\s+", " ", " ".join(parser.parts)).strip()
 
-        if len(text) >= 500:
-            item["article_text"] = text[:MAX_TEXT_PER_ARTICLE]
-            item["article_full_text_fetched"] = True
-            return
+        text_content = re.sub(
+            r"\s+", " ", " ".join(parser.parts)
+        ).strip()
 
-        item["fetch_note"] = "Page accessible, mais texte exploitable insuffisant."
+        # Priorité au contenu réellement récupéré sur la page.
+        article_text = text_content
 
-    except Exception as exc:
-        item["fetch_note"] = f"Article non récupéré : {str(exc)[:180]}"
+        if len(article_text) < MIN_ARTICLE_TEXT:
+            item["fetch_status"] = "TEXTE INSUFFISANT"
+            item["publisher_url"] = final_url
+            item["description_page"] = clean_text(
+                parser.meta_og_description or parser.meta_description
+            )[:1500]
+            return item
 
-    item["article_full_text_fetched"] = False
+        item["publisher_url"] = final_url
+        item["article_text"] = article_text[:9000]
+        item["article_full_text_fetched"] = True
+        item["fetch_status"] = "TEXTE RÉCUPÉRÉ"
+
+    except urllib.error.HTTPError as error:
+        item["fetch_status"] = f"ERREUR HTTP {error.code}"
+    except Exception as error:
+        item["fetch_status"] = f"ERREUR DE LECTURE : {str(error)[:150]}"
+
+    return item
 
 
 def extract_json(text):
-    if not text:
-        raise ValueError("Gemini n'a renvoyé aucun texte.")
+    text = (text or "").strip()
+    text = re.sub(r"^```(?:json)?\s*", "", text)
+    text = re.sub(r"\s*```$", "", text)
 
-    cleaned = text.strip()
-    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-    cleaned = re.sub(r"\s*```$", "", cleaned)
+    start = text.find("{")
+    end = text.rfind("}")
 
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        match = re.search(r"\{.*\}|\[.*\]", cleaned, re.DOTALL)
-        if not match:
-            raise ValueError("Réponse Gemini non reconnue comme JSON.")
-        return json.loads(match.group(0))
+    if start == -1 or end == -1 or end <= start:
+        raise ValueError("Gemini n'a pas retourné un JSON valide.")
+
+    return json.loads(text[start:end + 1])
+
+
+def get_response_text(response):
+    output_text = getattr(response, "output_text", None)
+    if output_text:
+        return output_text
+
+    collected = []
+    output = getattr(response, "output", None) or []
+
+    for item in output:
+        content = getattr(item, "content", None) or []
+        for part in content:
+            text_value = getattr(part, "text", None)
+            if text_value:
+                collected.append(text_value)
+
+    return "\n".join(collected)
 
 
 def analyze_with_gemini(items):
-    api_key = os.getenv("GEMINI_API_KEY")
-
+    api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        return {
-            "status": "NON_CONFIGURE",
-            "error": "Le secret GEMINI_API_KEY est absent.",
-            "stories": [],
-        }
-
-    from google import genai
+        raise RuntimeError("La variable GEMINI_API_KEY est absente.")
 
     client = genai.Client(api_key=api_key)
 
-    sources = []
+    source_list = []
     for index, item in enumerate(items, start=1):
-        sources.append({
+        source_list.append({
             "source_id": index,
             "title": item["title"],
             "publisher": item["publisher"],
-            "date": item["date"],
-            "url": item["url"],
-            "rss_description": item["rss_description"],
-            "article_text": item["article_text"],
+            "publisher_url": item["publisher_url"],
+            "rss_url": item["rss_url"],
+            "published_at": item["published_at"],
+            "search_region": item["search_region"],
+            "description": item["description"][:700],
             "article_full_text_fetched": item["article_full_text_fetched"],
+            "article_text": item["article_text"][:7000],
+            "fetch_status": item["fetch_status"],
         })
 
     prompt = f"""
-Tu es le rédacteur en chef et documentaliste de la chaîne africaine
-Observateur Actif.
+Tu es le documentaliste et vérificateur de faits de la chaîne YouTube
+francophone Observateur Actif.
 
 MISSION :
-Analyser les résultats de recherche fournis ci-dessous pour trouver
-des sujets authentiques adaptés à des vidéos YouTube Shorts de 45 à 60 secondes.
+Repérer des histoires africaines réelles et documentées pour des vidéos
+YouTube Shorts de 45 à 60 secondes.
 
-THÈMES PRIORITAIRES :
-1. Mystères historiques africains.
-2. Lieux mystérieux en Afrique.
-3. Civilisations et royaumes oubliés.
-4. Découvertes archéologiques africaines.
+PRIORITÉS :
+1. Mystères historiques.
+2. Lieux mystérieux.
+3. Civilisations oubliées.
 
-RÈGLES STRICTES :
-- Ne crée aucune histoire et n'invente aucun fait.
-- N'ajoute aucune date, personne, citation ou découverte absente des sources.
-- Distingue les faits établis, les hypothèses et les légendes.
-- Une légende ou une tradition orale ne doit jamais être présentée comme un fait prouvé.
-- Un titre sensationnel n'est pas une preuve.
-- Si le contenu intégral d'un article n'a pas été récupéré, indique-le.
-- Ne prétends pas avoir consulté une page si son texte n'est pas fourni.
-- N'invente jamais de sources ou d'URL.
-- Utilise uniquement les URL présentes dans les résultats ci-dessous.
-- Si les éléments sont insuffisants, écarte le sujet.
-- Ne transforme pas une simple coïncidence en mystère historique.
-- Privilégie les sujets africains clairement localisables.
+ZONE :
+Tout le continent africain : Afrique du Nord, de l'Ouest, centrale,
+de l'Est et australe.
 
-ÉVALUE CHAQUE SUJET :
-- intérêt historique ;
-- qualité des informations disponibles ;
-- niveau de fiabilité ;
-- présence d'incertitudes ;
-- possibilité de raconter le sujet en 45 à 60 secondes.
+RÈGLES ABSOLUES :
+- Ne jamais inventer une histoire, un lieu, une date, un nom ou une citation.
+- Ne pas confondre une hypothèse avec un fait établi.
+- Ne pas présenter une légende comme un fait historique.
+- Ne pas affirmer qu'une information est corroborée si les textes fournis
+  ne le démontrent pas.
+- Utiliser exclusivement les sources numérotées ci-dessous.
+- Ne jamais inventer de source, d'URL ou de numéro source.
+- Une page dont le texte intégral n'a pas été récupéré ne constitue pas
+  une preuve suffisante.
+- Si les informations sont insuffisantes, choisir
+  "EN ATTENTE DE VÉRIFICATION".
+- Si l'information est hors d'Afrique ou sans rapport avec les thèmes,
+  l'écarter.
+- Distinguer clairement les faits, les hypothèses et les légendes.
+- Ne pas inventer de détails pour rendre une histoire plus spectaculaire.
 
-RENVOIE UNIQUEMENT UN JSON VALIDE avec cette structure :
+IMPORTANT :
+Si une source a article_full_text_fetched = false, tu ne peux pas
+la considérer comme une source documentaire lue.
+Ne prétends jamais avoir lu un article dont le texte est absent.
+
+SOURCES DISPONIBLES :
+{json.dumps(source_list, ensure_ascii=False)}
+
+Réponds uniquement avec un JSON valide ayant exactement cette structure :
 
 {{
-  "editorial_summary": "Résumé bref de la recherche",
-  "stories": [
+  "resume_recherche": "Résumé honnête de la qualité des sources",
+  "histoires": [
     {{
-      "title": "Titre factuel du sujet",
-      "country": "Pays africain ou pays non déterminé",
-      "location": "Lieu précis ou non déterminé",
-      "category": "Mystère historique, lieu mystérieux ou civilisation oubliée",
-      "short_summary": "Résumé factuel",
-      "established_facts": ["Fait établi 1", "Fait établi 2"],
-      "hypotheses_or_legends": ["Hypothèse ou légende, si présente"],
-      "unknowns": ["Ce qui reste inconnu"],
-      "reliability": "Élevée, moyenne ou faible",
-      "editorial_decision": "À APPROFONDIR ou À ÉCARTER",
-      "reason": "Justification de la décision",
+      "titre": "Titre factuel",
+      "pays": "Pays africain",
+      "region_afrique": "Région",
+      "periode_historique": "Période ou date si connue",
+      "resume_factuel": "Résumé prudent des faits documentés",
+      "faits_confirmes": ["Fait réellement soutenu par les textes lus"],
+      "hypotheses_ou_incertitudes": ["Ce qui reste incertain"],
+      "nature": "Mystère historique, lieu mystérieux ou civilisation oubliée",
       "source_ids": [1, 2],
-      "source_urls": ["URL exacte fournie dans les résultats"]
+      "decision_editoriale": "EN ATTENTE DE VÉRIFICATION",
+      "raison_decision": "Explication précise",
+      "idee_accroche": "Accroche prudente pour un Short",
+      "potentiel_short": "Faible, moyen ou élevé"
     }}
   ]
 }}
 
-IMPORTANT :
-- N'invente pas de corroboration indépendante.
-- Si une seule source est disponible, dis-le.
-- Si aucune histoire n'est suffisamment documentée, renvoie une liste stories vide.
-- Ne rédige pas encore de scénario vidéo.
-
-RÉSULTATS RSS ET EXTRAITS D'ARTICLES :
-{json.dumps(sources, ensure_ascii=False)}
+Ne retourne pas plus de 5 histoires.
+Si aucune histoire n'est suffisamment documentée, retourne une liste vide.
+Ne transforme pas une simple manchette en fait historique.
 """
 
-    try:
-        interaction = client.interactions.create(
-            model=MODEL,
-            input=prompt,
-        )
+    response = client.interactions.create(
+        model=MODEL,
+        input=prompt
+    )
 
-        answer = interaction.output_text or ""
-        parsed = extract_json(answer)
+    return extract_json(get_response_text(response))
 
-        if isinstance(parsed, list):
-            parsed = {"editorial_summary": "", "stories": parsed}
 
-        if not isinstance(parsed, dict):
-            raise ValueError("Le JSON Gemini n'a pas le format attendu.")
+def validate_analysis(analysis, items):
+    """Les URL affichées proviennent toujours de nos propres sources."""
 
-        # Sécurité : seules les URL réellement fournies sont autorisées.
-        allowed_urls = {item["url"] for item in items}
-        safe_stories = []
+    valid_stories = []
+    total_sources = len(items)
 
-        for story in parsed.get("stories", []):
-            if not isinstance(story, dict):
-                continue
+    for story in analysis.get("histoires", []):
+        ids = story.get("source_ids", [])
 
-            valid_urls = [
-                url for url in story.get("source_urls", [])
-                if url in allowed_urls
-            ]
+        if not isinstance(ids, list):
+            ids = []
 
-            valid_ids = [
-                source_id for source_id in story.get("source_ids", [])
-                if isinstance(source_id, int) and 1 <= source_id <= len(items)
-            ]
+        valid_ids = []
+        for value in ids:
+            if isinstance(value, int) and 1 <= value <= total_sources:
+                if value not in valid_ids:
+                    valid_ids.append(value)
 
-            story["source_urls"] = valid_urls
-            story["source_ids"] = valid_ids
+        selected_sources = [items[i - 1] for i in valid_ids]
 
-            if not valid_urls:
-                story["editorial_decision"] = "À ÉCARTER"
-                story["reason"] = (
-                    "Aucune URL source vérifiable parmi les résultats fournis."
-                )
+        read_sources = [
+            source for source in selected_sources
+            if source.get("article_full_text_fetched")
+        ]
 
-            safe_stories.append(story)
+        domains = set()
+        for source in read_sources:
+            host = urlparse(source.get("publisher_url") or "").hostname
+            if host:
+                domains.add(host.lower().removeprefix("www."))
 
-        return {
-            "status": "SUCCÈS",
-            "model": MODEL,
-            "editorial_summary": parsed.get("editorial_summary", ""),
-            "stories": safe_stories,
-        }
+        story["source_ids"] = valid_ids
+        story["sources"] = [
+            {
+                "source_id": i,
+                "title": items[i - 1]["title"],
+                "publisher": items[i - 1]["publisher"],
+                "url": (
+                    items[i - 1]["publisher_url"]
+                    or items[i - 1]["rss_url"]
+                ),
+                "article_full_text_fetched":
+                    items[i - 1]["article_full_text_fetched"],
+            }
+            for i in valid_ids
+        ]
 
-    except Exception as exc:
-        return {
-            "status": "ÉCHEC_ANALYSE_GEMINI",
-            "model": MODEL,
-            "error": str(exc)[:1000],
-            "stories": [],
-        }
+        story["nombre_articles_lus"] = len(read_sources)
+        story["nombre_domaines_distincts"] = len(domains)
+
+        # Aucun sujet ne devient automatiquement vérifié.
+        story["decision_editoriale"] = "EN ATTENTE DE VÉRIFICATION"
+
+        if not read_sources:
+            story["raison_controle"] = (
+                "Aucun texte intégral de source n'a été récupéré."
+            )
+        elif len(read_sources) < 2:
+            story["raison_controle"] = (
+                "Une seule source a été lue : corroboration insuffisante."
+            )
+        elif len(domains) < 2:
+            story["raison_controle"] = (
+                "Les sources lues ne proviennent pas de deux domaines distincts."
+            )
+        else:
+            story["raison_controle"] = (
+                "Plusieurs textes ont été récupérés, mais une vérification "
+                "humaine de leur indépendance et de leurs affirmations reste nécessaire."
+            )
+
+        valid_stories.append(story)
+
+    return valid_stories
 
 
 def main():
+    os.makedirs("output", exist_ok=True)
+
+    now = datetime.now(timezone.utc)
     print("=" * 60)
-    print("OBSERVATEUR ACTIF AI — RECHERCHE QUOTIDIENNE")
+    print("OBSERVATEUR ACTIF AI - RECHERCHE DOCUMENTAIRE")
+    print("Date UTC :", now.isoformat())
     print("=" * 60)
 
-    collected = []
+    all_results = []
+    seen = set()
+    query_stats = []
 
-    for query, language, country, edition in SEARCHES:
-        collected.extend(read_rss(query, language, country, edition))
+    searches = build_searches()
+
+    # Chaque recherche dispose de son propre quota.
+    for region, query in searches:
+        print(f"Recherche : {region}")
+        results = google_news_search(query, region)
+
+        added = 0
+        for item in results:
+            key = re.sub(r"\W+", "", item["title"].lower())
+
+            if key and key not in seen:
+                seen.add(key)
+                all_results.append(item)
+                added += 1
+
+            if added >= MAX_RESULTS_PER_QUERY:
+                break
+
+        query_stats.append({
+            "region": region,
+            "resultats_recus": len(results),
+            "resultats_ajoutes": added,
+        })
+
         time.sleep(1)
 
-    collected = deduplicate(collected)[:MAX_RESULTS]
+    print("Résultats uniques :", len(all_results))
 
-    print(f"\nTotal de résultats uniques : {len(collected)}")
+    # On tente de lire les articles les plus récents en premier.
+    all_results.sort(
+        key=lambda x: x.get("published_at") or "",
+        reverse=True
+    )
 
-    # Récupération limitée des pages pour éviter trop de requêtes.
-    for index, item in enumerate(collected[:MAX_ARTICLES_TO_READ], start=1):
-        print(f"[ARTICLE {index}/{min(len(collected), MAX_ARTICLES_TO_READ)}] "
-              f"{item['title'][:90]}")
-        fetch_article_text(item)
-        time.sleep(0.5)
+    for index, item in enumerate(all_results[:MAX_ARTICLES_TO_OPEN], start=1):
+        print(f"Lecture article {index}/{min(len(all_results), MAX_ARTICLES_TO_OPEN)}")
+        resolve_and_read_article(item)
+        time.sleep(1)
 
-    analysis = analyze_with_gemini(collected)
+    read_count = sum(
+        1 for item in all_results
+        if item["article_full_text_fetched"]
+    )
 
     report = {
-        "date_recherche": now_iso(),
-        "chaine": "Observateur Actif",
+        "date_recherche": now.isoformat(),
+        "chaine": CHANNEL,
         "zone": "Toute l'Afrique",
         "priorite_editoriale": [
             "Mystères historiques",
@@ -381,42 +541,55 @@ def main():
             "Civilisations oubliées",
         ],
         "duree_shorts": "45 à 60 secondes",
-        "nombre_resultats": len(collected),
-        "nombre_articles_integralement_recuperes": sum(
-            1 for item in collected if item["article_full_text_fetched"]
+        "nombre_recherches": len(searches),
+        "statistiques_recherche": query_stats,
+        "nombre_resultats": len(all_results),
+        "nombre_articles_tentes": min(
+            len(all_results), MAX_ARTICLES_TO_OPEN
         ),
-        "statut_recherche": (
-            "RESULTATS_COLLECTES" if collected else "AUCUN_RESULTAT"
-        ),
-        "analyse_ia": analysis,
-        "sources_brutes": collected,
+        "nombre_articles_integralement_recuperes": read_count,
+        "sources": all_results,
+        "analyse_ia": {
+            "status": "NON EFFECTUÉE",
+            "modele": MODEL,
+            "histoires": [],
+        },
         "publication_youtube": {
             "active": False,
-            "raison": "Publication désactivée pendant la phase de vérification.",
+            "raison": "Publication désactivée jusqu'à validation humaine."
         },
-        "avertissement": (
-            "Les résultats RSS sont des pistes de recherche. "
-            "Ils ne constituent pas à eux seuls une vérification historique. "
-            "Les faits doivent être contrôlés avec des sources fiables "
-            "et indépendantes avant toute publication."
-        ),
     }
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    OUTPUT_FILE.write_text(
-        json.dumps(report, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+    try:
+        analysis = analyze_with_gemini(all_results)
+        stories = validate_analysis(analysis, all_results)
 
-    print("\n" + "=" * 60)
+        report["analyse_ia"] = {
+            "status": "SUCCÈS",
+            "modele": MODEL,
+            "resume_recherche": analysis.get("resume_recherche", ""),
+            "nombre_histoires_proposees": len(stories),
+            "histoires": stories,
+        }
+
+    except Exception as error:
+        report["analyse_ia"] = {
+            "status": "ÉCHEC",
+            "modele": MODEL,
+            "erreur": str(error)[:1000],
+            "histoires": [],
+        }
+        print("Erreur analyse Gemini :", error)
+
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as file:
+        json.dump(report, file, ensure_ascii=False, indent=2)
+
+    print("=" * 60)
     print("RECHERCHE TERMINÉE")
-    print(f"Résultats collectés : {len(collected)}")
-    print(
-        "Articles récupérés : "
-        f"{report['nombre_articles_integralement_recuperes']}"
-    )
-    print(f"Analyse Gemini : {analysis['status']}")
-    print(f"Rapport : {OUTPUT_FILE}")
+    print("Résultats :", len(all_results))
+    print("Articles lus :", read_count)
+    print("Analyse IA :", report["analyse_ia"]["status"])
+    print("Rapport :", OUTPUT_FILE)
     print("Publication YouTube : DÉSACTIVÉE")
     print("=" * 60)
 
