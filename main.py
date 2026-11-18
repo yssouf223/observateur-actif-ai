@@ -51,7 +51,7 @@ logging.basicConfig(
 
 
 # ============================================================
-# 2. PAYS ET MOTS-CLÉS AFRICAINS
+# 2. PAYS AFRICAINS
 # ============================================================
 
 AFRICAN_COUNTRIES = [
@@ -123,7 +123,7 @@ SEARCH_QUERIES = [
 
 
 # ============================================================
-# 4. FLUX RSS DES MÉDIAS SPÉCIALISÉS
+# 4. FLUX RSS SPÉCIALISÉS
 # ============================================================
 
 RSS_SOURCES = [
@@ -143,7 +143,7 @@ RSS_SOURCES = [
         "type": "archaeology"
     },
     {
-        "name": "Archaeology News Online",
+        "name": "Archaeology Magazine Online",
         "url": "https://archaeologymag.com/feed/",
         "type": "archaeology"
     }
@@ -151,7 +151,49 @@ RSS_SOURCES = [
 
 
 # ============================================================
-# 5. EXTRACTION HTML
+# 5. DIAGNOSTICS
+# ============================================================
+
+DIAGNOSTICS = {
+    "rss_ok": 0,
+    "rss_errors": 0,
+    "liens_directs": 0,
+    "liens_google_resolus": 0,
+    "liens_non_resolus": 0,
+    "pages_ouvertes": 0,
+    "pages_refusees": 0,
+    "textes_trop_courts": 0,
+    "erreurs_extraction": 0,
+    "articles_hors_afrique": 0,
+    "articles_complets": 0,
+    "articles_directs_complets": 0,
+    "articles_google_complets": 0
+}
+
+
+def log_failure(category, message):
+
+    logging.warning(
+        "[%s] %s",
+        category,
+        message
+    )
+
+
+# ============================================================
+# 6. NETTOYAGE DU TEXTE
+# ============================================================
+
+def clean_text(text):
+
+    text = html.unescape(text)
+    text = re.sub(r"\s+", " ", text)
+
+    return text.strip()
+
+
+# ============================================================
+# 7. EXTRACTION HTML
 # ============================================================
 
 class ArticleParser(HTMLParser):
@@ -180,6 +222,7 @@ class ArticleParser(HTMLParser):
             return
 
         if tag == "meta":
+
             name = (
                 attrs.get("name", "")
                 or attrs.get("property", "")
@@ -222,6 +265,7 @@ class ArticleParser(HTMLParser):
             return
 
         if self.in_paragraph:
+
             text = data.strip()
 
             if text:
@@ -230,6 +274,7 @@ class ArticleParser(HTMLParser):
     def get_text(self):
 
         if self.in_paragraph and self.current_paragraph:
+
             self.paragraphs.append(
                 clean_text(" ".join(self.current_paragraph))
             )
@@ -242,44 +287,8 @@ class ArticleParser(HTMLParser):
         return clean_text(content)
 
 
-def clean_text(text):
-
-    text = html.unescape(text)
-    text = re.sub(r"\s+", " ", text)
-
-    return text.strip()
-
-
 # ============================================================
-# 6. OUTILS DE DIAGNOSTIC
-# ============================================================
-
-DIAGNOSTICS = {
-    "rss_ok": 0,
-    "rss_errors": 0,
-    "liens_directs": 0,
-    "liens_google_resolus": 0,
-    "liens_non_resolus": 0,
-    "pages_ouvertes": 0,
-    "pages_refusees": 0,
-    "textes_trop_courts": 0,
-    "erreurs_extraction": 0,
-    "articles_hors_afrique": 0,
-    "articles_complets": 0
-}
-
-
-def log_failure(category, message):
-
-    logging.warning(
-        "[%s] %s",
-        category,
-        message
-    )
-
-
-# ============================================================
-# 7. IDENTIFICATION DE L'AFRIQUE
+# 8. FILTRAGE AFRICAIN
 # ============================================================
 
 def concerns_africa(text):
@@ -287,10 +296,12 @@ def concerns_africa(text):
     text_lower = text.lower()
 
     for country in AFRICAN_COUNTRIES:
+
         if country.lower() in text_lower:
             return True
 
     for region in AFRICAN_REGIONS:
+
         if region.lower() in text_lower:
             return True
 
@@ -298,7 +309,7 @@ def concerns_africa(text):
 
 
 # ============================================================
-# 8. LECTURE D'UN FLUX RSS
+# 9. LECTURE DES FLUX RSS DIRECTS
 # ============================================================
 
 def read_rss(url, source_name):
@@ -322,6 +333,7 @@ def read_rss(url, source_name):
             title = item.findtext("title", "").strip()
             link = item.findtext("link", "").strip()
             pub_date = item.findtext("pubDate", "").strip()
+
             description = item.findtext(
                 "description", ""
             )
@@ -333,10 +345,8 @@ def read_rss(url, source_name):
                 re.sub(r"<[^>]+>", " ", description)
             )
 
-            title_lower = title.lower()
-
             if any(
-                term in title_lower
+                term in title.lower()
                 for term in EXCLUDED_TERMS
             ):
                 continue
@@ -371,7 +381,7 @@ def read_rss(url, source_name):
 
 
 # ============================================================
-# 9. GOOGLE NEWS RSS
+# 10. GOOGLE NEWS RSS
 # ============================================================
 
 def search_google_news(query):
@@ -441,7 +451,7 @@ def search_google_news(query):
 
 
 # ============================================================
-# 10. COLLECTE DE TOUTES LES SOURCES
+# 11. COLLECTE DES RÉSULTATS
 # ============================================================
 
 def collect_rss_results():
@@ -452,7 +462,10 @@ def collect_rss_results():
 
     for query in SEARCH_QUERIES:
 
-        logging.info("Recherche : %s", query)
+        logging.info(
+            "Recherche : %s",
+            query
+        )
 
         all_results.extend(
             search_google_news(query)
@@ -494,7 +507,7 @@ def collect_rss_results():
 
 
 # ============================================================
-# 11. RÉSOLUTION DES LIENS GOOGLE NEWS
+# 12. RÉSOLUTION DES LIENS GOOGLE NEWS
 # ============================================================
 
 def resolve_article_url(rss_url, expected_source=""):
@@ -515,7 +528,9 @@ def resolve_article_url(rss_url, expected_source=""):
 
         final_url = response.url
 
-        final_domain = urlparse(final_url).netloc.lower()
+        final_domain = urlparse(
+            final_url
+        ).netloc.lower()
 
         if (
             final_url.startswith("http")
@@ -528,7 +543,6 @@ def resolve_article_url(rss_url, expected_source=""):
 
         content = response.text
 
-        # Recherche des liens canoniques
         patterns = [
             r'<link[^>]+rel=["\']canonical["\'][^>]+href=["\']([^"\']+)',
             r'<meta[^>]+property=["\']og:url["\'][^>]+content=["\']([^"\']+)',
@@ -545,11 +559,11 @@ def resolve_article_url(rss_url, expected_source=""):
 
             for candidate in matches:
 
-                candidate = html.unescape(
-                    candidate.replace("\\u003d", "=")
-                )
+                candidate = html.unescape(candidate)
 
-                domain = urlparse(candidate).netloc.lower()
+                domain = urlparse(
+                    candidate
+                ).netloc.lower()
 
                 if (
                     candidate.startswith("http")
@@ -561,13 +575,7 @@ def resolve_article_url(rss_url, expected_source=""):
 
                     return candidate
 
-        # Recherche d'un lien correspondant au média RSS
-        source_domain = ""
-
         if expected_source:
-            source_domain = expected_source.lower()
-
-        if source_domain:
 
             links = re.findall(
                 r'href=["\'](https?://[^"\']+)',
@@ -577,9 +585,11 @@ def resolve_article_url(rss_url, expected_source=""):
 
             for candidate in links:
 
-                domain = urlparse(candidate).netloc.lower()
+                domain = urlparse(
+                    candidate
+                ).netloc.lower()
 
-                if source_domain in domain:
+                if expected_source.lower() in domain:
 
                     DIAGNOSTICS["liens_google_resolus"] += 1
 
@@ -598,7 +608,7 @@ def resolve_article_url(rss_url, expected_source=""):
 
 
 # ============================================================
-# 12. EXTRACTION D'UN ARTICLE
+# 13. EXTRACTION D'UN ARTICLE
 # ============================================================
 
 def extract_article(url):
@@ -615,7 +625,8 @@ def extract_article(url):
             allow_redirects=True
         )
 
-        if response.status_code in [403, 401, 429]:
+        if response.status_code in [401, 403, 429]:
+
             DIAGNOSTICS["pages_refusees"] += 1
 
             log_failure(
@@ -634,10 +645,12 @@ def extract_article(url):
         ).lower()
 
         if "html" not in content_type:
+
             log_failure(
                 "Format",
                 f"Page non HTML : {url}"
             )
+
             return None
 
         parser = ArticleParser()
@@ -656,9 +669,15 @@ def extract_article(url):
 
             return None
 
-        domain = urlparse(response.url).netloc.lower()
+        domain = urlparse(
+            response.url
+        ).netloc.lower()
 
-        domain = re.sub(r"^www\.", "", domain)
+        domain = re.sub(
+            r"^www\.",
+            "",
+            domain
+        )
 
         DIAGNOSTICS["articles_complets"] += 1
 
@@ -681,12 +700,14 @@ def extract_article(url):
 
 
 # ============================================================
-# 13. FILTRAGE DES RÉSULTATS
+# 14. FILTRAGE ÉDITORIAL
 # ============================================================
 
 def basic_screen(article):
 
-    title = article.get("title", "").lower()
+    title = article.get(
+        "title", ""
+    ).lower()
 
     if len(title) < 15:
         return False
@@ -701,7 +722,7 @@ def basic_screen(article):
 
 
 # ============================================================
-# 14. COLLECTE DES ARTICLES COMPLETS
+# 15. COLLECTE DES ARTICLES COMPLETS
 # ============================================================
 
 def collect_articles():
@@ -718,10 +739,39 @@ def collect_articles():
         len(unique_results)
     )
 
+    # Priorité aux flux spécialisés
+    direct_results = [
+        item for item in unique_results
+        if item.get("method") == "RSS_DIRECT"
+    ]
+
+    google_results = [
+        item for item in unique_results
+        if item.get("method") == "GOOGLE_NEWS"
+    ]
+
+    # Répartition des tentatives
+    direct_results = direct_results[:25]
+    google_results = google_results[:10]
+
+    prioritized_results = (
+        direct_results + google_results
+    )
+
+    logging.info(
+        "Articles directs prioritaires : %s",
+        len(direct_results)
+    )
+
+    logging.info(
+        "Articles Google News : %s",
+        len(google_results)
+    )
+
     articles = []
     attempts = 0
 
-    for item in unique_results:
+    for item in prioritized_results:
 
         if attempts >= MAX_ARTICLES_TO_OPEN:
             break
@@ -738,18 +788,16 @@ def collect_articles():
             item["title"]
         )
 
-        rss_url = item["rss_url"]
-
         if item["method"] == "RSS_DIRECT":
 
-            url = rss_url
+            url = item["rss_url"]
 
             DIAGNOSTICS["liens_directs"] += 1
 
         else:
 
             url = resolve_article_url(
-                rss_url,
+                item["rss_url"],
                 item.get("source", "")
             )
 
@@ -788,6 +836,11 @@ def collect_articles():
             "method": item["method"]
         })
 
+        if item["method"] == "RSS_DIRECT":
+            DIAGNOSTICS["articles_directs_complets"] += 1
+        else:
+            DIAGNOSTICS["articles_google_complets"] += 1
+
         logging.info(
             "Article récupéré : %s",
             item["title"]
@@ -809,12 +862,13 @@ def collect_articles():
 
 
 # ============================================================
-# 15. ANALYSE GEMINI
+# 16. ANALYSE GEMINI
 # ============================================================
 
 def analyze_articles(articles):
 
     if not GEMINI_API_KEY:
+
         raise RuntimeError(
             "GEMINI_API_KEY absente des secrets GitHub."
         )
@@ -868,7 +922,7 @@ RÈGLES :
 - Aucune limite d'ancienneté historique.
 - La date de publication ne détermine pas la valeur du sujet.
 - N'invente aucun fait, lieu, personnage ou date.
-- N'utilise que les informations présentes dans les sources.
+- Utilise uniquement les informations présentes dans les sources.
 - Le sujet doit réellement concerner l'Afrique.
 - Deux domaines différents sont nécessaires.
 - Deux domaines différents ne garantissent pas l'indépendance éditoriale.
@@ -975,7 +1029,10 @@ Si une histoire convient :
         end = output.rfind("}")
 
         if start == -1 or end == -1:
-            raise ValueError("JSON Gemini introuvable.")
+
+            raise ValueError(
+                "JSON Gemini introuvable."
+            )
 
         return json.loads(
             output[start:end + 1]
@@ -992,7 +1049,7 @@ Si une histoire convient :
 
 
 # ============================================================
-# 16. VALIDATION AUTOMATIQUE
+# 17. VALIDATION AUTOMATIQUE
 # ============================================================
 
 def validate_analysis(story, articles):
@@ -1013,10 +1070,12 @@ def validate_analysis(story, articles):
     for field in required_fields:
 
         if not story.get(field):
+
             logging.warning(
                 "Champ manquant : %s",
                 field
             )
+
             return None
 
     country = story["pays"].strip()
@@ -1025,10 +1084,12 @@ def validate_analysis(story, articles):
         country.lower() == name.lower()
         for name in AFRICAN_COUNTRIES
     ):
+
         logging.warning(
             "Pays non reconnu : %s",
             country
         )
+
         return None
 
     valid_ids = {
@@ -1036,18 +1097,23 @@ def validate_analysis(story, articles):
         for article in articles[:MAX_ARTICLES_FOR_AI]
     }
 
-    source_ids = story.get("sources_utilisees", [])
+    source_ids = story.get(
+        "sources_utilisees", []
+    )
 
     if not isinstance(source_ids, list):
         return None
 
-    source_ids = list(dict.fromkeys(source_ids))
+    source_ids = list(
+        dict.fromkeys(source_ids)
+    )
 
     selected_sources = []
 
     for source_id in source_ids:
 
         if source_id in valid_ids:
+
             selected_sources.append(
                 valid_ids[source_id]
             )
@@ -1063,7 +1129,9 @@ def validate_analysis(story, articles):
     if len(domains) < 2:
         return None
 
-    proofs = story.get("preuves_par_source", [])
+    proofs = story.get(
+        "preuves_par_source", []
+    )
 
     proof_ids = {
         proof.get("id_source")
@@ -1079,7 +1147,9 @@ def validate_analysis(story, articles):
     if not isinstance(facts, list) or len(facts) < 2:
         return None
 
-    script = story.get("script", "").strip()
+    script = story.get(
+        "script", ""
+    ).strip()
 
     word_count = len(script.split())
 
@@ -1127,7 +1197,7 @@ def validate_analysis(story, articles):
 
 
 # ============================================================
-# 17. ENREGISTREMENT DU RAPPORT
+# 18. ENREGISTREMENT DU RAPPORT
 # ============================================================
 
 def save_report(data):
@@ -1157,7 +1227,7 @@ def save_report(data):
 
 
 # ============================================================
-# 18. PROGRAMME PRINCIPAL
+# 19. PROGRAMME PRINCIPAL
 # ============================================================
 
 def main():
@@ -1165,13 +1235,13 @@ def main():
     start_time = datetime.now(timezone.utc)
 
     logging.info("=" * 60)
-    logging.info("OBSERVATEUR ACTIF AI - V6")
+    logging.info("OBSERVATEUR ACTIF AI - V7")
     logging.info("Recherche africaine multi-sources")
     logging.info("=" * 60)
 
     report = {
         "date_recherche": start_time.isoformat(),
-        "version": "V6",
+        "version": "V7",
         "chaine": CHANNEL,
         "zone": "Toute l'Afrique",
         "priorite_editoriale": [
@@ -1189,7 +1259,7 @@ def main():
             "Archaeology Magazine",
             "ScienceDaily Archaeology",
             "HeritageDaily",
-            "Archaeology News Online"
+            "Archaeology Magazine Online"
         ],
         "statistiques": {},
         "diagnostics": {},
@@ -1332,7 +1402,7 @@ def main():
         )
 
         logging.info(
-            "Fin Observateur Actif AI V6."
+            "Fin Observateur Actif AI V7."
         )
 
 
