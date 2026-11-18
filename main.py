@@ -7,296 +7,210 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from google import genai
-from google.genai import types
 
 
-# ==========================================
-# OBSERVATEUR ACTIF AI
-# Moteur de recherche journalistique africain
-# ==========================================
-
+MODEL = "gemini-3.8-flash"
 CHANNEL = "Observateur Actif"
-MODEL = "gemini-2.5-flash"
 
 PROMPT = """
-Tu es le journaliste d'investigation et documentaliste
-de la chaîne YouTube Observateur Actif.
+Tu es le journaliste d'investigation de la chaîne
+YouTube Observateur Actif.
 
-MISSION :
-Effectuer une véritable recherche Internet sur toute
-l'Afrique afin de découvrir des histoires mystérieuses,
-réelles et documentées.
+Effectue une véritable enquête sur Internet concernant
+les mystères africains réels et documentés.
 
-PRIORITÉS ÉDITORIALES :
+ZONE : toute l'Afrique, les 54 pays.
+
+PRIORITES :
 1. Mystères historiques.
 2. Lieux mystérieux.
 3. Civilisations oubliées.
 
-SUJETS À EXPLORER :
-- Cités anciennes et villes disparues.
-- Civilisations et royaumes oubliés.
+EXPLORE :
+- Cités perdues et royaumes anciens.
 - Découvertes archéologiques.
-- Sites historiques mystérieux.
-- Grottes, ruines, monuments et tombeaux.
+- Grottes, ruines et monuments mystérieux.
 - Manuscrits et objets historiques.
-- Disparitions et événements historiques inexpliqués.
-- Mystères africains anciens et contemporains.
+- Disparitions historiques documentées.
+- Phénomènes historiques inexpliqués.
+- Découvertes récentes en Afrique.
+- Mystères anciens et contemporains.
 
-MÉTHODE OBLIGATOIRE :
+METHODE :
+1. Effectue plusieurs recherches Google.
+2. Recherche en français et en anglais.
+3. Consulte les médias, universités, musées,
+   institutions archéologiques et UNESCO.
+4. Lis et compare les informations disponibles.
+5. Vérifie les dates, lieux et personnages.
+6. Distingue faits, hypothèses et légendes.
+7. Cherche des sources indépendantes.
+8. Ne confonds pas plusieurs articles qui recopient
+   la même dépêche avec plusieurs preuves.
+9. N'invente jamais de faits ni de références.
+10. Si les preuves sont insuffisantes, dis-le.
 
-1. Effectue de véritables recherches Google sur Internet.
-2. Explore toute l'Afrique, pas seulement l'Afrique de l'Ouest.
-3. Recherche en français et en anglais.
-4. Consulte les médias, universités, musées,
-   institutions historiques et archéologiques,
-   UNESCO et publications scientifiques.
-5. Lis les informations disponibles dans les sources.
-6. Compare les informations entre plusieurs sources.
-7. Vérifie les dates, les lieux, les noms et les faits.
-8. Distingue clairement les faits établis,
-   les hypothèses et les légendes.
-9. Ne transforme jamais une légende en fait historique.
-10. N'invente jamais une histoire, une citation,
-    une date ou une source.
-11. Ne donne jamais une URL que tu n'as pas réellement
-    trouvée dans tes recherches.
+Sélectionne jusqu'à 8 histoires intéressantes.
+Privilégie les sujets sérieux et documentés.
 
-SÉLECTION :
-Trouve jusqu'à 8 sujets intéressants.
-Privilégie les découvertes récentes et les sujets
-historiques qui méritent une enquête approfondie.
-
-Pour chaque sujet, fournis :
+Pour chaque histoire, retourne :
 - titre
 - pays
-- lieu précis si connu
-- catégorie
-- résumé factuel
-- faits confirmés
-- éléments incertains ou controversés
-- intérêt journalistique
-- sources : titre, URL et domaine
-- niveau de corroboration
+- lieu
+- categorie
+- resume
+- faits_confirmes
+- elements_inc ertains
+- interet_journalistique
+- sources (titre et URL)
+- limites_de_verification
 
-IMPORTANT :
-Ne prétends pas qu'une histoire est vérifiée si les
-sources sont insuffisantes.
-Deux sites qui recopient le même article ne sont pas
-deux sources indépendantes.
-Si tu ne trouves pas assez de preuves, indique-le.
-
-FORMAT DE SORTIE :
-Retourne uniquement un objet JSON valide, sans Markdown,
-avec cette structure :
+Retourne uniquement un JSON valide :
 
 {
-  "histoires": [
-    {
-      "titre": "",
-      "pays": "",
-      "lieu": "",
-      "categorie": "",
-      "resume": "",
-      "faits_confirmes": [],
-      "elements_inc ertains": [],
-      "interet_journalistique": "",
-      "sources": [
-        {
-          "titre": "",
-          "url": "",
-          "domaine": ""
-        }
-      ],
-      "niveau_corroboration": ""
-    }
-  ],
+  "histoires": [],
   "bilan_recherche": "",
   "pistes_a_approfondir": []
 }
-
-Ne fabrique aucune source.
 """
 
 
-def get_grounding_sources(response):
-    """Récupère les références réellement fournies
-    par les résultats de recherche Google."""
-
-    sources = []
-    seen = set()
-
-    for candidate in (response.candidates or []):
-        metadata = getattr(
-            candidate, "grounding_metadata", None
-        )
-
-        if not metadata:
-            continue
-
-        chunks = getattr(
-            metadata, "grounding_chunks", []
-        ) or []
-
-        for chunk in chunks:
-            web = getattr(chunk, "web", None)
-
-            if not web:
-                continue
-
-            url = getattr(web, "uri", "") or ""
-            title = getattr(web, "title", "") or ""
-
-            if not url.startswith("http"):
-                continue
-
-            if url in seen:
-                continue
-
-            seen.add(url)
-
-            domain = urlparse(url).netloc.lower()
-
-            sources.append({
-                "titre": title,
-                "url": url,
-                "domaine": domain
-            })
-
-    return sources
-
-
 def extract_json(text):
-    """Extrait le JSON même si le modèle ajoute
-    accidentellement des balises Markdown."""
-
     text = text.strip()
-
     text = re.sub(
         r"^```(?:json)?\s*",
         "",
         text,
         flags=re.IGNORECASE
     )
-
     text = re.sub(r"\s*```$", "", text)
 
     start = text.find("{")
     end = text.rfind("}")
 
-    if start == -1 or end == -1:
-        raise ValueError("Réponse JSON introuvable")
+    if start < 0 or end < 0:
+        raise ValueError("JSON introuvable dans la réponse")
 
     return json.loads(text[start:end + 1])
 
 
-def verify_candidate_sources(stories, grounding_sources):
-    """Ne conserve comme références de recherche
-    que les URL effectivement retournées par Google."""
+def extract_citations(interaction):
+    citations = []
+    seen = set()
 
-    source_map = {
-        source["url"]: source
-        for source in grounding_sources
-    }
+    for step in getattr(interaction, "steps", []) or []:
+        if getattr(step, "type", "") != "model_output":
+            continue
 
-    for story in stories:
-        original_sources = story.get("sources", [])
-        verified_sources = []
+        for block in getattr(step, "content", []) or []:
+            for annotation in (
+                getattr(block, "annotations", []) or []
+            ):
+                if getattr(annotation, "type", "") != "url_citation":
+                    continue
 
-        for source in original_sources:
-            url = source.get("url", "").strip()
+                url = getattr(annotation, "url", "") or ""
 
-            if url in source_map:
-                verified_sources.append(
-                    source_map[url]
-                )
+                if not url.startswith("http") or url in seen:
+                    continue
 
-        story["sources"] = verified_sources
+                seen.add(url)
 
-        domains = {
-            source["domaine"]
-            for source in verified_sources
-        }
+                citations.append({
+                    "titre": getattr(annotation, "title", "") or "",
+                    "url": url,
+                    "domaine": urlparse(url).netloc.lower()
+                })
 
-        if len(domains) >= 3:
-            story["statut_sources"] = (
-                "PLUSIEURS_DOMAINES_A_EXAMINER"
-            )
-        elif len(domains) >= 2:
-            story["statut_sources"] = (
-                "CORROBORATION_INSUFFISANTE"
-            )
-        else:
-            story["statut_sources"] = (
-                "SOURCES_INSUFFISANTES"
-            )
-
-        story["publication_autorisee"] = False
-        story["verification_humaine_requise"] = True
-
-    return stories
+    return citations
 
 
 def main():
     print("======================================")
     print("OBSERVATEUR ACTIF AI")
-    print("Recherche journalistique sur l'Afrique")
+    print("Recherche journalistique africaine")
     print("======================================")
 
     api_key = os.environ.get("GEMINI_API_KEY")
 
     if not api_key:
         raise RuntimeError(
-            "Le secret GEMINI_API_KEY est introuvable."
+            "Secret GEMINI_API_KEY introuvable"
         )
 
     client = genai.Client(api_key=api_key)
 
-    print("\nRecherche Internet avec Google Search...")
+    print("Recherche Google en cours...")
 
-    response = client.models.generate_content(
+    interaction = client.interactions.create(
         model=MODEL,
-        contents=PROMPT,
-        config=types.GenerateContentConfig(
-            tools=[
-                types.Tool(
-                    google_search=types.GoogleSearch()
-                )
-            ],
-            temperature=0.2
-        )
+        input=PROMPT,
+        tools=[
+            {"type": "google_search"}
+        ]
     )
 
-    if not response.text:
+    response_text = interaction.output_text
+
+    if not response_text:
         raise RuntimeError(
-            "Gemini n'a retourné aucun texte."
+            "Gemini n'a retourné aucun texte"
         )
 
     print("Recherche terminée.")
-    print("Extraction des sources...")
+    print("Lecture des références...")
 
-    grounding_sources = get_grounding_sources(response)
+    citations = extract_citations(interaction)
 
-    print(
-        "Sources retournées par Google :",
-        len(grounding_sources)
-    )
+    print("Citations trouvées :", len(citations))
 
     try:
-        research = extract_json(response.text)
+        research = extract_json(response_text)
         stories = research.get("histoires", [])
 
-        stories = verify_candidate_sources(
-            stories,
-            grounding_sources
-        )
+        citation_urls = {
+            item["url"] for item in citations
+        }
 
-        status = (
-            "CANDIDATS_A_VERIFIER"
-            if stories
-            else "AUCUNE_HISTOIRE_EXPLOITABLE"
-        )
+        for story in stories:
+            original_sources = story.get("sources", [])
 
-        research_result = {
+            matched_sources = []
+
+            for source in original_sources:
+                url = source.get("url", "").strip()
+
+                if url in citation_urls:
+                    matched_sources.append(source)
+
+            story["sources_citees_dans_reponse"] = (
+                matched_sources
+            )
+
+            domains = {
+                urlparse(source["url"]).netloc.lower()
+                for source in matched_sources
+            }
+
+            story["nombre_domaines_cites"] = len(domains)
+
+            story["verification_humaine_requise"] = True
+            story["publication_autorisee"] = False
+
+            if len(domains) >= 3:
+                story["statut_sources"] = (
+                    "PLUSIEURS_DOMAINES_A_CONTROLER"
+                )
+            elif len(domains) == 2:
+                story["statut_sources"] = (
+                    "DEUX_DOMAINES_A_CONTROLER"
+                )
+            else:
+                story["statut_sources"] = (
+                    "CORROBORATION_INSUFFISANTE"
+                )
+
+        result = {
             "date_recherche": datetime.now(
                 timezone.utc
             ).isoformat(),
@@ -314,12 +228,10 @@ def main():
             ],
 
             "nombre_histoires": len(stories),
-            "nombre_sources_recherche": len(
-                grounding_sources
-            ),
+            "nombre_sources": len(citations),
 
             "histoires": stories,
-            "sources_recherche": grounding_sources,
+            "sources_recherche": citations,
 
             "bilan_recherche": research.get(
                 "bilan_recherche", ""
@@ -329,60 +241,47 @@ def main():
                 "pistes_a_approfondir", []
             ),
 
-            "statut": status,
-            "publication_autorisee": False,
+            "statut": (
+                "CANDIDATS_A_VERIFIER"
+                if stories else "AUCUN_RESULTAT"
+            ),
 
-            "avertissement": (
-                "Les résultats sont des pistes "
-                "journalistiques. Les sources et les faits "
-                "doivent être vérifiés avant publication."
-            )
+            "publication_autorisee": False
         }
 
     except Exception as error:
-        research_result = {
+        result = {
             "date_recherche": datetime.now(
                 timezone.utc
             ).isoformat(),
-
             "chaine": CHANNEL,
             "statut": "ERREUR_FORMAT_REPONSE",
             "erreur": str(error),
-            "reponse_brute": response.text,
-            "sources_recherche": grounding_sources,
+            "reponse_brute": response_text,
+            "sources_recherche": citations,
             "publication_autorisee": False
         }
 
     output_dir = Path("output")
     output_dir.mkdir(exist_ok=True)
 
-    output_file = output_dir / "daily_research.json"
-
-    with output_file.open(
+    with open(
+        output_dir / "daily_research.json",
         "w",
         encoding="utf-8"
     ) as file:
         json.dump(
-            research_result,
+            result,
             file,
             ensure_ascii=False,
             indent=2
         )
 
-    print("\n======================================")
+    print("======================================")
     print("RECHERCHE TERMINEE")
-    print(
-        "Histoires :",
-        research_result.get("nombre_histoires", 0)
-    )
-    print(
-        "Sources :",
-        research_result.get("nombre_sources_recherche", 0)
-    )
-    print(
-        "Statut :",
-        research_result.get("statut")
-    )
+    print("Histoires :", result.get("nombre_histoires", 0))
+    print("Sources :", result.get("nombre_sources", 0))
+    print("Statut :", result.get("statut"))
     print("Publication : DESACTIVEE")
     print("======================================")
 
