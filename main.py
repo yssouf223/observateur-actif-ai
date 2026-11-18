@@ -10,21 +10,52 @@ from pathlib import Path
 PROJECT = Path(__file__).parent
 DATA = PROJECT / "data"
 OUTPUT = PROJECT / "output"
+
 HISTORY_FILE = DATA / "published_history.json"
 
-AFRICA = [
-    "Africa", "African", "Mali", "Sudan", "Egypt", "Ethiopia",
-    "Ghana", "Nigeria", "Niger", "Senegal", "Guinea",
-    "Burkina Faso", "Ivory Coast", "Cote d'Ivoire", "Benin",
-    "Togo", "Gambia", "Mauritania", "Morocco", "Algeria",
-    "Tunisia", "Libya", "Chad", "Cameroon", "Congo",
-    "Democratic Republic of the Congo", "Angola", "Zimbabwe",
-    "Zambia", "Botswana", "Namibia", "South Africa",
-    "Kenya", "Tanzania", "Uganda", "Rwanda", "Burundi",
-    "Somalia", "Eritrea", "Djibouti", "Mozambique",
-    "Madagascar", "Malawi", "Lesotho", "Eswatini",
-    "Central African Republic", "Gabon", "Equatorial Guinea",
-    "Sierra Leone", "Liberia"
+# Recherche dans les cinq grandes régions africaines.
+REGIONS = {
+    "Afrique de l'Ouest": [
+        "Mali", "Senegal", "Niger", "Nigeria", "Ghana",
+        "Guinea", "Burkina Faso", "Benin", "Togo",
+        "Mauritania", "Gambia", "Sierra Leone", "Liberia",
+        "Ivory Coast"
+    ],
+    "Afrique du Nord": [
+        "Egypt", "Sudan", "Morocco", "Algeria",
+        "Tunisia", "Libya"
+    ],
+    "Afrique centrale": [
+        "Cameroon", "Chad", "Congo", "Gabon",
+        "Angola", "Central African Republic",
+        "Democratic Republic of the Congo"
+    ],
+    "Afrique de l'Est": [
+        "Ethiopia", "Kenya", "Tanzania", "Uganda",
+        "Somalia", "Rwanda", "Burundi", "Eritrea",
+        "Madagascar", "Mozambique"
+    ],
+    "Afrique australe": [
+        "South Africa", "Zimbabwe", "Zambia",
+        "Botswana", "Namibia", "Malawi",
+        "Lesotho", "Eswatini"
+    ]
+}
+
+# Termes liés à la ligne éditoriale.
+THEMES = [
+    "archaeology",
+    "excavation",
+    '"ancient ruins"',
+    '"lost city"',
+    '"ancient kingdom"',
+    '"historical mystery"',
+    "pyramid",
+    "temple",
+    "tomb",
+    "manuscript",
+    '"rock art"',
+    "civilization"
 ]
 
 AFRICA_TEXT = [
@@ -37,61 +68,94 @@ AFRICA_TEXT = [
     "namibia", "kenya", "tanzania", "uganda", "rwanda",
     "burundi", "somalia", "eritrea", "mozambique",
     "madagascar", "malawi", "sierra leone", "liberia",
-    "nubia", "kush", "meroë", "meroe", "timbuktu",
-    "djenné", "djenne", "great zimbabwe"
+    "nubia", "kush", "meroe", "timbuktu", "djenne",
+    "great zimbabwe", "nok culture", "carthage"
 ]
 
-SEARCHES = [
-    '("archaeological discovery" OR archaeology OR excavation OR "ancient ruins")',
-    '("lost city" OR "forgotten kingdom" OR "ancient civilization")',
-    '("historical mystery" OR "mysterious site" OR "ancient city")',
-    '(pyramid OR temple OR tomb OR manuscript OR "rock art")'
+EDITORIAL_TERMS = [
+    "archaeology", "archaeological", "ancient",
+    "civilization", "civilisation", "kingdom",
+    "empire", "ruins", "historical", "history",
+    "mystery", "mysterious", "temple", "pyramid",
+    "tomb", "manuscript", "excavation", "heritage",
+    "culture", "city", "settlement", "rock art",
+    "metallurgy", "medieval", "prehistoric"
 ]
+
+ERRORS = []
+
 
 def load_json(path, default):
     if not path.exists():
         return default
+
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return default
 
+
 def save_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
+
     path.write_text(
         json.dumps(data, ensure_ascii=False, indent=2),
         encoding="utf-8"
     )
 
+
 def clean_text(value):
     value = re.sub(r"<[^>]+>", " ", str(value or ""))
     return re.sub(r"\s+", " ", value).strip()
 
+
 def fetch_json(url):
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "ObservateurActifAI/2.0"}
+        headers={
+            "User-Agent": "ObservateurActifAI/3.0"
+        }
     )
-    with urllib.request.urlopen(request, timeout=40) as response:
-        content_type = response.headers.get("Content-Type", "")
-        body = response.read().decode("utf-8", errors="replace")
 
-    if "json" not in content_type.lower():
-        raise ValueError("Réponse non JSON : " + body[:180])
+    with urllib.request.urlopen(request, timeout=40) as response:
+        body = response.read().decode(
+            "utf-8",
+            errors="replace"
+        )
 
     return json.loads(body)
 
+
 def africa_related(text):
     text = text.lower()
-    return any(word in text for word in AFRICA_TEXT)
 
-def search_gdelt(query):
-    africa_group = "(" + " OR ".join(
-        '"' + country + '"' if " " in country else country
-        for country in AFRICA
+    return any(
+        word in text
+        for word in AFRICA_TEXT
+    )
+
+
+def editorial_related(text):
+    text = text.lower()
+
+    return any(
+        word in text
+        for word in EDITORIAL_TERMS
+    )
+
+
+def search_gdelt(region, countries):
+    theme_query = "(" + " OR ".join(THEMES) + ")"
+
+    country_query = "(" + " OR ".join(
+        '"' + country + '"'
+        if " " in country else country
+        for country in countries
     ) + ")"
 
-    full_query = query + " " + africa_group
+    # Les pays sont intégrés directement dans la requête.
+    # Le titre n'a donc pas besoin de répéter le nom du pays.
+    full_query = theme_query + " " + country_query
 
     params = {
         "query": full_query,
@@ -109,13 +173,31 @@ def search_gdelt(query):
 
     try:
         data = fetch_json(url)
-        return data.get("articles", [])
+        articles = data.get("articles", [])
+
+        print(
+            "GDELT -",
+            region,
+            ":",
+            len(articles),
+            "articles reçus"
+        )
+
+        return articles
+
     except Exception as error:
-        print("GDELT : recherche impossible :", str(error))
+        message = "GDELT - " + region + " : " + str(error)
+        print(message)
+        ERRORS.append(message)
         return []
 
+
 def search_wikipedia(query):
-    params = {"q": query, "limit": "20"}
+    params = {
+        "q": query,
+        "limit": "20"
+    }
+
     url = (
         "https://en.wikipedia.org/w/rest.php/v1/search/page?"
         + urllib.parse.urlencode(params)
@@ -124,17 +206,25 @@ def search_wikipedia(query):
     try:
         data = fetch_json(url)
         return data.get("pages", [])
+
     except Exception as error:
-        print("Wikimedia :", str(error))
+        message = "Wikimedia : " + str(error)
+        print(message)
+        ERRORS.append(message)
         return []
 
+
 def main():
-    print("OBSERVATEUR ACTIF AI - RECHERCHE AFRICAINE")
+    print("======================================")
+    print("OBSERVATEUR ACTIF AI")
+    print("MOTEUR DE RECHERCHE AFRICAIN")
+    print("======================================")
 
     DATA.mkdir(exist_ok=True)
     OUTPUT.mkdir(exist_ok=True)
 
     history = load_json(HISTORY_FILE, [])
+
     used_urls = {
         item.get("url")
         for item in history
@@ -143,51 +233,87 @@ def main():
 
     candidates = {}
 
-    print("1. Recherche dans les médias avec GDELT")
+    # 1. RECHERCHE DANS LES MÉDIAS AVEC GDELT
 
-    for query in SEARCHES:
-        print("Recherche :", query)
-        articles = search_gdelt(query)
+    print("\n1. RECHERCHE DANS LES MÉDIAS")
+
+    for region, countries in REGIONS.items():
+
+        print("\nRégion :", region)
+
+        articles = search_gdelt(region, countries)
 
         for article in articles:
-            title = clean_text(article.get("title"))
-            url = article.get("url", "").strip()
-            domain = article.get("domain", "Source inconnue")
 
-            if not title or not url.startswith("https://"):
+            title = clean_text(
+                article.get("title")
+            )
+
+            url = article.get("url", "").strip()
+
+            if not title:
                 continue
 
-            if not africa_related(title):
+            if not url.startswith("https://"):
                 continue
 
             candidates[url] = {
                 "title": title,
                 "url": url,
-                "publisher": domain,
-                "published_at": article.get("seendate", ""),
-                "source_type": "Article de presse trouvé par GDELT"
+                "publisher": article.get(
+                    "domain",
+                    "Source inconnue"
+                ),
+                "published_at": article.get(
+                    "seendate",
+                    ""
+                ),
+                "region_recherchee": region,
+                "source_type": "Article de presse - GDELT"
             }
 
+        # Pause entre les requêtes.
         time.sleep(6)
 
-    print("2. Recherche documentaire avec Wikimedia")
+    # 2. RECHERCHE DOCUMENTAIRE WIKIMEDIA
+
+    print("\n2. RECHERCHE DOCUMENTAIRE")
 
     wiki_queries = [
-        "African archaeology",
-        "ancient African kingdoms",
-        "lost cities Africa",
-        "mysterious historical places Africa",
-        "ancient African civilizations"
+        "African archaeology ancient sites",
+        "ancient African kingdoms civilizations",
+        "lost cities and ruins in Africa",
+        "African historical mysteries",
+        "African archaeological discoveries"
     ]
 
     for query in wiki_queries:
-        for page in search_wikipedia(query):
-            title = clean_text(page.get("title"))
-            description = clean_text(page.get("description"))
-            excerpt = clean_text(page.get("excerpt"))
+
+        print("Wikimedia :", query)
+
+        pages = search_wikipedia(query)
+
+        for page in pages:
+
+            title = clean_text(
+                page.get("title")
+            )
+
+            description = clean_text(
+                page.get("description")
+            )
+
+            excerpt = clean_text(
+                page.get("excerpt")
+            )
+
             key = page.get("key", "")
 
-            combined = title + " " + description + " " + excerpt
+            combined = (
+                title + " " +
+                description + " " +
+                excerpt
+            )
 
             if not title or not key:
                 continue
@@ -195,8 +321,14 @@ def main():
             if not africa_related(combined):
                 continue
 
-            url = "https://en.wikipedia.org/wiki/" + urllib.parse.quote(
-                key.replace(" ", "_")
+            if not editorial_related(combined):
+                continue
+
+            url = (
+                "https://en.wikipedia.org/wiki/"
+                + urllib.parse.quote(
+                    key.replace(" ", "_")
+                )
             )
 
             candidates[url] = {
@@ -205,39 +337,107 @@ def main():
                 "url": url,
                 "publisher": "Wikipedia",
                 "published_at": "",
-                "source_type": "Piste documentaire à corroborer"
+                "source_type": "Documentation à corroborer"
             }
 
+    # 3. ÉLIMINATION DES DOUBLONS
+
     new_candidates = [
-        item for item in candidates.values()
+        item
+        for item in candidates.values()
         if item["url"] not in used_urls
     ]
 
+    # 4. CLASSEMENT DES RÉSULTATS
+
+    new_candidates.sort(
+        key=lambda item: (
+            item["source_type"] != "Article de presse - GDELT",
+            item["title"].lower()
+        )
+    )
+
+    # 5. SAUVEGARDE
+
     result = {
-        "date_recherche": datetime.now(timezone.utc).isoformat(),
+        "date_recherche": datetime.now(
+            timezone.utc
+        ).isoformat(),
+
         "chaine": "Observateur Actif",
+
         "zone": "Toute l'Afrique",
+
         "priorite_editoriale": [
             "Mystères historiques",
             "Lieux mystérieux",
             "Civilisations oubliées"
         ],
+
         "nombre_resultats": len(new_candidates),
+
+        "nombre_articles_presse": sum(
+            item["source_type"] == "Article de presse - GDELT"
+            for item in new_candidates
+        ),
+
+        "nombre_documents": sum(
+            item["source_type"] == "Documentation à corroborer"
+            for item in new_candidates
+        ),
+
+        "erreurs_recherche": ERRORS,
+
         "statut": "CANDIDATS_A_VERIFIER",
+
         "publication_autorisee": False,
+
         "sujets": new_candidates,
+
         "regle_editoriale": (
-            "Aucun sujet ne peut être considéré comme vrai "
-            "sans vérification par plusieurs sources indépendantes."
+            "Les sujets doivent être corroborés par plusieurs "
+            "sources indépendantes avant toute publication. "
+            "Aucune histoire ne doit être inventée."
         )
     }
 
-    save_json(OUTPUT / "daily_research.json", result)
+    save_json(
+        OUTPUT / "daily_research.json",
+        result
+    )
 
-    print("Résultats trouvés :", len(candidates))
-    print("Nouveaux sujets :", len(new_candidates))
-    print("Fichier : output/daily_research.json")
-    print("Publication automatique : désactivée")
+    print("\n======================================")
+    print("RECHERCHE TERMINEE")
+    print("======================================")
+
+    print(
+        "Total des résultats :",
+        len(new_candidates)
+    )
+
+    print(
+        "Articles de presse :",
+        result["nombre_articles_presse"]
+    )
+
+    print(
+        "Documents Wikimedia :",
+        result["nombre_documents"]
+    )
+
+    print(
+        "Erreurs rencontrées :",
+        len(ERRORS)
+    )
+
+    print(
+        "Fichier créé : output/daily_research.json"
+    )
+
+    print(
+        "Publication automatique : DESACTIVEE"
+    )
+
 
 if __name__ == "__main__":
     main()
