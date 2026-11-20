@@ -3,6 +3,7 @@ name: Observateur Actif AI
 
 on:
   workflow_dispatch:
+
   schedule:
     - cron: "0 18 * * *"
 
@@ -12,7 +13,7 @@ permissions:
 jobs:
   production:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: Recuperer le projet
@@ -39,8 +40,26 @@ jobs:
           ffmpeg -version
           ffprobe -version
 
+      - name: Verifier les fichiers du projet
+        run: |
+          python -c "from pathlib import Path; files=['main.py','config.json','recherche/moteur.py','recherche/verification.py','intelligence/scripts.py','video/voix.py','video/montage.py','recherche_images.py']; missing=[f for f in files if not Path(f).exists()]; print('Fichiers manquants:', missing); assert not missing, 'Structure du projet incomplete'"
+
       - name: Executer Observateur Actif AI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python main.py
+
+      - name: Sauvegarder les resultats de production
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: observateur-actif-resultats
+          path: |
+            data/
+            images/telechargements/
+            **/*.mp3
+            **/*.wav
+            **/*.mp4
+          if-no-files-found: warn
+          retention-days: 7
