@@ -12,162 +12,113 @@ from datetime import datetime, timezone
 
 # ==========================================
 # OBSERVATEUR ACTIF AI
-# COLLECTE ET ANALYSE DOCUMENTAIRE V2
+# COLLECTE ET ANALYSE DOCUMENTAIRE V3
 # ==========================================
 
 DOSSIER = "data"
 
-ENTREE = os.path.join(
-    DOSSIER, "histoires_brutes.json"
-)
+ENTREE = os.path.join(DOSSIER, "histoires_brutes.json")
+SORTIE = os.path.join(DOSSIER, "histoires_analysees.json")
 
-SORTIE = os.path.join(
-    DOSSIER, "histoires_analysees.json"
-)
+# Limites pour accélérer l'analyse
+MAX_HISTOIRES = 30
+TIMEOUT_CONNEXION = 5
+TIMEOUT_LECTURE = 10
+PAUSE_REQUETE = 0.15
+SAUVEGARDE_TOUS_LES = 5
+LONGUEUR_MAX = 12000
 
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (compatible; "
-        "ObservateurActifAI/2.0)"
+        "ObservateurActifAI/3.0)"
     )
 }
 
-TIMEOUT = 25
-LONGUEUR_MAX = 20000
-
 MOTS_DOCUMENTAIRES = [
-    "historique",
-    "archéologique",
-    "archaeological",
-    "research",
-    "recherche",
-    "université",
-    "university",
-    "musée",
-    "museum",
-    "étude",
-    "study",
-    "excavation",
-    "scientifique",
-    "scientific",
-    "historian",
-    "historien",
-    "journal",
-    "publication",
-    "archaeology",
-    "archéologie",
-    "anthropologie",
-    "anthropology",
-    "inscription",
-    "manuscrit",
-    "manuscript",
-    "chronique",
-    "chronicle"
+    "historique", "archéologique", "archaeological",
+    "research", "recherche", "université", "university",
+    "musée", "museum", "étude", "study", "excavation",
+    "scientifique", "scientific", "historian", "historien",
+    "journal", "publication", "archaeology", "archéologie",
+    "anthropologie", "anthropology", "inscription",
+    "manuscrit", "manuscript", "chronique", "chronicle"
 ]
 
 MOTS_AFRIQUE = [
-    "africa",
-    "afrique",
-    "africain",
-    "africaine",
-    "africains",
-    "africaines",
-    "mali",
-    "senegal",
-    "sénégal",
-    "ghana",
-    "nigeria",
-    "nigéria",
-    "ethiopia",
-    "éthiopie",
-    "egypt",
-    "égypte",
-    "sudan",
-    "soudan",
-    "kenya",
-    "tanzania",
-    "tanzanie",
-    "zimbabwe",
-    "morocco",
-    "maroc",
-    "algeria",
-    "algérie",
-    "niger",
-    "mauritania",
-    "mauritanie",
-    "cameroon",
-    "cameroun",
-    "congo",
-    "uganda",
-    "ouest-africain",
-    "west african",
-    "central african",
-    "east african",
-    "southern african",
-    "north african",
-    "nubia",
-    "nubie",
-    "timbuktu",
-    "tombouctou",
-    "djenné",
-    "djenne",
-    "dogon",
-    "bandiagara",
-    "aksum",
-    "axum",
-    "méroé",
-    "meroe",
-    "great zimbabwe",
-    "mapungubwe",
-    "kilwa",
-    "carthage",
-    "carthage",
-    "lalibela",
-    "nok culture",
-    "culture nok",
-    "mbanza kongo"
+    "africa", "afrique", "africain", "africaine",
+    "africains", "africaines", "mali", "senegal",
+    "sénégal", "ghana", "nigeria", "nigéria",
+    "ethiopia", "éthiopie", "egypt", "égypte",
+    "sudan", "soudan", "kenya", "tanzania", "tanzanie",
+    "zimbabwe", "morocco", "maroc", "algeria", "algérie",
+    "niger", "mauritania", "mauritanie", "cameroon",
+    "cameroun", "congo", "uganda", "west african",
+    "central african", "east african", "southern african",
+    "north african", "nubia", "nubie", "timbuktu",
+    "tombouctou", "djenné", "djenne", "dogon",
+    "bandiagara", "aksum", "axum", "méroé", "meroe",
+    "great zimbabwe", "mapungubwe", "kilwa",
+    "carthage", "lalibela", "nok culture",
+    "culture nok", "mbanza kongo"
 ]
 
 
+def maintenant():
+    return datetime.now(timezone.utc).isoformat()
+
+
 def nettoyer_texte(texte):
-
     texte = str(texte or "")
-
-    texte = re.sub(
-        r"\s+",
-        " ",
-        texte
-    )
-
+    texte = re.sub(r"\s+", " ", texte)
     return texte.strip()
 
 
 def normaliser(texte):
+    return nettoyer_texte(texte).lower()
 
-    texte = nettoyer_texte(texte).lower()
 
-    return texte
+def sauvegarder(resultats, erreurs, histoires_recues, terminees):
+    os.makedirs(DOSSIER, exist_ok=True)
+
+    sortie = {
+        "agent": "Observateur Actif AI",
+        "version": "V3",
+        "date_analyse": maintenant(),
+        "nombre_histoires_recues": histoires_recues,
+        "nombre_histoires_selectionnees": min(
+            histoires_recues, MAX_HISTOIRES
+        ),
+        "nombre_histoires_analysees": len(resultats),
+        "nombre_histoires_non_analysees": max(
+            0, histoires_recues - len(resultats) - len(erreurs)
+        ),
+        "nombre_erreurs": len(erreurs),
+        "histoires": resultats,
+        "erreurs": erreurs,
+        "progression": {
+            "terminees": terminees,
+            "maximum": min(histoires_recues, MAX_HISTOIRES)
+        }
+    }
+
+    temporaire = SORTIE + ".tmp"
+
+    with open(temporaire, "w", encoding="utf-8") as fichier:
+        json.dump(sortie, fichier, ensure_ascii=False, indent=2)
+
+    os.replace(temporaire, SORTIE)
 
 
 def extraire_meta(soup, proprietes):
-
     for propriete in proprietes:
-
         balise = (
-            soup.find(
-                "meta",
-                attrs={"property": propriete}
-            )
-            or soup.find(
-                "meta",
-                attrs={"name": propriete}
-            )
+            soup.find("meta", attrs={"property": propriete})
+            or soup.find("meta", attrs={"name": propriete})
         )
 
         if balise:
-
             valeur = balise.get("content", "").strip()
-
             if valeur:
                 return valeur
 
@@ -175,7 +126,6 @@ def extraire_meta(soup, proprietes):
 
 
 def extraire_article(url):
-
     resultat = {
         "url_originale": url,
         "url_finale": url,
@@ -191,11 +141,15 @@ def extraire_article(url):
     }
 
     try:
+        parsed = urlparse(url)
+
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            raise ValueError("URL invalide ou non autorisée.")
 
         response = requests.get(
             url,
             headers=HEADERS,
-            timeout=TIMEOUT,
+            timeout=(TIMEOUT_CONNEXION, TIMEOUT_LECTURE),
             allow_redirects=True
         )
 
@@ -206,50 +160,30 @@ def extraire_article(url):
         ).lower()
 
         if "text/html" not in type_contenu:
-            raise ValueError(
-                "La ressource n'est pas une page HTML."
-            )
+            raise ValueError("La ressource n'est pas une page HTML.")
 
         resultat["url_finale"] = response.url
+        resultat["domaine"] = urlparse(
+            response.url
+        ).netloc.lower()
 
-        resultat["domaine"] = (
-            urlparse(response.url).netloc.lower()
-        )
+        soup = BeautifulSoup(response.content, "lxml")
 
-        soup = BeautifulSoup(
-            response.content,
-            "lxml"
-        )
-
-        # Titre
         if soup.title:
-
             resultat["titre_page"] = nettoyer_texte(
                 soup.title.get_text(" ", strip=True)
             )
 
-        # Description
         resultat["description_page"] = extraire_meta(
             soup,
-            [
-                "description",
-                "og:description",
-                "twitter:description"
-            ]
+            ["description", "og:description", "twitter:description"]
         )
 
-        # Auteur
         resultat["auteur"] = extraire_meta(
             soup,
-            [
-                "author",
-                "article:author",
-                "parsely-author",
-                "dc.creator"
-            ]
+            ["author", "article:author", "parsely-author", "dc.creator"]
         )
 
-        # Date de publication
         resultat["date_page"] = extraire_meta(
             soup,
             [
@@ -261,22 +195,12 @@ def extraire_article(url):
             ]
         )
 
-        # Suppression des éléments inutiles
         for element in soup([
-            "script",
-            "style",
-            "nav",
-            "footer",
-            "header",
-            "aside",
-            "form",
-            "noscript",
-            "svg"
+            "script", "style", "nav", "footer", "header",
+            "aside", "form", "noscript", "svg"
         ]):
-
             element.decompose()
 
-        # Priorité aux zones principales
         zone = (
             soup.find("article")
             or soup.find("main")
@@ -291,37 +215,25 @@ def extraire_article(url):
             for p in paragraphes
         )
 
-        contenu = nettoyer_texte(contenu)
-
-        resultat["contenu"] = contenu[:LONGUEUR_MAX]
-
-        resultat["nombre_caracteres"] = len(
-            resultat["contenu"]
-        )
+        resultat["contenu"] = nettoyer_texte(contenu)[:LONGUEUR_MAX]
+        resultat["nombre_caracteres"] = len(resultat["contenu"])
 
         resultat["accessible"] = bool(
-            resultat["titre_page"]
-            or resultat["contenu"]
+            resultat["titre_page"] or resultat["contenu"]
         )
 
     except Exception as erreur:
-
         resultat["erreur"] = str(erreur)[:1000]
 
     return resultat
 
 
 def detecter_indice_africain(histoire, article):
-
     texte = normaliser(
-        histoire.get("titre", "")
-        + " "
-        + histoire.get("description", "")
-        + " "
-        + article.get("titre_page", "")
-        + " "
-        + article.get("description_page", "")
-        + " "
+        histoire.get("titre", "") + " "
+        + histoire.get("description", "") + " "
+        + article.get("titre_page", "") + " "
+        + article.get("description_page", "") + " "
         + article.get("contenu", "")[:6000]
     )
 
@@ -334,7 +246,6 @@ def detecter_indice_africain(histoire, article):
 
 
 def evaluer_source(histoire, article):
-
     contenu = article.get("contenu", "")
     titre = article.get("titre_page", "")
     domaine = article.get("domaine", "")
@@ -342,15 +253,11 @@ def evaluer_source(histoire, article):
     score = 0
     observations = []
 
-    # Accessibilité
     if article.get("accessible"):
         score += 20
     else:
-        observations.append(
-            "Page originale inaccessible"
-        )
+        observations.append("Page originale inaccessible")
 
-    # Quantité de contenu
     longueur = len(contenu)
 
     if longueur >= 3000:
@@ -360,47 +267,29 @@ def evaluer_source(histoire, article):
     elif longueur >= 500:
         score += 10
     else:
-        observations.append(
-            "Contenu documentaire insuffisant"
-        )
+        observations.append("Contenu documentaire insuffisant")
 
-    # Titre
     if titre:
         score += 10
     else:
-        observations.append(
-            "Titre de page absent"
-        )
+        observations.append("Titre de page absent")
 
-    # Domaine
     if domaine:
         score += 10
-
     else:
-        observations.append(
-            "Domaine de la source absent"
-        )
+        observations.append("Domaine de la source absent")
 
-    # Auteur
     if article.get("auteur"):
         score += 10
     else:
-        observations.append(
-            "Auteur non identifié"
-        )
+        observations.append("Auteur non identifié")
 
-    # Date
     if article.get("date_page"):
         score += 5
     else:
-        observations.append(
-            "Date de publication non trouvée"
-        )
+        observations.append("Date de publication non trouvée")
 
-    # Indices documentaires
-    texte = normaliser(
-        titre + " " + contenu
-    )
+    texte = normaliser(titre + " " + contenu)
 
     indices_documentaires = [
         mot for mot in MOTS_DOCUMENTAIRES
@@ -417,8 +306,7 @@ def evaluer_source(histoire, article):
         )
 
     indices_africains = detecter_indice_africain(
-        histoire,
-        article
+        histoire, article
     )
 
     if not indices_africains:
@@ -438,118 +326,96 @@ def evaluer_source(histoire, article):
 
 
 def analyser():
-
     os.makedirs(DOSSIER, exist_ok=True)
 
     if not os.path.exists(ENTREE):
-
         raise FileNotFoundError(
             "Fichier de recherche introuvable."
         )
 
-    with open(
-        ENTREE,
-        "r",
-        encoding="utf-8"
-    ) as fichier:
-
+    with open(ENTREE, "r", encoding="utf-8") as fichier:
         donnees = json.load(fichier)
 
     histoires = donnees.get("histoires", [])
 
+    if not isinstance(histoires, list):
+        raise ValueError("Format incorrect : histoires doit être une liste.")
+
+    selection = histoires[:MAX_HISTOIRES]
+
     resultats = []
     erreurs = []
+    urls_vues = set()
 
     print("=" * 55)
     print("OBSERVATEUR ACTIF AI")
-    print("ANALYSE DOCUMENTAIRE V2")
+    print("ANALYSE DOCUMENTAIRE V3")
     print("=" * 55)
 
-    print("Histoires à analyser :", len(histoires))
+    print("Histoires reçues :", len(histoires))
+    print("Histoires sélectionnées :", len(selection))
 
-    for numero, histoire in enumerate(
-        histoires,
-        start=1
-    ):
+    for numero, histoire in enumerate(selection, start=1):
+        titre = histoire.get("titre", "")
 
-        print(
-            f"\n[{numero}/{len(histoires)}]",
-            histoire.get("titre", "")
-        )
+        print(f"\n[{numero}/{len(selection)}] {titre}")
 
-        url = histoire.get("source_url", "")
+        url = nettoyer_texte(histoire.get("source_url", ""))
 
         if not url:
-
-            print("URL absente.")
-
             erreurs.append({
                 "id": histoire.get("id"),
                 "erreur": "URL_ABSENTE"
             })
-
+            print("URL absente.")
             continue
+
+        if url in urls_vues:
+            erreurs.append({
+                "id": histoire.get("id"),
+                "erreur": "URL_DUPLIQUEE"
+            })
+            print("URL déjà analysée.")
+            continue
+
+        urls_vues.add(url)
 
         article = extraire_article(url)
 
-        evaluation = evaluer_source(
-            histoire,
-            article
-        )
+        evaluation = evaluer_source(histoire, article)
 
         histoire_analysee = {
             **histoire,
             "source_analysee": article,
             "evaluation": evaluation,
-            "date_analyse": datetime.now(
-                timezone.utc
-            ).isoformat(),
+            "date_analyse": maintenant(),
             "statut": "A_CORROBORER"
         }
 
         resultats.append(histoire_analysee)
 
-        print(
-            "Score de collecte :",
-            evaluation["score_collecte"]
-        )
-
-        print(
-            "Contenu récupéré :",
-            article["nombre_caracteres"],
-            "caractères"
-        )
+        print("Score de collecte :", evaluation["score_collecte"])
+        print("Contenu récupéré :", article["nombre_caracteres"], "caractères")
 
         if not article["accessible"]:
             print("Attention : page inaccessible.")
 
-        time.sleep(0.5)
+        terminees = numero
 
-    sortie = {
-        "agent": "Observateur Actif AI",
-        "version": "V2",
-        "date_analyse": datetime.now(
-            timezone.utc
-        ).isoformat(),
-        "nombre_histoires_recues": len(histoires),
-        "nombre_histoires_analysees": len(resultats),
-        "nombre_erreurs": len(erreurs),
-        "histoires": resultats,
-        "erreurs": erreurs
-    }
+        if terminees % SAUVEGARDE_TOUS_LES == 0:
+            sauvegarder(
+                resultats, erreurs, len(histoires), terminees
+            )
+            print("Sauvegarde progressive effectuée.")
 
-    with open(
-        SORTIE,
-        "w",
-        encoding="utf-8"
-    ) as fichier:
+        time.sleep(PAUSE_REQUETE)
 
-        json.dump(
-            sortie,
-            fichier,
-            ensure_ascii=False,
-            indent=2
-        )
+    sauvegarder(
+        resultats,
+        erreurs,
+        len(histoires),
+        len(selection)
+    )
 
     print("\n" + "=" * 55)
     print("ANALYSE TERMINÉE")
