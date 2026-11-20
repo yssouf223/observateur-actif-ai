@@ -13,7 +13,7 @@ permissions:
 jobs:
   production:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
 
     steps:
       - name: Recuperer le projet
@@ -30,15 +30,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-dejavu-core
 
-      - name: Installer les dependances Python
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
       - name: Verifier FFmpeg
         run: |
           ffmpeg -version
           ffprobe -version
+
+      - name: Installer les dependances Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Verifier les fichiers du projet
         run: |
@@ -47,6 +47,7 @@ jobs:
       - name: Executer Observateur Actif AI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PIPER_VOICE: fr_FR-siwis-medium
         run: |
           python main.py
 
@@ -57,7 +58,9 @@ jobs:
           name: observateur-actif-resultats
           path: |
             data/
-            images/telechargements/
+            images/
+            audio/
+            videos/
             **/*.mp3
             **/*.wav
             **/*.mp4
