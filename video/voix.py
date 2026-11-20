@@ -1,18 +1,29 @@
 
 import os
+import sys
 import json
 import re
 import subprocess
+
 from pathlib import Path
+
+# ==========================================
+# OBSERVATEUR ACTIF AI
+# GENERATEUR DE VOIX OFF V2
+# ==========================================
 
 DOSSIER_MODELES = Path("models/voices")
 DOSSIER_AUDIO = Path("audio")
 FICHIER_SCRIPTS = Path("data/scripts_generes.json")
 
-VOIX = os.environ.get("PIPER_VOICE", "fr_FR-siwis-medium")
+VOIX = os.environ.get(
+    "PIPER_VOICE",
+    "fr_FR-siwis-medium"
+)
 
 
 def executer_commande(commande):
+
     resultat = subprocess.run(
         commande,
         capture_output=True,
@@ -20,19 +31,27 @@ def executer_commande(commande):
     )
 
     if resultat.returncode != 0:
-        raise RuntimeError(resultat.stderr[-2000:])
+        raise RuntimeError(
+            resultat.stderr[-3000:]
+        )
 
     return resultat
 
 
 def installer_voix():
-    DOSSIER_MODELES.mkdir(parents=True, exist_ok=True)
+
+    DOSSIER_MODELES.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
     modele = DOSSIER_MODELES / f"{VOIX}.onnx"
     configuration = Path(str(modele) + ".json")
 
     if modele.exists() and configuration.exists():
+
         print("Voix française déjà installée.")
+
         return modele
 
     print("Téléchargement de la voix :", VOIX)
@@ -47,22 +66,31 @@ def installer_voix():
     ])
 
     if not modele.exists() or not configuration.exists():
-        raise RuntimeError("Fichiers de la voix introuvables.")
+
+        raise RuntimeError(
+            "Fichiers de la voix introuvables."
+        )
 
     return modele
 
 
 def nom_fichier(identifiant):
+
     identifiant = re.sub(
         r"[^a-zA-Z0-9_-]",
         "",
         str(identifiant)
     )
+
     return identifiant or "histoire"
 
 
 def generer_audio(script, modele):
-    narration = script.get("narration", "").strip()
+
+    narration = script.get(
+        "narration",
+        ""
+    ).strip()
 
     if not narration:
         return None
@@ -71,7 +99,11 @@ def generer_audio(script, modele):
         script.get("id_histoire", "histoire")
     )
 
-    DOSSIER_AUDIO.mkdir(parents=True, exist_ok=True)
+    DOSSIER_AUDIO.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
     sortie = DOSSIER_AUDIO / f"{identifiant}.wav"
 
     print("Génération audio :", sortie)
@@ -88,45 +120,99 @@ def generer_audio(script, modele):
         narration
     ])
 
-    if not sortie.exists() or sortie.stat().st_size == 0:
-        raise RuntimeError("Le fichier audio n'a pas été créé.")
+    if not sortie.exists():
+        raise RuntimeError(
+            "Le fichier audio n'a pas été créé."
+        )
 
-    return str(sortie)
+    if sortie.stat().st_size < 1000:
+        raise RuntimeError(
+            "Le fichier audio est trop petit ou vide."
+        )
+
+    resultat = executer_commande([
+        "ffprobe",
+        "-v", "error",
+        "-show_entries", "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        str(sortie)
+    ])
+
+    duree = float(resultat.stdout.strip())
+
+    if duree <= 0:
+        raise RuntimeError(
+            "Durée audio invalide."
+        )
+
+    print(
+        "Durée audio :",
+        round(duree, 2),
+        "secondes"
+    )
+
+    return {
+        "id_histoire": script.get("id_histoire"),
+        "fichier_audio": str(sortie),
+        "duree_secondes": round(duree, 2),
+        "statut": "AUDIO_CREE"
+    }
 
 
 def executer():
-    DOSSIER_AUDIO.mkdir(parents=True, exist_ok=True)
+
+    DOSSIER_AUDIO.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
     if not FICHIER_SCRIPTS.exists():
-        raise FileNotFoundError("Scripts Gemini introuvables.")
 
-    with open(FICHIER_SCRIPTS, encoding="utf-8") as fichier:
+        raise FileNotFoundError(
+            "Scripts Gemini introuvables."
+        )
+
+    with open(
+        FICHIER_SCRIPTS,
+        encoding="utf-8"
+    ) as fichier:
+
         donnees = json.load(fichier)
 
     scripts = donnees.get("scripts", [])
 
     if not scripts:
-        raise RuntimeError("Aucun script disponible pour la narration.")
+
+        raise RuntimeError(
+            "Aucun script disponible pour la narration."
+        )
 
     modele = installer_voix()
+
     resultats = []
 
     for script in scripts:
+
         try:
-            audio = generer_audio(script, modele)
+
+            audio = generer_audio(
+                script,
+                modele
+            )
 
             if audio:
-                resultats.append({
-                    "id_histoire": script.get("id_histoire"),
-                    "fichier_audio": audio,
-                    "statut": "AUDIO_CREE"
-                })
+                resultats.append(audio)
 
         except Exception as erreur:
-            print("Erreur audio :", erreur)
+
+            print(
+                "Erreur audio :",
+                erreur
+            )
 
     rapport = {
         "agent": "Observateur Actif AI",
+        "version": "V2",
         "nombre_audios": len(resultats),
         "audios": resultats
     }
@@ -136,14 +222,25 @@ def executer():
         "w",
         encoding="utf-8"
     ) as fichier:
-        json.dump(rapport, fichier, ensure_ascii=False, indent=2)
+
+        json.dump(
+            rapport,
+            fichier,
+            ensure_ascii=False,
+            indent=2
+        )
 
     if not resultats:
-        raise RuntimeError("Aucun fichier audio n'a été généré.")
 
-    print("Audios générés :", len(resultats))
+        raise RuntimeError(
+            "Aucun fichier audio n'a été généré."
+        )
+
+    print(
+        "Audios générés :",
+        len(resultats)
+    )
 
 
 if __name__ == "__main__":
-    import sys
     executer()
