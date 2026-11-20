@@ -1,0 +1,36 @@
+
+{
+  "agent_name": "Observateur Actif AI",
+  "youtube_channel": "Observateur Actif",
+  "continent": "Afrique",
+  "language": "fr",
+  "timezone": "Africa/Bamako",
+  "publication": {
+    "enabled": true,
+    "time": "18:00",
+    "videos_per_day": 1,
+    "format": "youtube_shorts"
+  },
+  "video": {
+    "min_duration": 45,
+    "max_duration": 60,
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "editorial_priorities": [
+    "Mystères historiques",
+    "Lieux mystérieux",
+    "Civilisations oubliées",
+    "Royaumes anciens",
+    "Histoires étranges",
+    "Phénomènes insolites",
+    "Découvertes archéologiques"
+  ],
+  "requirements": {
+    "real_stories_only": true,
+    "require_sources": true,
+    "no_invented_facts": true,
+    "language": "French"
+  }
+}
