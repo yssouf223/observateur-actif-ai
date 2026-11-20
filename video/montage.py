@@ -1,46 +1,54 @@
 
+import os
 import json
-import subprocess
 import re
+import subprocess
 
 from pathlib import Path
+from datetime import datetime, timezone
 
 # ==========================================
 # OBSERVATEUR ACTIF AI
-# MOTEUR DE MONTAGE VIDEO V2
+# MOTEUR DE MONTAGE VIDEO V3
 # ==========================================
 
-DOSSIER_DATA = Path("data")
-DOSSIER_AUDIO = Path("audio")
-DOSSIER_VIDEO = Path("videos")
+RACINE = Path(__file__).resolve().parent.parent
+
+DOSSIER_DATA = RACINE / "data"
+DOSSIER_AUDIO = RACINE / "audio"
+DOSSIER_VIDEO = RACINE / "videos"
 
 FICHIER_SCRIPTS = DOSSIER_DATA / "scripts_generes.json"
 FICHIER_IMAGES = DOSSIER_DATA / "images_rapport.json"
 
+TIMEOUT_FFMPEG = 900
+TIMEOUT_FFPROBE = 30
 
-# ==========================================
-# EXECUTION DES COMMANDES
-# ==========================================
 
-def executer_commande(commande):
+def executer_commande(commande, timeout=120):
 
-    resultat = subprocess.run(
-        commande,
-        capture_output=True,
-        text=True
-    )
+    try:
+        resultat = subprocess.run(
+            commande,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False
+        )
+
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(
+            f"Commande interrompue après {timeout} secondes."
+        )
 
     if resultat.returncode != 0:
         raise RuntimeError(
             resultat.stderr[-3000:]
+            or "La commande a échoué."
         )
 
     return resultat
 
-
-# ==========================================
-# NETTOYAGE DES IDENTIFIANTS
-# ==========================================
 
 def nettoyer_nom(valeur):
 
@@ -53,38 +61,118 @@ def nettoyer_nom(valeur):
     return nom or "histoire"
 
 
-# ==========================================
-# MESURE DE LA DUREE AUDIO
-# ==========================================
+def obtenir_identifiant(script):
 
-def obtenir_duree_audio(audio):
+    identifiant = script.get(
+        "id_histoire",
+        script.get("id", "histoire")
+    )
 
-    resultat = executer_commande([
-        "ffprobe",
-        "-v", "error",
-        "-show_entries", "format=duration",
-        "-of", "default=noprint_wrappers=1:nokey=1",
-        str(audio)
-    ])
+    return nettoyer_nom(identifiant)
+
+
+def sauvegarder_rapport(rapport):
+
+    DOSSIER_VIDEO.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    destination = DOSSIER_VIDEO / "rapport.json"
+    temporaire = DOSSIER_VIDEO / "rapport.tmp"
+
+    with open(
+        temporaire,
+        "w",
+        encoding="utf-8"
+    ) as fichier:
+
+        json.dump(
+            rapport,
+            fichier,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    os.replace(
+        temporaire,
+        destination
+    )
+
+
+def obtenir_duree(fichier):
+
+    resultat = executer_commande(
+        [
+            "ffprobe",
+            "-v", "error",
+            "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            str(fichier)
+        ],
+        timeout=TIMEOUT_FFPROBE
+    )
 
     try:
         duree = float(resultat.stdout.strip())
-    except ValueError:
+    except (ValueError, TypeError):
         raise RuntimeError(
-            "Impossible de mesurer la durée audio."
+            "Impossible de mesurer la durée du média."
         )
 
     if duree <= 0:
-        raise RuntimeError(
-            "La durée audio est invalide."
-        )
+        raise RuntimeError("Durée du média invalide.")
 
     return duree
 
 
-# ==========================================
-# RECUPERATION DES IMAGES
-# ==========================================
+def verifier_video(fichier):
+
+    resultat = executer_commande(
+        [
+            "ffprobe",
+            "-v", "error",
+            "-show_entries",
+            "stream=codec_type,width,height",
+            "-of", "json",
+            str(fichier)
+        ],
+        timeout=TIMEOUT_FFPROBE
+    )
+
+    try:
+        donnees = json.loads(resultat.stdout)
+    except json.JSONDecodeError:
+        raise RuntimeError(
+            "Impossible de lire les informations de la vidéo."
+        )
+
+    flux = donnees.get("streams", [])
+
+    video = [
+        flux_video for flux_video in flux
+        if flux_video.get("codec_type") == "video"
+    ]
+
+    audio = [
+        flux_audio for flux_audio in flux
+        if flux_audio.get("codec_type") == "audio"
+    ]
+
+    if not video:
+        raise RuntimeError("Aucune piste vidéo détectée.")
+
+    if not audio:
+        raise RuntimeError("Aucune piste audio détectée.")
+
+    if video[0].get("width") != 1080:
+        raise RuntimeError("Largeur vidéo incorrecte.")
+
+    if video[0].get("height") != 1920:
+        raise RuntimeError("Hauteur vidéo incorrecte.")
+
+    return True
+
 
 def charger_images(identifiant):
 
@@ -108,17 +196,21 @@ def charger_images(identifiant):
 
                 chemin = image.get("fichier")
 
-                if chemin and Path(chemin).exists():
-                    images.append(str(Path(chemin).resolve()))
+                if not chemin:
+                    continue
+
+                chemin = Path(chemin)
+
+                if not chemin.is_absolute():
+                    chemin = RACINE / chemin
+
+                if chemin.exists() and chemin.is_file():
+                    images.append(str(chemin.resolve()))
 
             return images
 
     return []
 
-
-# ==========================================
-# CREATION DU FICHIER DE SEQUENCE
-# ==========================================
 
 def creer_liste_images(images, duree, identifiant):
 
@@ -129,9 +221,7 @@ def creer_liste_images(images, duree, identifiant):
 
     liste = DOSSIER_VIDEO / f"{identifiant}_images.txt"
 
-    nombre_images = len(images)
-
-    duree_par_image = duree / nombre_images
+    duree_par_image = duree / len(images)
 
     with open(
         liste,
@@ -141,11 +231,8 @@ def creer_liste_images(images, duree, identifiant):
 
         for image in images:
 
-            chemin = str(
-                Path(image).resolve()
-            )
+            chemin = Path(image).resolve().as_posix()
 
-            chemin = chemin.replace("\\", "/")
             chemin = chemin.replace("'", "'\\''")
 
             fichier.write(
@@ -156,32 +243,19 @@ def creer_liste_images(images, duree, identifiant):
                 f"duration {duree_par_image:.6f}\n"
             )
 
-        # Répétition de la dernière image
-        # pour respecter sa durée d'affichage.
-
-        chemin = str(
-            Path(images[-1]).resolve()
-        )
-
-        chemin = chemin.replace("\\", "/")
-        chemin = chemin.replace("'", "'\\''")
+        dernier = Path(images[-1]).resolve().as_posix()
+        dernier = dernier.replace("'", "'\\''")
 
         fichier.write(
-            f"file '{chemin}'\n"
+            f"file '{dernier}'\n"
         )
 
     return liste
 
 
-# ==========================================
-# MONTAGE D'UNE VIDEO
-# ==========================================
-
 def creer_video(script):
 
-    identifiant = nettoyer_nom(
-        script.get("id_histoire", "histoire")
-    )
+    identifiant = obtenir_identifiant(script)
 
     audio = DOSSIER_AUDIO / f"{identifiant}.wav"
 
@@ -190,13 +264,19 @@ def creer_video(script):
             f"Audio absent : {audio}"
         )
 
-    duree = obtenir_duree_audio(audio)
+    duree = obtenir_duree(audio)
 
     print(
-        "Durée de la narration :",
+        "Durée de narration :",
         round(duree, 2),
         "secondes"
     )
+
+    if duree < 45 or duree > 60:
+        print(
+            "ATTENTION : la narration ne respecte pas "
+            "la durée cible de 45 à 60 secondes."
+        )
 
     DOSSIER_VIDEO.mkdir(
         parents=True,
@@ -204,8 +284,12 @@ def creer_video(script):
     )
 
     sortie = DOSSIER_VIDEO / f"{identifiant}.mp4"
+    temporaire = DOSSIER_VIDEO / f"{identifiant}.tmp.mp4"
 
     images = charger_images(identifiant)
+
+    if temporaire.exists():
+        temporaire.unlink()
 
     if images:
 
@@ -228,20 +312,24 @@ def creer_video(script):
             "-safe", "0",
             "-i", str(liste),
             "-i", str(audio),
+            "-map", "0:v:0",
+            "-map", "1:a:0",
             "-t", str(duree),
             "-vf",
             "scale=1080:1920:force_original_aspect_ratio=increase,"
             "crop=1080:1920,"
-            "format=yuv420p,"
-            "fps=30",
+            "setsar=1,"
+            "fps=30,"
+            "format=yuv420p",
             "-c:v", "libx264",
             "-preset", "veryfast",
             "-tune", "stillimage",
+            "-threads", "2",
             "-c:a", "aac",
             "-b:a", "128k",
             "-shortest",
             "-movflags", "+faststart",
-            str(sortie)
+            str(temporaire)
         ]
 
     else:
@@ -257,50 +345,68 @@ def creer_video(script):
             "-i",
             f"color=c=black:s=1080x1920:r=30:d={duree}",
             "-i", str(audio),
+            "-map", "0:v:0",
+            "-map", "1:a:0",
             "-t", str(duree),
-            "-vf", "format=yuv420p",
+            "-vf",
+            "setsar=1,format=yuv420p",
             "-c:v", "libx264",
             "-preset", "veryfast",
+            "-threads", "2",
             "-c:a", "aac",
             "-b:a", "128k",
             "-shortest",
             "-movflags", "+faststart",
-            str(sortie)
+            str(temporaire)
         ]
 
-    executer_commande(commande)
+    executer_commande(
+        commande,
+        timeout=TIMEOUT_FFMPEG
+    )
 
-    if not sortie.exists():
+    if not temporaire.exists():
         raise RuntimeError(
-            "La vidéo n'a pas été créée."
+            "FFmpeg n'a pas créé le fichier vidéo."
         )
 
-    if sortie.stat().st_size == 0:
+    if temporaire.stat().st_size < 10000:
         raise RuntimeError(
-            "Le fichier vidéo est vide."
+            "Le fichier vidéo est trop petit."
         )
 
-    duree_video = obtenir_duree_audio(sortie)
+    verifier_video(temporaire)
 
-    print(
-        "Vidéo créée :",
+    duree_video = obtenir_duree(temporaire)
+
+    os.replace(
+        temporaire,
         sortie
     )
 
-    print(
-        "Durée finale :",
-        round(duree_video, 2),
-        "secondes"
-    )
+    print("Vidéo validée :", sortie.name)
+    print("Durée finale :", round(duree_video, 2), "secondes")
+    print("Résolution : 1080 x 1920")
 
-    return str(sortie)
+    return {
+        "id_histoire": identifiant,
+        "fichier_video": str(
+            sortie.relative_to(RACINE)
+        ),
+        "duree_secondes": round(duree_video, 2),
+        "resolution": "1080x1920",
+        "taille_octets": sortie.stat().st_size,
+        "nombre_images": len(images),
+        "statut": "VIDEO_CREEE"
+    }
 
-
-# ==========================================
-# PRODUCTION DES VIDEOS
-# ==========================================
 
 def executer():
+
+    print("=" * 55)
+    print("OBSERVATEUR ACTIF AI")
+    print("MOTEUR DE MONTAGE VIDEO V3")
+    print("=" * 55)
 
     DOSSIER_VIDEO.mkdir(
         parents=True,
@@ -327,55 +433,62 @@ def executer():
         )
 
     resultats = []
+    erreurs = []
 
-    for script in scripts:
+    rapport = {
+        "agent": "Observateur Actif AI",
+        "version": "V3",
+        "date_generation": datetime.now(
+            timezone.utc
+        ).isoformat(),
+        "nombre_scripts": len(scripts),
+        "nombre_videos": 0,
+        "nombre_erreurs": 0,
+        "videos": [],
+        "erreurs": []
+    }
+
+    for numero, script in enumerate(scripts, start=1):
+
+        print(
+            f"\nMontage {numero}/{len(scripts)}"
+        )
 
         try:
 
             video = creer_video(script)
 
-            resultats.append({
-                "id_histoire": script.get("id_histoire"),
-                "fichier_video": video,
-                "statut": "VIDEO_CREEE"
-            })
+            resultats.append(video)
 
         except Exception as erreur:
 
-            print(
-                "Erreur montage :",
-                erreur
-            )
+            message = str(erreur)
 
-    rapport = {
-        "agent": "Observateur Actif AI",
-        "version": "V2",
-        "nombre_videos": len(resultats),
-        "videos": resultats
-    }
+            print("ERREUR MONTAGE :", message)
 
-    with open(
-        DOSSIER_VIDEO / "rapport.json",
-        "w",
-        encoding="utf-8"
-    ) as fichier:
+            erreurs.append({
+                "numero": numero,
+                "message": message
+            })
 
-        json.dump(
-            rapport,
-            fichier,
-            ensure_ascii=False,
-            indent=2
-        )
+        rapport["nombre_videos"] = len(resultats)
+        rapport["nombre_erreurs"] = len(erreurs)
+        rapport["videos"] = resultats
+        rapport["erreurs"] = erreurs
+
+        sauvegarder_rapport(rapport)
 
     if not resultats:
+
         raise RuntimeError(
             "Aucune vidéo n'a été créée."
         )
 
-    print(
-        "Vidéos produites :",
-        len(resultats)
-    )
+    print("\n" + "=" * 55)
+    print("PRODUCTION VIDEO TERMINEE")
+    print("Vidéos créées :", len(resultats))
+    print("Erreurs :", len(erreurs))
+    print("=" * 55)
 
 
 if __name__ == "__main__":
