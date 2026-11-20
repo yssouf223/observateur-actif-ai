@@ -6,36 +6,78 @@ import re
 import subprocess
 
 from pathlib import Path
+from datetime import datetime, timezone
 
 # ==========================================
 # OBSERVATEUR ACTIF AI
-# GENERATEUR DE VOIX OFF V2
+# GENERATEUR DE VOIX OFF V3
 # ==========================================
 
-DOSSIER_MODELES = Path("models/voices")
-DOSSIER_AUDIO = Path("audio")
-FICHIER_SCRIPTS = Path("data/scripts_generes.json")
+RACINE = Path(__file__).resolve().parent.parent
+
+DOSSIER_MODELES = RACINE / "models" / "voices"
+DOSSIER_AUDIO = RACINE / "audio"
+FICHIER_SCRIPTS = RACINE / "data" / "scripts_generes.json"
 
 VOIX = os.environ.get(
     "PIPER_VOICE",
     "fr_FR-siwis-medium"
 )
 
+TIMEOUT_TELECHARGEMENT = 300
+TIMEOUT_AUDIO = 240
+TIMEOUT_FFPROBE = 30
 
-def executer_commande(commande):
 
-    resultat = subprocess.run(
-        commande,
-        capture_output=True,
-        text=True
-    )
+def executer_commande(commande, timeout=120):
+
+    try:
+        resultat = subprocess.run(
+            commande,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False
+        )
+
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(
+            f"Commande interrompue après {timeout} secondes."
+        )
 
     if resultat.returncode != 0:
         raise RuntimeError(
             resultat.stderr[-3000:]
+            or "La commande a échoué."
         )
 
     return resultat
+
+
+def sauvegarder_rapport(rapport):
+
+    DOSSIER_AUDIO.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    destination = DOSSIER_AUDIO / "rapport.json"
+    temporaire = DOSSIER_AUDIO / "rapport.tmp"
+
+    with open(
+        temporaire,
+        "w",
+        encoding="utf-8"
+    ) as fichier:
+
+        json.dump(
+            rapport,
+            fichier,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    os.replace(temporaire, destination)
 
 
 def installer_voix():
@@ -56,20 +98,25 @@ def installer_voix():
 
     print("Téléchargement de la voix :", VOIX)
 
-    executer_commande([
-        sys.executable,
-        "-m",
-        "piper.download_voices",
-        VOIX,
-        "--download-dir",
-        str(DOSSIER_MODELES)
-    ])
+    executer_commande(
+        [
+            sys.executable,
+            "-m",
+            "piper.download_voices",
+            VOIX,
+            "--data-dir",
+            str(DOSSIER_MODELES)
+        ],
+        timeout=TIMEOUT_TELECHARGEMENT
+    )
 
     if not modele.exists() or not configuration.exists():
 
         raise RuntimeError(
-            "Fichiers de la voix introuvables."
+            "Les fichiers du modèle vocal sont introuvables."
         )
+
+    print("Modèle vocal installé.")
 
     return modele
 
@@ -85,18 +132,52 @@ def nom_fichier(identifiant):
     return identifiant or "histoire"
 
 
+def obtenir_duree(fichier_audio):
+
+    resultat = executer_commande(
+        [
+            "ffprobe",
+            "-v", "error",
+            "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            str(fichier_audio)
+        ],
+        timeout=TIMEOUT_FFPROBE
+    )
+
+    try:
+        duree = float(resultat.stdout.strip())
+    except (ValueError, TypeError):
+        raise RuntimeError(
+            "Impossible de déterminer la durée du fichier audio."
+        )
+
+    if duree <= 0:
+        raise RuntimeError("Durée audio invalide.")
+
+    return duree
+
+
 def generer_audio(script, modele):
 
-    narration = script.get(
-        "narration",
-        ""
-    ).strip()
+    if not isinstance(script, dict):
+        raise RuntimeError("Format de script invalide.")
+
+    narration = script.get("narration", "")
+
+    if not isinstance(narration, str):
+        raise RuntimeError("La narration n'est pas du texte.")
+
+    narration = narration.strip()
 
     if not narration:
-        return None
+        raise RuntimeError("Narration vide.")
 
     identifiant = nom_fichier(
-        script.get("id_histoire", "histoire")
+        script.get(
+            "id_histoire",
+            script.get("id", "histoire")
+        )
     )
 
     DOSSIER_AUDIO.mkdir(
@@ -105,61 +186,68 @@ def generer_audio(script, modele):
     )
 
     sortie = DOSSIER_AUDIO / f"{identifiant}.wav"
+    temporaire = DOSSIER_AUDIO / f"{identifiant}.tmp.wav"
 
-    print("Génération audio :", sortie)
+    print("Génération audio :", sortie.name)
 
-    executer_commande([
-        sys.executable,
-        "-m",
-        "piper",
-        "-m",
-        str(modele),
-        "-f",
-        str(sortie),
-        "--",
-        narration
-    ])
+    if temporaire.exists():
+        temporaire.unlink()
 
-    if not sortie.exists():
+    executer_commande(
+        [
+            sys.executable,
+            "-m",
+            "piper",
+            "-m",
+            str(modele),
+            "-f",
+            str(temporaire),
+            "--",
+            narration
+        ],
+        timeout=TIMEOUT_AUDIO
+    )
+
+    if not temporaire.exists():
         raise RuntimeError(
-            "Le fichier audio n'a pas été créé."
+            "Piper n'a pas créé le fichier audio."
         )
 
-    if sortie.stat().st_size < 1000:
+    if temporaire.stat().st_size < 1000:
         raise RuntimeError(
-            "Le fichier audio est trop petit ou vide."
+            "Le fichier audio est vide ou incomplet."
         )
 
-    resultat = executer_commande([
-        "ffprobe",
-        "-v", "error",
-        "-show_entries", "format=duration",
-        "-of", "default=noprint_wrappers=1:nokey=1",
-        str(sortie)
-    ])
+    duree = obtenir_duree(temporaire)
 
-    duree = float(resultat.stdout.strip())
-
-    if duree <= 0:
-        raise RuntimeError(
-            "Durée audio invalide."
-        )
+    os.replace(temporaire, sortie)
 
     print(
-        "Durée audio :",
+        "Audio validé :",
         round(duree, 2),
         "secondes"
     )
 
     return {
-        "id_histoire": script.get("id_histoire"),
-        "fichier_audio": str(sortie),
+        "id_histoire": script.get(
+            "id_histoire",
+            script.get("id")
+        ),
+        "fichier_audio": str(
+            sortie.relative_to(RACINE)
+        ),
         "duree_secondes": round(duree, 2),
+        "taille_octets": sortie.stat().st_size,
         "statut": "AUDIO_CREE"
     }
 
 
 def executer():
+
+    print("=" * 55)
+    print("OBSERVATEUR ACTIF AI")
+    print("GENERATION DES VOIX OFF V3")
+    print("=" * 55)
 
     DOSSIER_AUDIO.mkdir(
         parents=True,
@@ -169,11 +257,12 @@ def executer():
     if not FICHIER_SCRIPTS.exists():
 
         raise FileNotFoundError(
-            "Scripts Gemini introuvables."
+            "Fichier des scripts Gemini introuvable."
         )
 
     with open(
         FICHIER_SCRIPTS,
+        "r",
         encoding="utf-8"
     ) as fichier:
 
@@ -190,8 +279,13 @@ def executer():
     modele = installer_voix()
 
     resultats = []
+    erreurs = []
 
-    for script in scripts:
+    for numero, script in enumerate(scripts, start=1):
+
+        print(
+            f"\nNarration {numero}/{len(scripts)}"
+        )
 
         try:
 
@@ -200,35 +294,34 @@ def executer():
                 modele
             )
 
-            if audio:
-                resultats.append(audio)
+            resultats.append(audio)
 
         except Exception as erreur:
 
-            print(
-                "Erreur audio :",
-                erreur
-            )
+            message = str(erreur)
+
+            print("ERREUR AUDIO :", message)
+
+            erreurs.append({
+                "numero": numero,
+                "message": message
+            })
 
     rapport = {
         "agent": "Observateur Actif AI",
-        "version": "V2",
+        "version": "V3",
+        "date_generation": datetime.now(
+            timezone.utc
+        ).isoformat(),
+        "voix": VOIX,
+        "nombre_scripts": len(scripts),
         "nombre_audios": len(resultats),
-        "audios": resultats
+        "nombre_erreurs": len(erreurs),
+        "audios": resultats,
+        "erreurs": erreurs
     }
 
-    with open(
-        DOSSIER_AUDIO / "rapport.json",
-        "w",
-        encoding="utf-8"
-    ) as fichier:
-
-        json.dump(
-            rapport,
-            fichier,
-            ensure_ascii=False,
-            indent=2
-        )
+    sauvegarder_rapport(rapport)
 
     if not resultats:
 
@@ -236,10 +329,11 @@ def executer():
             "Aucun fichier audio n'a été généré."
         )
 
-    print(
-        "Audios générés :",
-        len(resultats)
-    )
+    print("\n" + "=" * 55)
+    print("GENERATION AUDIO TERMINEE")
+    print("Audios créés :", len(resultats))
+    print("Erreurs :", len(erreurs))
+    print("=" * 55)
 
 
 if __name__ == "__main__":
