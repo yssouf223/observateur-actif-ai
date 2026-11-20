@@ -13,7 +13,7 @@ from urllib.parse import urlencode
 
 # ==========================================
 # OBSERVATEUR ACTIF AI
-# MOTEUR DE RECHERCHE AFRICAIN V2
+# MOTEUR DE RECHERCHE AFRICAIN V3
 # ==========================================
 
 AGENT = "Observateur Actif AI"
@@ -25,215 +25,133 @@ FICHIER_SORTIE = os.path.join(
 
 API_GOOGLE_NEWS = "https://news.google.com/rss/search"
 
+TIMEOUT_REQUETE = 15
+PAUSE_REQUETE = 0.3
+SAUVEGARDE_TOUS_LES = 4
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (compatible; "
-        "ObservateurActifAI/2.0; "
-        "+https://github.com/)"
+        "ObservateurActifAI/3.0)"
     )
 }
 
 # ==========================================
-# PAYS ET RÉGIONS AFRICAINS
+# PAYS AFRICAINS
 # ==========================================
 
 PAYS = [
-    "Algeria", "Algérie",
-    "Angola",
-    "Benin", "Bénin",
-    "Botswana",
-    "Burkina Faso",
-    "Burundi",
+    "Algeria", "Algérie", "Angola",
+    "Benin", "Bénin", "Botswana",
+    "Burkina Faso", "Burundi",
     "Cameroon", "Cameroun",
     "Cape Verde", "Cap-Vert",
     "Central African Republic",
     "République centrafricaine",
-    "Chad", "Tchad",
-    "Comoros", "Comores",
-    "Congo",
-    "Democratic Republic of the Congo",
+    "Chad", "Tchad", "Comoros", "Comores",
+    "Congo", "Democratic Republic of the Congo",
     "République démocratique du Congo",
     "Ivory Coast", "Côte d'Ivoire",
-    "Djibouti",
-    "Egypt", "Égypte",
+    "Djibouti", "Egypt", "Égypte",
     "Equatorial Guinea", "Guinée équatoriale",
-    "Eritrea", "Érythrée",
-    "Eswatini",
-    "Ethiopia", "Éthiopie",
-    "Gabon",
-    "Gambia", "Gambie",
-    "Ghana",
-    "Guinea", "Guinée",
-    "Guinea-Bissau", "Guinée-Bissau",
-    "Kenya",
-    "Lesotho",
-    "Liberia", "Libéria",
-    "Libya", "Libye",
-    "Madagascar",
-    "Malawi",
-    "Mali",
-    "Mauritania", "Mauritanie",
-    "Mauritius", "Maurice",
-    "Morocco", "Maroc",
-    "Mozambique",
-    "Namibia", "Namibie",
-    "Niger",
-    "Nigeria", "Nigéria",
-    "Rwanda",
-    "Sao Tome and Principe",
-    "Sénégal", "Senegal",
-    "Seychelles",
-    "Sierra Leone",
-    "Somalia", "Somalie",
-    "South Africa", "Afrique du Sud",
-    "South Sudan", "Soudan du Sud",
-    "Sudan", "Soudan",
-    "Tanzania", "Tanzanie",
-    "Togo",
-    "Tunisia", "Tunisie",
-    "Uganda", "Ouganda",
-    "Zambia", "Zambie",
-    "Zimbabwe"
+    "Eritrea", "Érythrée", "Eswatini",
+    "Ethiopia", "Éthiopie", "Gabon",
+    "Gambia", "Gambie", "Ghana",
+    "Guinea", "Guinée", "Guinea-Bissau",
+    "Guinée-Bissau", "Kenya", "Lesotho",
+    "Liberia", "Libéria", "Libya", "Libye",
+    "Madagascar", "Malawi", "Mali",
+    "Mauritania", "Mauritanie", "Mauritius",
+    "Maurice", "Morocco", "Maroc",
+    "Mozambique", "Namibia", "Namibie",
+    "Niger", "Nigeria", "Nigéria", "Rwanda",
+    "Sao Tome and Principe", "Sénégal",
+    "Senegal", "Seychelles", "Sierra Leone",
+    "Somalia", "Somalie", "South Africa",
+    "Afrique du Sud", "South Sudan",
+    "Soudan du Sud", "Sudan", "Soudan",
+    "Tanzania", "Tanzanie", "Togo",
+    "Tunisia", "Tunisie", "Uganda", "Ouganda",
+    "Zambia", "Zambie", "Zimbabwe"
 ]
 
 REGIONS = [
-    "Afrique de l'Ouest",
-    "West Africa",
-    "Afrique centrale",
-    "Central Africa",
-    "Afrique de l'Est",
-    "East Africa",
-    "Afrique australe",
-    "Southern Africa",
-    "Afrique du Nord",
-    "North Africa",
-    "Sahel",
-    "Sahara",
-    "Horn of Africa",
-    "Corne de l'Afrique",
-    "Wassoulou",
-    "Nubia",
-    "Nubie",
-    "Sahelian kingdoms"
+    "Afrique de l'Ouest", "West Africa",
+    "Afrique centrale", "Central Africa",
+    "Afrique de l'Est", "East Africa",
+    "Afrique australe", "Southern Africa",
+    "Afrique du Nord", "North Africa",
+    "Sahel", "Sahara", "Horn of Africa",
+    "Corne de l'Afrique", "Nubia", "Nubie",
+    "Wassoulou"
 ]
 
 SITES_HISTORIQUES = [
-    "Great Zimbabwe",
-    "Grand Zimbabwe",
-    "Timbuktu",
-    "Tombouctou",
-    "Djenné",
-    "Djenne",
-    "Dogon",
-    "Bandiagara",
-    "Gao Empire",
-    "Empire du Ghana",
-    "Empire du Mali",
-    "Songhai Empire",
-    "Great Mosque of Djenne",
-    "Lalibela",
-    "Axum",
-    "Aksum",
-    "Meroe",
-    "Méroé",
-    "Carthage",
-    "Leptis Magna",
-    "Kilwa Kisiwani",
-    "Benin City",
-    "Kingdom of Benin",
-    "Royaume du Bénin",
-    "Kingdom of Kush",
-    "Royaume de Koush",
-    "Mapungubwe",
-    "Gedi ruins",
-    "Olduvai Gorge",
-    "Gorges d'Olduvai",
-    "Tassili n'Ajjer",
-    "Sankore",
-    "Gonja",
-    "Oualata",
-    "Aoudaghost",
-    "Kumbi Saleh",
-    "Nok culture",
-    "Culture Nok",
-    "Mbanza Kongo",
-    "Fasil Ghebbi",
-    "Djenne-Djenno"
-]
-
-MOTS_THEMES = [
-    "mystère historique",
-    "mystère archéologique",
-    "civilisation oubliée",
-    "royaume ancien",
-    "cité antique",
-    "ville disparue",
-    "site archéologique",
-    "découverte archéologique",
-    "lieu mystérieux",
-    "histoire étrange",
-    "mystère ancien",
-    "tradition ancienne",
-    "vestiges historiques",
-    "ancient mystery",
-    "lost civilization",
-    "forgotten kingdom",
-    "ancient ruins",
-    "archaeological discovery",
-    "mysterious archaeological site",
-    "ancient city",
-    "historical mystery",
-    "forgotten history",
-    "ancient African kingdom",
-    "enigmatic ruins"
+    "Great Zimbabwe", "Timbuktu", "Tombouctou",
+    "Djenné", "Djenne", "Dogon", "Bandiagara",
+    "Gao Empire", "Empire du Ghana",
+    "Empire du Mali", "Songhai Empire",
+    "Lalibela", "Axum", "Aksum",
+    "Meroe", "Méroé", "Carthage",
+    "Leptis Magna", "Kilwa Kisiwani",
+    "Benin City", "Kingdom of Benin",
+    "Royaume du Bénin", "Kingdom of Kush",
+    "Royaume de Koush", "Mapungubwe",
+    "Gedi ruins", "Olduvai Gorge",
+    "Gorges d'Olduvai", "Tassili n'Ajjer",
+    "Sankore", "Oualata", "Aoudaghost",
+    "Kumbi Saleh", "Nok culture",
+    "Culture Nok", "Mbanza Kongo",
+    "Fasil Ghebbi", "Djenne-Djenno"
 ]
 
 # ==========================================
-# CONSTRUCTION DES REQUÊTES
+# REQUÊTES CIBLÉES
+# 16 EN FRANÇAIS + 16 EN ANGLAIS
 # ==========================================
 
-def construire_requetes():
+REQUETES = {
+    "fr": [
+        '"mystère historique" Afrique',
+        '"civilisation oubliée" Afrique',
+        '"royaume ancien" Afrique histoire',
+        '"découverte archéologique" Afrique',
+        '"lieu mystérieux" Afrique histoire',
+        '"cité antique" Afrique archéologie',
+        '"Afrique de l Ouest" royaume ancien',
+        '"Afrique centrale" archéologie histoire',
+        '"Afrique de l Est" civilisation ancienne',
+        '"Afrique australe" site archéologique',
+        '"Afrique du Nord" mystère historique',
+        'Mali Ghana Songhaï archéologie histoire',
+        'Nubie Koush Méroé Égypte ancienne',
+        'Zimbabwe Mapungubwe civilisation ancienne',
+        'Tombouctou Djenné Gao histoire ancienne',
+        'Dogon Bandiagara Tassili archéologie'
+    ],
 
-    requetes = set()
-
-    # Recherches générales africaines.
-    for mot in MOTS_THEMES:
-        requetes.add(f'"{mot}" Africa')
-        requetes.add(f'"{mot}" Afrique')
-
-    # Recherches ciblées par pays.
-    pays_cibles = [
-        "Mali", "Senegal", "Ghana", "Nigeria",
-        "Ethiopia", "Egypt", "Sudan", "Kenya",
-        "Tanzania", "Zimbabwe", "South Africa",
-        "Morocco", "Algeria", "Niger",
-        "Mauritania", "Cameroon", "Benin",
-        "Congo", "Uganda", "Madagascar",
-        "Mozambique", "Angola", "Chad",
-        "Burkina Faso", "Guinea", "Libya"
+    "en": [
+        '"historical mystery" Africa',
+        '"lost civilization" Africa',
+        '"ancient African kingdom" history',
+        '"archaeological discovery" Africa',
+        '"mysterious place" Africa history',
+        '"ancient African city" archaeology',
+        '"West Africa" ancient kingdom history',
+        '"Central Africa" archaeology history',
+        '"East Africa" ancient civilization',
+        '"Southern Africa" archaeological site',
+        '"North Africa" historical mystery',
+        'Mali Ghana Songhai archaeology history',
+        'Nubia Kush Meroe ancient Egypt',
+        'Zimbabwe Mapungubwe ancient civilization',
+        'Timbuktu Djenne Gao ancient history',
+        'Dogon Bandiagara Tassili archaeology'
     ]
-
-    themes_courts = [
-        "ancient history archaeology",
-        "historical mystery",
-        "lost civilization",
-        "ancient kingdom",
-        "mysterious archaeological site"
-    ]
-
-    for pays in pays_cibles:
-        for theme in themes_courts:
-            requetes.add(f"{theme} {pays}")
-
-    # Recherches par sites et civilisations historiques.
-    for site in SITES_HISTORIQUES:
-        requetes.add(f'"{site}" history archaeology')
-
-    return sorted(requetes)
-
+}
 
 # ==========================================
-# NORMALISATION ET FILTRAGE
+# NORMALISATION
 # ==========================================
 
 def normaliser(texte):
@@ -245,38 +163,43 @@ def normaliser(texte):
     )
 
     texte = "".join(
-        caractere for caractere in texte
-        if not unicodedata.combining(caractere)
+        c for c in texte
+        if not unicodedata.combining(c)
     )
 
-    texte = re.sub(r"[^a-z0-9\s]", " ", texte)
+    texte = re.sub(
+        r"[^a-z0-9\s]", " ", texte
+    )
 
-    return re.sub(r"\s+", " ", texte).strip()
+    return re.sub(
+        r"\s+", " ", texte
+    ).strip()
 
 
 PAYS_NORMALISES = [
-    normaliser(pays) for pays in PAYS
+    normaliser(p) for p in PAYS
 ]
 
 REGIONS_NORMALISEES = [
-    normaliser(region) for region in REGIONS
+    normaliser(r) for r in REGIONS
 ]
 
 SITES_NORMALISES = [
-    normaliser(site) for site in SITES_HISTORIQUES
+    normaliser(s) for s in SITES_HISTORIQUES
 ]
 
 
 def contient_expression(texte, expression):
 
-    texte = normaliser(texte)
-    expression = normaliser(expression)
+    texte = " " + normaliser(texte) + " "
+    expression = " " + normaliser(expression) + " "
 
-    if not expression:
-        return False
+    return expression.strip() in texte
 
-    return f" {expression} " in f" {texte} "
 
+# ==========================================
+# ANALYSE DE LA PERTINENCE AFRICAINE
+# ==========================================
 
 def evaluer_pertinence(titre, description, requete):
 
@@ -284,13 +207,13 @@ def evaluer_pertinence(titre, description, requete):
         titre + " " + description
     )
 
-    requete_norm = normaliser(requete)
-
     score = 0
     raisons = []
     pays_detectes = []
 
-    for pays, pays_norm in zip(PAYS, PAYS_NORMALISES):
+    for pays, pays_norm in zip(
+        PAYS, PAYS_NORMALISES
+    ):
 
         if contient_expression(texte, pays_norm):
             score += 3
@@ -316,30 +239,18 @@ def evaluer_pertinence(titre, description, requete):
         score += 3
         raisons.append("REFERENCE_AFRIQUE")
 
-    if any(
-        mot in requete_norm
-        for mot in [
-            "africa", "afrique",
-            "mali", "senegal", "ghana",
-            "nigeria", "ethiopia", "egypt"
-        ]
-    ):
-        score += 1
-
-    # Un résultat doit contenir un indice géographique
-    # africain dans son titre ou sa description.
     geographie_presente = (
         bool(pays_detectes)
-        or any(
-            contient_expression(texte, region)
-            for region in REGIONS_NORMALISEES
-        )
-        or any(
-            contient_expression(texte, site)
-            for site in SITES_NORMALISES
-        )
         or "africa" in texte
         or "afrique" in texte
+        or any(
+            contient_expression(texte, r)
+            for r in REGIONS_NORMALISEES
+        )
+        or any(
+            contient_expression(texte, s)
+            for s in SITES_NORMALISES
+        )
     )
 
     return {
@@ -351,32 +262,30 @@ def evaluer_pertinence(titre, description, requete):
 
 
 # ==========================================
-# IDENTIFIANT UNIQUE
+# IDENTIFIANTS
 # ==========================================
 
 def identifiant_unique(titre, lien):
 
-    titre_norm = normaliser(titre)
-
-    contenu = titre_norm + "|" + lien.strip().lower()
+    contenu = (
+        normaliser(titre)
+        + "|"
+        + lien.strip().lower()
+    )
 
     return hashlib.sha256(
         contenu.encode("utf-8")
     ).hexdigest()
 
 
-def cle_titre(titre):
-
-    return normaliser(titre)
-
-
 # ==========================================
-# GOOGLE NEWS RSS
+# GOOGLE NEWS
 # ==========================================
 
 def construire_url(requete, langue):
 
     if langue == "fr":
+
         parametres = {
             "q": requete,
             "hl": "fr",
@@ -385,6 +294,7 @@ def construire_url(requete, langue):
         }
 
     else:
+
         parametres = {
             "q": requete,
             "hl": "en-US",
@@ -392,24 +302,96 @@ def construire_url(requete, langue):
             "ceid": "US:en"
         }
 
-    return API_GOOGLE_NEWS + "?" + urlencode(parametres)
+    return (
+        API_GOOGLE_NEWS
+        + "?"
+        + urlencode(parametres)
+    )
 
 
 def rechercher_flux(requete, langue):
 
-    url = construire_url(requete, langue)
+    url = construire_url(
+        requete,
+        langue
+    )
 
     response = requests.get(
         url,
         headers=HEADERS,
-        timeout=35
+        timeout=TIMEOUT_REQUETE
     )
 
     response.raise_for_status()
 
-    flux = feedparser.parse(response.content)
+    return feedparser.parse(
+        response.content
+    )
 
-    return flux
+
+# ==========================================
+# SAUVEGARDE PROGRESSIVE
+# ==========================================
+
+def sauvegarder(
+    histoires,
+    erreurs,
+    total,
+    rejetes,
+    requetes_terminees
+):
+
+    os.makedirs(
+        REPERTOIRE,
+        exist_ok=True
+    )
+
+    liste = sorted(
+        histoires.values(),
+        key=lambda h: (
+            h["score_pertinence"],
+            h["date_publication"]
+        ),
+        reverse=True
+    )
+
+    resultat = {
+        "agent": AGENT,
+        "version": "V3",
+        "date_recherche": datetime.now(
+            timezone.utc
+        ).isoformat(),
+        "zone": "Toute l'Afrique",
+        "langues": ["français", "anglais"],
+        "limite_date": None,
+        "nombre_requetes": requetes_terminees,
+        "nombre_resultats_bruts": total,
+        "nombre_histoires": len(liste),
+        "nombre_resultats_rejetes": rejetes,
+        "nombre_erreurs": len(erreurs),
+        "histoires": liste,
+        "erreurs": erreurs
+    }
+
+    temporaire = FICHIER_SORTIE + ".tmp"
+
+    with open(
+        temporaire,
+        "w",
+        encoding="utf-8"
+    ) as fichier:
+
+        json.dump(
+            resultat,
+            fichier,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    os.replace(
+        temporaire,
+        FICHIER_SORTIE
+    )
 
 
 # ==========================================
@@ -418,34 +400,46 @@ def rechercher_flux(requete, langue):
 
 def rechercher():
 
-    os.makedirs(REPERTOIRE, exist_ok=True)
+    os.makedirs(
+        REPERTOIRE,
+        exist_ok=True
+    )
 
     histoires = {}
     titres_vus = set()
-
     erreurs = []
-    total_resultats = 0
-    resultats_rejetes = 0
 
-    requetes = construire_requetes()
+    total = 0
+    rejetes = 0
+    requetes_terminees = 0
+
+    requetes = REQUETES["fr"] + REQUETES["en"]
 
     print("=" * 60)
     print(AGENT)
-    print("MOTEUR DE RECHERCHE AFRICAIN V2")
+    print("MOTEUR DE RECHERCHE AFRICAIN V3")
     print("=" * 60)
 
     print("Nombre de requêtes :", len(requetes))
     print("Langues : français et anglais")
     print("Période : aucune limite de date")
     print("Zone : toute l'Afrique")
+    print("Sauvegarde progressive activée")
 
     for langue in ["fr", "en"]:
 
-        for numero, requete in enumerate(requetes, 1):
+        liste_requetes = REQUETES[langue]
+
+        for numero, requete in enumerate(
+            liste_requetes,
+            1
+        ):
 
             print(
                 f"\n[{langue.upper()}] "
-                f"{numero}/{len(requetes)} : {requete}"
+                f"{numero}/{len(liste_requetes)} : "
+                f"{requete}",
+                flush=True
             )
 
             try:
@@ -456,12 +450,12 @@ def rechercher():
                 )
 
                 if flux.bozo and not flux.entries:
+
                     erreurs.append({
                         "requete": requete,
                         "langue": langue,
                         "erreur": "FLUX_RSS_INVALIDE"
                     })
-                    continue
 
                 for entree in flux.entries:
 
@@ -480,7 +474,7 @@ def rechercher():
                     if not titre or not lien:
                         continue
 
-                    total_resultats += 1
+                    total += 1
 
                     pertinence = evaluer_pertinence(
                         titre,
@@ -488,21 +482,24 @@ def rechercher():
                         requete
                     )
 
-                    if not pertinence["geographie_africaine"]:
-                        resultats_rejetes += 1
+                    if not pertinence[
+                        "geographie_africaine"
+                    ]:
+
+                        rejetes += 1
                         continue
 
-                    identifiant = identifiant_unique(
-                        titre, lien
-                    )
+                    cle = normaliser(titre)
 
-                    cle = cle_titre(titre)
-
-                    # Déduplication par titre normalisé.
                     if cle in titres_vus:
                         continue
 
                     titres_vus.add(cle)
+
+                    identifiant = identifiant_unique(
+                        titre,
+                        lien
+                    )
 
                     histoires[identifiant] = {
                         "id": identifiant,
@@ -529,11 +526,14 @@ def rechercher():
                         ).isoformat()
                     }
 
-                time.sleep(0.5)
+                requetes_terminees += 1
 
             except Exception as erreur:
 
-                print("Erreur de recherche :", str(erreur))
+                print(
+                    "Erreur de recherche :",
+                    str(erreur)[:300]
+                )
 
                 erreurs.append({
                     "requete": requete,
@@ -541,58 +541,50 @@ def rechercher():
                     "erreur": str(erreur)[:500]
                 })
 
-    # Les histoires les plus pertinentes apparaissent en premier.
-    liste_histoires = sorted(
-        histoires.values(),
-        key=lambda histoire: (
-            histoire["score_pertinence"],
-            histoire["date_publication"]
-        ),
-        reverse=True
+                requetes_terminees += 1
+
+            if (
+                requetes_terminees
+                % SAUVEGARDE_TOUS_LES == 0
+            ):
+
+                sauvegarder(
+                    histoires,
+                    erreurs,
+                    total,
+                    rejetes,
+                    requetes_terminees
+                )
+
+                print(
+                    "Sauvegarde intermédiaire :",
+                    len(histoires),
+                    "histoires",
+                    flush=True
+                )
+
+            time.sleep(PAUSE_REQUETE)
+
+    sauvegarder(
+        histoires,
+        erreurs,
+        total,
+        rejetes,
+        requetes_terminees
     )
-
-    resultat = {
-        "agent": AGENT,
-        "version": "V2",
-        "date_recherche": datetime.now(
-            timezone.utc
-        ).isoformat(),
-        "zone": "Toute l'Afrique",
-        "nombre_requetes": len(requetes) * 2,
-        "nombre_resultats_bruts": total_resultats,
-        "nombre_histoires": len(liste_histoires),
-        "nombre_resultats_rejetes": resultats_rejetes,
-        "nombre_erreurs": len(erreurs),
-        "histoires": liste_histoires,
-        "erreurs": erreurs
-    }
-
-    with open(
-        FICHIER_SORTIE,
-        "w",
-        encoding="utf-8"
-    ) as fichier:
-
-        json.dump(
-            resultat,
-            fichier,
-            ensure_ascii=False,
-            indent=2
-        )
 
     print("\n" + "=" * 60)
     print("RECHERCHE TERMINÉE")
     print("=" * 60)
 
-    print("Résultats bruts :", total_resultats)
-    print("Histoires africaines retenues :", len(liste_histoires))
-    print("Résultats rejetés :", resultats_rejetes)
+    print("Requêtes exécutées :", requetes_terminees)
+    print("Résultats bruts :", total)
+    print("Histoires africaines retenues :", len(histoires))
+    print("Résultats rejetés :", rejetes)
     print("Erreurs :", len(erreurs))
     print("Fichier :", FICHIER_SORTIE)
 
-    print("=" * 60)
-
-    return resultat
+    return histoires
 
 
 if __name__ == "__main__":
