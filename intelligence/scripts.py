@@ -2,15 +2,15 @@
 import os
 import re
 import json
-import sys
-from datetime import datetime, timezone
+import time
 
+from datetime import datetime, timezone
 from google import genai
 from google.genai import types
 
 # ==========================================
 # OBSERVATEUR ACTIF AI
-# GENERATEUR DE SCRIPTS YOUTUBE SHORTS
+# GENERATEUR DE SCRIPTS YOUTUBE SHORTS V3
 # ==========================================
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -25,9 +25,6 @@ SORTIE = "data/scripts_generes.json"
 
 SCORE_MINIMUM = 60
 CONTENU_MINIMUM = 500
-
-# Un seul Short par exécution.
-# Plusieurs candidats peuvent être essayés si nécessaire.
 NOMBRE_MAX_CANDIDATS = 5
 
 if not API_KEY:
@@ -35,15 +32,13 @@ if not API_KEY:
 
 client = genai.Client(api_key=API_KEY)
 
-
 INSTRUCTIONS = """
 Tu es le scénariste documentaire professionnel
 de la chaîne YouTube Observateur Actif.
 
-ZONE :
-Toute l'Afrique.
+ZONE : Toute l'Afrique.
 
-SUJETS PRIORITAIRES :
+PRIORITÉS :
 - Mystères historiques
 - Lieux mystérieux
 - Civilisations oubliées
@@ -53,9 +48,8 @@ SUJETS PRIORITAIRES :
 - Découvertes archéologiques
 
 MISSION :
-Créer un script documentaire YouTube Shorts
-de 45 à 60 secondes à partir des informations
-documentaires fournies.
+Créer un documentaire YouTube Shorts
+de 45 à 60 secondes.
 
 RÈGLES ABSOLUES :
 
@@ -63,38 +57,42 @@ RÈGLES ABSOLUES :
 un personnage, un lieu ou un événement.
 
 2. Utiliser uniquement les informations
-présentes dans le dossier documentaire.
+du dossier documentaire fourni.
 
 3. Ne jamais transformer une légende en fait établi.
 
-4. Distinguer les faits historiques,
-les hypothèses scientifiques et les traditions orales.
+4. Distinguer faits historiques,
+hypothèses scientifiques et traditions orales.
 
 5. Ne jamais inventer de citation.
 
 6. Ne pas présenter une hypothèse comme une certitude.
 
 7. Si les informations sont insuffisantes,
-refuser de produire un script.
+refuser de produire le script.
 
-8. Ne pas inventer de détails pour rendre
-l'histoire plus spectaculaire.
+8. Ne jamais ajouter de détails non documentés
+pour rendre le récit plus spectaculaire.
 
-9. Le récit doit rester fidèle aux sources.
+9. Les indices documentaires et géographiques
+ne constituent pas une preuve historique.
+
+10. Ne jamais prétendre qu'une histoire
+est confirmée par plusieurs sources
+si cela n'est pas démontré.
 
 DURÉE :
-La narration doit contenir environ 100 à 130 mots
-pour viser 45 à 60 secondes.
+Environ 100 à 130 mots pour la narration.
 
 STYLE :
 Documentaire professionnel, cinématographique,
-mystérieux, captivant et rigoureux.
+captivant, mystérieux et rigoureux.
 
 STRUCTURE :
 - Accroche forte.
-- Présentation du lieu ou de l'événement.
+- Présentation du lieu ou événement.
 - Développement historique.
-- Faits documentés.
+- Informations documentées.
 - Conclusion intrigante.
 
 RÉPONSE :
@@ -113,10 +111,16 @@ Format obligatoire :
   "motif_refus": ""
 }
 
+Si les informations sont insuffisantes,
+retourner une narration vide et expliquer le motif
+dans motif_refus.
+
 Ne jamais utiliser le statut VALIDE.
-Ne jamais prétendre qu'une histoire est vérifiée
-par plusieurs sources si ce n'est pas démontré.
 """
+
+
+def maintenant():
+    return datetime.now(timezone.utc).isoformat()
 
 
 def charger_histoires():
@@ -144,10 +148,10 @@ def analyser_admissibilite(histoire):
     evaluation = histoire.get("evaluation") or {}
     article = histoire.get("source_analysee") or {}
 
-    score = evaluation.get("score_collecte", 0)
-
     try:
-        score = float(score)
+        score = float(
+            evaluation.get("score_collecte", 0)
+        )
     except (TypeError, ValueError):
         score = 0
 
@@ -167,8 +171,11 @@ def analyser_admissibilite(histoire):
     if article.get("accessible") is not True:
         raisons.append("ARTICLE_NON_ACCESSIBLE")
 
+    if not histoire.get("source_url"):
+        raisons.append("SOURCE_ABSENTE")
+
     return {
-        "admissible": len(raisons) == 0,
+        "admissible": not raisons,
         "score": score,
         "longueur": len(contenu),
         "raisons": raisons
@@ -217,28 +224,28 @@ def valider_script(resultat):
 
     nombre_mots = len(narration.split())
 
-    if nombre_mots < 95 or nombre_mots > 145:
-        raise ValueError(
-            f"Durée estimée incorrecte : {nombre_mots} mots."
-        )
-
     if not resultat["titre"].strip():
         raise ValueError("Titre vide.")
 
     if not resultat["accroche"].strip():
         raise ValueError("Accroche vide.")
 
-    resultat["hashtags"] = (
-        resultat.get("hashtags")
-        if isinstance(resultat.get("hashtags"), list)
-        else []
-    )
+    if nombre_mots < 95 or nombre_mots > 145:
+        raise ValueError(
+            f"Durée estimée incorrecte : {nombre_mots} mots."
+        )
 
-    resultat["sources"] = (
-        resultat.get("sources")
-        if isinstance(resultat.get("sources"), list)
-        else []
-    )
+    if not isinstance(resultat.get("sources"), list):
+        raise ValueError("Liste des sources incorrecte.")
+
+    if not isinstance(resultat.get("hashtags"), list):
+        resultat["hashtags"] = []
+
+    if resultat.get("motif_refus", "").strip():
+        raise ValueError(
+            "Gemini a refusé ce sujet : "
+            + resultat["motif_refus"]
+        )
 
     return resultat
 
@@ -246,6 +253,7 @@ def valider_script(resultat):
 def generer_script(histoire):
 
     article = histoire.get("source_analysee") or {}
+    evaluation = histoire.get("evaluation") or {}
 
     informations = {
         "titre_initial": histoire.get("titre"),
@@ -253,7 +261,17 @@ def generer_script(histoire):
         "date_publication": histoire.get("date_publication"),
         "date_page": article.get("date_page"),
         "domaine": article.get("domaine"),
+        "auteur": article.get("auteur"),
         "contenu_article": article.get("contenu"),
+        "indices_documentaires": evaluation.get(
+            "indices_documentaires", []
+        ),
+        "indices_africains": evaluation.get(
+            "indices_africains", []
+        ),
+        "observations": evaluation.get(
+            "observations", []
+        ),
         "url_source": histoire.get("source_url")
     }
 
@@ -277,9 +295,7 @@ def generer_script(histoire):
     )
 
     if not reponse.text:
-        raise RuntimeError(
-            "Gemini a retourné une réponse vide."
-        )
+        raise RuntimeError("Réponse Gemini vide.")
 
     resultat = json.loads(
         nettoyer_json(reponse.text)
@@ -292,9 +308,7 @@ def generer_script(histoire):
         or "histoire_sans_identifiant"
     )
 
-    resultat["date_generation"] = datetime.now(
-        timezone.utc
-    ).isoformat()
+    resultat["date_generation"] = maintenant()
 
     resultat["score_collecte"] = analyser_admissibilite(
         histoire
@@ -303,10 +317,9 @@ def generer_script(histoire):
     resultat["statut_editorial"] = "A_VERIFIER"
     resultat["statut_publication"] = "NON_PUBLIE"
 
-    url = histoire.get("source_url")
-
-    if url and url not in resultat["sources"]:
-        resultat["sources"].append(url)
+    resultat["sources"] = list(dict.fromkeys(
+        resultat["sources"] + [histoire["source_url"]]
+    ))
 
     return resultat
 
@@ -315,9 +328,8 @@ def enregistrer_resultats(scripts, statistiques, erreurs):
 
     resultat = {
         "agent": "Observateur Actif AI",
-        "date_generation": datetime.now(
-            timezone.utc
-        ).isoformat(),
+        "version": "V3",
+        "date_generation": maintenant(),
         "modele": MODELE,
         "nombre_scripts": len(scripts),
         "statistiques": statistiques,
@@ -325,13 +337,17 @@ def enregistrer_resultats(scripts, statistiques, erreurs):
         "scripts": scripts
     }
 
-    with open(SORTIE, "w", encoding="utf-8") as fichier:
+    temporaire = SORTIE + ".tmp"
+
+    with open(temporaire, "w", encoding="utf-8") as fichier:
         json.dump(
             resultat,
             fichier,
             ensure_ascii=False,
             indent=2
         )
+
+    os.replace(temporaire, SORTIE)
 
 
 def executer():
@@ -351,10 +367,8 @@ def executer():
     scripts = []
 
     print("=" * 55)
-    print("OBSERVATEUR ACTIF AI - GEMINI")
+    print("OBSERVATEUR ACTIF AI - GEMINI V3")
     print("=" * 55)
-
-    print("Histoires disponibles :", len(histoires))
 
     candidats = []
 
@@ -364,27 +378,19 @@ def executer():
 
         if evaluation["admissible"]:
             candidats.append((histoire, evaluation))
-
         else:
             statistiques["histoires_rejetees"] += 1
 
     statistiques["histoires_admissibles"] = len(candidats)
 
-    # Priorité aux histoires ayant les meilleurs scores.
     candidats.sort(
         key=lambda element: element[1]["score"],
         reverse=True
     )
 
-    print(
-        "Histoires admissibles :",
-        statistiques["histoires_admissibles"]
-    )
-
-    print(
-        "Histoires rejetées :",
-        statistiques["histoires_rejetees"]
-    )
+    print("Histoires reçues :", len(histoires))
+    print("Histoires admissibles :", len(candidats))
+    print("Histoires rejetées :", statistiques["histoires_rejetees"])
 
     if not candidats:
         enregistrer_resultats(
@@ -393,17 +399,11 @@ def executer():
             ["AUCUNE_HISTOIRE_ADMISSIBLE"]
         )
 
-        print("Aucune histoire ne satisfait les critères.")
-        print("Consulte les statistiques du rapport.")
-
         raise RuntimeError(
             "Aucune histoire admissible pour Gemini."
         )
 
-    for histoire, evaluation in candidats:
-
-        if statistiques["candidats_essayes"] >= NOMBRE_MAX_CANDIDATS:
-            break
+    for histoire, evaluation in candidats[:NOMBRE_MAX_CANDIDATS]:
 
         statistiques["candidats_essayes"] += 1
 
@@ -416,14 +416,21 @@ def executer():
 
             scripts.append(script)
 
-            print("Script généré avec succès.")
+            # Sauvegarde immédiate
+            enregistrer_resultats(
+                scripts,
+                statistiques,
+                erreurs
+            )
 
-            # Un seul Short par exécution.
+            print("Script généré et sauvegardé.")
+
+            # Un seul Short par exécution
             break
 
         except Exception as erreur:
 
-            message = str(erreur)
+            message = str(erreur)[:1500]
 
             print("Erreur Gemini :", message)
 
@@ -431,6 +438,15 @@ def executer():
                 "titre": histoire.get("titre"),
                 "erreur": message
             })
+
+            enregistrer_resultats(
+                scripts,
+                statistiques,
+                erreurs
+            )
+
+            # Pause courte avant le candidat suivant
+            time.sleep(2)
 
     enregistrer_resultats(
         scripts,
