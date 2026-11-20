@@ -1,7 +1,9 @@
-
+google-genai
+edge-tts
+moviepy==2.1.2
+pillow
 requests
 feedparser
-beautifulsoup4
-lxml
-google-genai
-piper-tts
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
