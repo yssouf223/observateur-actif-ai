@@ -196,6 +196,9 @@ RÈGLES IMPÉRATIVES :
 - Au moins deux éditeurs indépendants doivent documenter le MÊME sujet central. Utilise leurs source_ids dans les scènes correspondantes ; ne cite jamais une source sans rapport.
 - Utilise exclusivement les informations présentes dans les documents fournis.
 - N'invente aucun nom, date, lieu, citation, chiffre, témoignage ou événement.
+- Ne jamais appliquer à un artefact ou à un site la datation générale d'une culture archéologique : si l'âge exact des objets n'est pas établi, le dire explicitement.
+- Ne jamais attribuer des vestiges à une espèce humaine précise, à une cause ou à un événement sans preuve explicite dans les sources.
+- Les hypothèses, légendes et traditions orales doivent être clairement étiquetées et séparées des faits établis.
 - Ne prétends jamais qu'une affirmation est vérifiée : tous les statuts factuels doivent rester "unconfirmed", "hypothesis", "testimony", "oral_tradition" ou "legend".
 - Une tradition orale, un récit spirituel ou une légende doit être explicitement présenté comme tel.
 - Chaque scène factuelle doit référencer le ou les source_id qui soutiennent réellement son contenu.
