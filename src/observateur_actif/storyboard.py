@@ -14,6 +14,7 @@ class ClaimStatus(str, Enum):
 
 
 class Source(BaseModel):
+    id: str
     title: str
     url: str
     publisher: str
@@ -36,6 +37,8 @@ class Scene(BaseModel):
     def require_motion(self):
         if not self.motion_description.strip():
             raise ValueError("Chaque scène doit décrire un mouvement réel.")
+        if not self.video_prompt.strip():
+            raise ValueError("Chaque scène doit avoir un prompt vidéo.")
         return self
 
 
@@ -51,8 +54,14 @@ class DocumentaryProject(BaseModel):
     def validate_storyboard(self):
         if self.aspect_ratio != "16:9":
             raise ValueError("Le format documentaire doit être 16:9.")
-        known_sources = {source.title for source in self.sources}
+        known_source_ids = {source.id for source in self.sources}
         for scene in self.scenes:
+            unknown_ids = set(scene.source_ids) - known_source_ids
+            if unknown_ids:
+                raise ValueError(
+                    f"La scène {scene.id} référence des sources inconnues : "
+                    f"{', '.join(sorted(unknown_ids))}."
+                )
             if scene.claim_status == ClaimStatus.VERIFIED and not scene.source_ids:
                 raise ValueError(
                     f"La scène {scene.id} est déclarée vérifiée sans source associée."
