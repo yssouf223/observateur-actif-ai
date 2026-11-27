@@ -5,6 +5,7 @@ import pytest
 
 from observateur_actif.speech import (
     DEFAULT_VOICE, SpeechError, build_speech_text, generate_audio,
+    _word_boundaries_to_srt,
 )
 from observateur_actif.storyboard import DocumentaryProject
 
@@ -25,8 +26,7 @@ def make_project():
 
 
 def test_build_speech_text_uses_scene_order():
-    text = build_speech_text(make_project())
-    assert text == "La nuit tombe. Le vent se lève."
+    assert build_speech_text(make_project()) == "La nuit tombe. Le vent se lève."
 
 
 def test_generate_audio_saves_mp3_and_uses_documentary_voice(tmp_path, monkeypatch):
@@ -44,7 +44,6 @@ def test_generate_audio_saves_mp3_and_uses_documentary_voice(tmp_path, monkeypat
     monkeypatch.setitem(sys.modules, "edge_tts", types.SimpleNamespace(
         Communicate=FakeCommunicate
     ))
-    # Patch the imported module object used by speech.py.
     import observateur_actif.speech as speech
     monkeypatch.setattr(speech, "edge_tts", sys.modules["edge_tts"])
 
@@ -56,9 +55,35 @@ def test_generate_audio_saves_mp3_and_uses_documentary_voice(tmp_path, monkeypat
     assert calls["text"].startswith("La nuit tombe.")
 
 
+def test_word_boundaries_create_real_timestamps_and_captions():
+    from observateur_actif.speech import _word_boundaries_to_srt
+    # Offsets/durations use Edge-TTS 100-nanosecond ticks.
+    srt = _word_boundaries_to_srt([
+        (0, 3_000_000, "La"),
+        (3_000_000, 4_000_000, "nuit"),
+        (7_000_000, 5_000_000, "tombe."),
+        (15_000_000, 3_000_000, "Le"),
+        (18_000_000, 4_000_000, "vent"),
+    ])
+    assert "00:00:00,000 --> 00:00:01,200" in srt
+    assert "La nuit tombe." in srt
+    assert "00:00:01,500 --> 00:00:02,200" in srt
+    assert "Le vent" in srt
+
+
+def test_empty_word_boundaries_are_rejected():
+    from observateur_actif.speech import _word_boundaries_to_srt
+    with pytest.raises(SpeechError):
+        _word_boundaries_to_srt([])
+
+
 def test_empty_project_narration_is_rejected():
     project = DocumentaryProject.model_validate({
-        "title": "Vide", "target_duration_minutes": 10, "scenes": [{"id": "s1", "duration_seconds": 5, "narration": "   ", "video_prompt": "Empty", "motion_description": "Still", "claim_status": "legend"}]
+        "title": "Vide", "target_duration_minutes": 10, "scenes": [{
+            "id": "s1", "duration_seconds": 5, "narration": "   ",
+            "video_prompt": "Empty", "motion_description": "Still",
+            "claim_status": "legend"
+        }]
     })
     with pytest.raises(SpeechError):
         build_speech_text(project)
