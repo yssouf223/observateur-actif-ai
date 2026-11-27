@@ -55,7 +55,9 @@ def generate_video(
 ) -> Path:
     """Générer un clip 720p et l'enregistrer localement.
 
-    Le client respecte une demande de création par minute (limite publique gratuite) et réessaie une file saturée après 60 puis 120 secondes.
+    Le client espace localement les demandes d'au moins une minute et réessaie
+    une file saturée après 60 puis 120 secondes. Ce délai ne garantit pas la
+    gratuité et ne constitue pas une limite officielle confirmée du fournisseur.
     """
     key = (api_key or os.getenv("AGNES_API_KEY", "")).strip()
     if not key:
@@ -88,7 +90,7 @@ def generate_video(
                 time.monotonic() - _LAST_CREATE_MONOTONIC
             )
             if wait > 0:
-                print(f"Limite Agnes gratuite : attente de {wait:.1f}s avant la prochaine demande vidéo.")
+                print(f"Protection locale : attente de {wait:.1f}s avant la prochaine demande vidéo.")
                 time.sleep(wait)
         _LAST_CREATE_MONOTONIC = time.monotonic()
         try:
