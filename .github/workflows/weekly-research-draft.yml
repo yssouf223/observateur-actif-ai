@@ -148,7 +148,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f projects/research_leads.json projects/source_documents.json projects/claim_candidates.json projects/weekly_documentary.json projects/editorial_review.md projects/topic_history.json 2>/dev/null || true
+          git add -f projects/
           if git diff --cached --quiet; then
             echo "Aucun nouveau fichier de recherche à enregistrer."
             exit 0
