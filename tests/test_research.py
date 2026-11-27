@@ -49,3 +49,39 @@ def test_feed_config_must_be_a_list(tmp_path):
     config.write_text('{"publisher":"Example"}')
     with pytest.raises(ResearchError, match="liste JSON"):
         load_feed_config(config)
+
+
+def test_collect_feeds_skips_one_unavailable_publisher():
+    from unittest.mock import Mock, patch
+    import urllib.error
+    import pytest
+    from observateur_actif.research import collect_feeds
+
+    response = Mock()
+    response.status = 200
+    response.read.return_value = RSS
+    response.__enter__ = Mock(return_value=response)
+    response.__exit__ = Mock(return_value=False)
+    feeds = [
+        {"publisher": "Broken", "url": "https://broken.example/rss"},
+        {"publisher": "Working", "url": "https://working.example/rss"},
+    ]
+    with patch("observateur_actif.research.urllib.request.urlopen",
+               side_effect=[urllib.error.URLError("404"), response]):
+        with pytest.warns(RuntimeWarning, match="Flux ignoré"):
+            items = collect_feeds(feeds)
+    assert len(items) == 1
+    assert items[0]["publisher"] == "Working"
+
+
+def test_collect_feeds_fails_if_every_publisher_is_unavailable():
+    from unittest.mock import patch
+    import urllib.error
+    import pytest
+    from observateur_actif.research import collect_feeds
+
+    with patch("observateur_actif.research.urllib.request.urlopen",
+               side_effect=urllib.error.URLError("offline")):
+        with pytest.warns(RuntimeWarning):
+            with pytest.raises(ResearchError, match="Aucun flux RSS exploitable"):
+                collect_feeds([{"publisher": "Offline", "url": "https://offline.example/rss"}])
