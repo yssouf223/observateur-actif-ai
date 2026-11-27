@@ -142,7 +142,7 @@ def draft_project(
         for doc in usable
     }
     independent_docs = []
-    for doc in usable:
+    for index, doc in enumerate(usable):
         body = (
             str(doc.get("title") or doc.get("lead_title") or "")
             + " " + str(doc.get("text", ""))[:7000]
@@ -153,7 +153,18 @@ def draft_project(
             and any(marker in body for marker in dependency_markers)
             for other in publisher_bases
         )
-        if not is_republication:
+        tokens = set(re.findall(r"[a-zà-ÿ]{4,}", str(doc.get("text", "")).casefold()))
+        copied_text = False
+        for earlier in usable[:index]:
+            earlier_tokens = set(
+                re.findall(r"[a-zà-ÿ]{4,}", str(earlier.get("text", "")).casefold())
+            )
+            if tokens and earlier_tokens:
+                overlap = len(tokens & earlier_tokens) / min(len(tokens), len(earlier_tokens))
+                if overlap >= 0.82:
+                    copied_text = True
+                    break
+        if not is_republication and not copied_text:
             independent_docs.append(doc)
 
     generic_topics = {
