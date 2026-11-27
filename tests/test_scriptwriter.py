@@ -87,3 +87,23 @@ def test_draft_uses_agnes_chat_completions_when_no_gemini_key(tmp_path, monkeypa
     assert post.call_args.kwargs["headers"]["Authorization"] == "Bearer agnes-test-key"
     assert post.call_args.kwargs["json"]["model"] == "agnes-2.5-flash"
     assert post.call_args.kwargs["json"]["response_format"] == {"type": "json_object"}
+
+
+def test_draft_prompt_excludes_topics_from_history(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    monkeypatch.setenv("SCRIPT_PROVIDER", "agnes")
+    history = tmp_path / "topic_history.json"
+    history.write_text(json.dumps([{"title": "Lac Nyos", "notes": "Sujet exclu."}]), encoding="utf-8")
+    response = Mock(ok=True)
+    response.json.return_value = {
+        "choices": [{"message": {"content": json.dumps(valid_draft())}}]
+    }
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response) as post:
+        draft_project(
+            sources, tmp_path / "project.json",
+            topic_history_file=history,
+        )
+    prompt = post.call_args.kwargs["json"]["messages"][0]["content"]
+    assert "Lac Nyos" in prompt
+    assert "NE PAS RÉUTILISER" in prompt
