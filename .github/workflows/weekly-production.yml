@@ -121,9 +121,11 @@ jobs:
           name: observateur-actif-documentary
           path: |
             output/documentary.mp4
+            output/scenes/*.mp4
             output/narration.mp3
             output/narration.srt
             output/production_report.json
             output/quality_report.json
+            projects/weekly_documentary.json
           if-no-files-found: warn
           retention-days: 7
