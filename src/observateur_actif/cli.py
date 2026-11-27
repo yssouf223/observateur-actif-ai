@@ -386,7 +386,7 @@ def draft_project_command(
 ) -> None:
     """Rédiger un storyboard documentaire à partir de sources publiques extraites."""
     try:
-        console.print("Rédaction du brouillon avec Gemini ; les validations humaines restent désactivées…")
+        console.print("Rédaction du brouillon avec le modèle IA configuré ; les validations humaines restent désactivées…")
         result = draft_project(sources_file, output_file, topic=topic, model=model, topic_history_file=topic_history_file)
         console.print(f"[green]Brouillon créé : {result}[/green]")
         console.print("[yellow]Toutes les scènes et la publication restent non approuvées.[/yellow]")
