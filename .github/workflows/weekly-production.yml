@@ -32,6 +32,7 @@ jobs:
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
       YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+      YOUTUBE_API_PROJECT_VERIFIED: ${{ vars.YOUTUBE_API_PROJECT_VERIFIED }}
       PROJECT_FILE: ${{ inputs.project_path || 'projects/weekly_documentary.json' }}
 
     steps:
@@ -55,6 +56,10 @@ jobs:
           done
           if [ "$AGNES_FREE_QUOTA_CONFIRMED" != "true" ]; then
             echo "::error::Production arrêtée : confirme le quota Agnes gratuit via AGNES_FREE_QUOTA_CONFIRMED=true."
+            exit 1
+          fi
+          if [ "$YOUTUBE_API_PROJECT_VERIFIED" != "true" ]; then
+            echo "::error::Projet YouTube Data API non confirmé comme vérifié."
             exit 1
           fi
           python - <<'PY'
