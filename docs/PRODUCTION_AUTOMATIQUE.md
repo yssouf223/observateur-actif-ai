@@ -26,6 +26,8 @@ Variables à configurer dans Settings > Secrets and variables > Actions > Variab
 - `GEMINI_FREE_TIER_CONFIRMED=true` : confirme que le projet Gemini utilisé reste sur le palier gratuit.
 - `AGNES_FREE_QUOTA_CONFIRMED=true` : confirme que les générations vidéo prévues sont couvertes par un quota gratuit disponible.
 
+Le client YouTube demande les autorisations OAuth `youtube.upload` et `youtube.readonly` et vérifie l'identifiant de chaîne configuré. L'application Google Cloud doit avoir l'API YouTube Data activée et être autorisée à publier ; les projets API non vérifiés peuvent être limités aux vidéos privées. La programmation est envoyée avec `privacyStatus=private` et un `publishAt` futur, conformément aux règles YouTube. Voir [OAuth YouTube](https://developers.google.com/youtube/data/guides/authentication) et [ressource vidéo / publishAt](https://developers.google.com/youtube/data/reference/rest/v3/videos).
+
 Les workflows arrêtent le traitement si les variables de gratuité ne sont pas explicitement confirmées. Le code ne peut pas lire de façon fiable le solde ou le statut de facturation privé des comptes fournisseurs. Agnes publie actuellement une promotion gratuite temporaire pour Video 2.5 Flash en 720p, mais ses conditions et quotas peuvent changer ; la file partagée peut aussi renvoyer HTTP 503 « queue full ». Vérifier les conditions dans le [catalogue Agnes](https://github.com/AgnesAI-Labs/skills/blob/main/agnes-ai-models/references/model_catalog.md) et le [suivi des erreurs de file](https://github.com/AgnesAI-Labs/AgnesAI-Models/issues/142) avant chaque activation.
 
 ## Contrôle éditorial obligatoire
