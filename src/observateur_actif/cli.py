@@ -349,7 +349,7 @@ def publish_youtube_command(
             for source in project.sources
         ]
         source_section = (
-            "\\n\\nSources consultées :\\n" + "\\n".join(source_lines)
+            "\n\nSources consultées :\n" + "\n".join(source_lines)
             if source_lines else ""
         )
         description = (
