@@ -76,7 +76,7 @@ async def _stream_audio_and_timing(
     text: str, audio_path: Path, voice: str, rate: str, pitch: str
 ) -> str:
     communicator = edge_tts.Communicate(
-        text, voice=voice, rate=rate, pitch=pitch
+        text, voice=voice, rate=rate, pitch=pitch, boundary="WordBoundary"
     )
     boundaries: list[tuple[int, int, str]] = []
     with audio_path.open("wb") as audio_file:
