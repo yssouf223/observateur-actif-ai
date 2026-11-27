@@ -159,3 +159,46 @@ def fetch_source(url: str, *, timeout: int = TIMEOUT_SECONDS,
         text=text[:100_000],
         fetched_at=datetime.now(timezone.utc).isoformat(),
     )
+
+
+def fetch_leads(leads: list[dict], *, limit: int = 5) -> list[dict]:
+    """Lire séquentiellement un petit lot de pistes RSS.
+
+    Les erreurs sont conservées piste par piste afin qu'une page inaccessible
+    ne bloque pas les autres. Les doublons d'URL sont ignorés.
+    """
+    if not 1 <= limit <= 20:
+        raise ValueError("La limite doit être comprise entre 1 et 20.")
+    if not isinstance(leads, list):
+        raise ValueError("Les pistes doivent être une liste JSON.")
+    results: list[dict] = []
+    seen: set[str] = set()
+    attempted = 0
+    for lead in leads:
+        if not isinstance(lead, dict):
+            continue
+        url = str(lead.get("url", "")).strip()
+        if not url or url in seen:
+            continue
+        seen.add(url)
+        if attempted >= limit:
+            break
+        attempted += 1
+        item = {
+            "lead_title": str(lead.get("title", ""))[:500],
+            "publisher": str(lead.get("publisher", ""))[:300],
+            "published_at": lead.get("published_at"),
+            "url": url,
+        }
+        try:
+            document = fetch_source(url)
+            item.update(document.to_dict())
+            item["fetch_status"] = "success"
+        except SourceFetchError as exc:
+            item.update({
+                "fetch_status": "failed",
+                "fetch_error": str(exc)[:1000],
+                "editorial_status": "source_text_unverified",
+            })
+        results.append(item)
+    return results
