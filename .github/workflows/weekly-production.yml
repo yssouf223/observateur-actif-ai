@@ -68,6 +68,14 @@ jobs:
           if not scenes or any(not s.get("review_approved") or not s.get("reviewer") or not s.get("reviewed_at") for s in scenes):
               sys.exit("Production bloquée : chaque scène doit être approuvée par un réviseur identifié.")
           print(f"Projet approuvé : {project.get('title')} ({len(scenes)} scènes).")
+          from datetime import datetime, timedelta, timezone
+          now = datetime.now(timezone.utc)
+          days = (5 - now.weekday()) % 7
+          target = (now + timedelta(days=days)).replace(hour=16, minute=0, second=0, microsecond=0)
+          if target <= now:
+              target += timedelta(days=7)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"publish_at={target.isoformat()}\\n")
           PY
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
@@ -93,7 +101,7 @@ jobs:
 
       - name: Programmer la publication YouTube pour samedi 16 h UTC
         if: steps.preflight.outputs.ready == 'true'
-        run: observateur publish-youtube "$PROJECT_FILE" --video output/documentary.mp4
+        run: observateur publish-youtube "$PROJECT_FILE" --video output/documentary.mp4 --publish-at "${{ steps.preflight.outputs.publish_at }}"
 
       - name: Archiver la vidéo et les rapports
         if: always() && steps.preflight.outputs.ready == 'true'
