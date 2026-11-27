@@ -158,3 +158,67 @@ def test_draft_rejects_story_using_only_one_of_two_sources(tmp_path, monkeypatch
     with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
         with pytest.raises(ScriptWriterError, match="deux sources indépendantes"):
             draft_project(sources, tmp_path / "project.json")
+
+
+def test_draft_rejects_secondary_article_that_cites_the_first_source(tmp_path, monkeypatch):
+    path = tmp_path / "dependent_sources.json"
+    path.write_text(json.dumps([
+        {"fetch_status": "success", "url": "https://scienceinpoland.pl/story",
+         "title": "Ancient Kalahari Acheulean handaxes discovered",
+         "publisher": "Science in Poland",
+         "text": "Archaeologists found nearly 100 Acheulean handaxes in the Kalahari."},
+        {"fetch_status": "success", "url": "https://archaeology.org/story",
+         "title": "Acheulean hand axes found in Kalahari Desert",
+         "publisher": "Archaeology Magazine",
+         "text": "Nearly 100 hand axes were found in the Kalahari, according to a Science in Poland report."}
+    ]), encoding="utf-8")
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    with pytest.raises(ScriptWriterError, match="réellement indépendantes"):
+        draft_project(path, tmp_path / "project.json")
+
+
+def test_draft_rejects_undated_artifacts_given_an_exact_age(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    data = json.loads(sources.read_text(encoding="utf-8"))
+    data[0]["text"] += " The precise age of the newly discovered artifacts has yet to be established. The Acheulean tradition emerged around 1.7 million years ago."
+    data[1]["text"] += " The exact age of the Kalahari tools remains unresolved."
+    sources.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    draft = valid_draft()
+    draft["scenes"][0]["narration"] = "Ces outils ont un million et demi d'années."
+    response = Mock(ok=True)
+    response.json.return_value = {"choices": [{"message": {"content": json.dumps(draft)}}]}
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        with pytest.raises(ScriptWriterError, match="âge exact des artefacts"):
+            draft_project(sources, tmp_path / "project.json")
+
+
+def test_draft_rejects_exact_count_when_sources_say_nearly_100(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    data = json.loads(sources.read_text(encoding="utf-8"))
+    data[0]["text"] += " Nearly 100 handaxes have been collected across the survey."
+    data[1]["text"] += " Researchers found nearly 100 hand axes."
+    sources.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    draft = valid_draft()
+    draft["title"] = "Cent haches du Kalahari"
+    response = Mock(ok=True)
+    response.json.return_value = {"choices": [{"message": {"content": json.dumps(draft)}}]}
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        with pytest.raises(ScriptWriterError, match="quantité approximative"):
+            draft_project(sources, tmp_path / "project.json")
+
+
+def test_draft_rejects_calcite_mistranslation_and_unsupported_bone_visual(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    data = json.loads(sources.read_text(encoding="utf-8"))
+    data[0]["text"] += " Researchers examined calcretes in the valley."
+    sources.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    draft = valid_draft()
+    draft["scenes"][0]["narration"] = "Les carrières de calcite exposent les sédiments."
+    response = Mock(ok=True)
+    response.json.return_value = {"choices": [{"message": {"content": json.dumps(draft)}}]}
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        with pytest.raises(ScriptWriterError, match="calcrete"):
+            draft_project(sources, tmp_path / "project.json")
