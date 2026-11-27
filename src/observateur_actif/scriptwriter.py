@@ -65,14 +65,65 @@ def draft_project(
     if not isinstance(documents, list):
         raise ScriptWriterError("Le fichier source doit contenir une liste de documents.")
 
-    usable = [
+    strong_topics = (
+        "archaeolog", "archéolog", "excavat", "fouill", "ruins", "ruines",
+        "ancient", "ancien", "civilisation", "civilization", "mystery", "mystère",
+        "unexplained", "inexpliqué", "lost city", "cité perdue", "rock art",
+        "art rupestre", "rupestre", "fossil", "fossile", "manuscript", "manuscrit",
+        "temple", "grotte", "cave", "pyramid", "pyramide", "megalith", "mégalithe",
+        "prehistor", "préhistoire", "kingdom", "royaume", "empire", "geoglyph",
+        "géoglyphe", "historical", "histoire", "history", "pharaoh", "pharaon",
+        "artefact", "artifact", "mummy", "momie", "stone circle", "cercle de pierres",
+        "cave painting", "peinture rupestre", "mysterious", "mystérieux",
+        "oral tradition", "tradition orale", "lost civilization", "civilisation perdue",
+    )
+    african_regions = (
+        "africa", "african", "afrique", "sahara", "sahel", "mali", "niger",
+        "nigeria", "ethiopia", "éthiopie", "egypt", "égypte", "sudan", "soudan",
+        "somalia", "somalie", "kenya", "tanzania", "tanzanie", "ghana", "benin",
+        "bénin", "togo", "guinea", "guinée", "senegal", "sénégal", "morocco",
+        "maroc", "algeria", "algérie", "tunisia", "tunisie", "libya", "libye",
+        "chad", "tchad", "cameroon", "cameroun", "congo", "rwanda", "uganda",
+        "zimbabwe", "zambia", "botswana", "south africa", "afrique du sud",
+        "mozambique", "madagascar", "mauritania", "mauritanie", "ivory coast",
+        "côte d'ivoire", "burkina faso", "angola", "namibia", "namibie",
+        "eritrea", "érythrée", "djibouti", "gabon", "liberia", "libéria",
+    )
+    off_topic = (
+        "jihad", "djihad", "terror", "terrorisme", "al-shabaab", "al-shabab",
+        "jnim", "boko haram", "election", "élection", "football", "sport",
+        "nutrition", "santé", "health", "ukraine",
+    )
+
+    def relevance(doc: dict) -> int:
+        title = str(doc.get("title") or doc.get("lead_title") or "").casefold()
+        body = str(doc.get("text", ""))[:7000].casefold()
+        combined = title + " " + body
+        topic_hits = sum(1 for keyword in strong_topics if keyword in combined)
+        title_hits = sum(1 for keyword in strong_topics if keyword in title)
+        region_hits = sum(1 for keyword in african_regions if keyword in combined)
+        excluded_hits = sum(1 for keyword in off_topic if keyword in combined)
+        if topic_hits == 0 or region_hits == 0 or excluded_hits > 0:
+            return 0
+        return topic_hits * 3 + title_hits * 5 + region_hits * 2
+
+    candidates = [
         doc for doc in documents
         if isinstance(doc, dict)
         and doc.get("fetch_status") == "success"
         and str(doc.get("text", "")).strip()
         and str(doc.get("url", "")).startswith(("https://", "http://"))
     ]
-    usable = usable[:8]
+    usable = sorted(
+        (doc for doc in candidates if relevance(doc) > 0),
+        key=relevance,
+        reverse=True,
+    )[:12]
+    if len(usable) < 2:
+        raise ScriptWriterError(
+            "Aucun sujet de mystère historique ou archéologique africain ne dispose "
+            "d'au moins deux sources pertinentes. Aucun brouillon hors sujet ne sera créé."
+        )
     sources = []
     source_texts = []
     seen_hosts = set()
@@ -133,6 +184,9 @@ SUJETS DÉJÀ ABORDÉS OU EXCLUS (NE PAS RÉUTILISER LE MÊME ÉVÉNEMENT, LIEU 
 {history_text}
 
 RÈGLES IMPÉRATIVES :
+- La chaîne traite exclusivement de mystères historiques réels, d'archéologie africaine, de civilisations anciennes, de lieux énigmatiques et de phénomènes inexpliqués documentés. Refuse l'actualité politique, le terrorisme, les conflits armés, les faits divers, la santé et le sport.
+- Le sujet central doit être africain et historique/archéologique ; ne choisis pas une actualité de sécurité ou de propagande.
+- Au moins deux éditeurs indépendants doivent documenter le MÊME sujet central. Utilise leurs source_ids dans les scènes correspondantes ; ne cite jamais une source sans rapport.
 - Utilise exclusivement les informations présentes dans les documents fournis.
 - N'invente aucun nom, date, lieu, citation, chiffre, témoignage ou événement.
 - Ne prétends jamais qu'une affirmation est vérifiée : tous les statuts factuels doivent rester "unconfirmed", "hypothesis", "testimony", "oral_tradition" ou "legend".
@@ -237,6 +291,17 @@ DOCUMENTS SOURCÉS :
 
     if not isinstance(draft, dict) or not isinstance(draft.get("scenes"), list):
         raise ScriptWriterError(f"Le brouillon {provider.title()} ne contient pas de liste de scènes.")
+    used_source_ids = {
+        source_id
+        for scene in draft["scenes"]
+        if isinstance(scene, dict)
+        for source_id in scene.get("source_ids", [])
+    }
+    if len(used_source_ids) < 2:
+        raise ScriptWriterError(
+            "Brouillon rejeté : au moins deux sources indépendantes doivent être "
+            "réellement utilisées pour documenter le même sujet."
+        )
     for index, scene in enumerate(draft["scenes"], start=1):
         scene["id"] = _slug_id(index)
         scene["review_approved"] = False
