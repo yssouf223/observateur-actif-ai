@@ -100,7 +100,7 @@ jobs:
                   "status": "draft",
               })
           history_path.parent.mkdir(parents=True, exist_ok=True)
-          history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           print(f"Historique éditorial : {len(history)} sujet(s).")
           PY
 
