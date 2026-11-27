@@ -19,7 +19,7 @@ from observateur_actif.source_fetcher import SourceFetchError, fetch_source, fet
 from observateur_actif.claim_extractor import extract_claim_candidates
 from observateur_actif.review_queue import write_review_queue
 from observateur_actif.narration import export_narration
-from observateur_actif.speech import SpeechError, generate_audio
+from observateur_actif.speech import SpeechError, generate_audio, generate_audio_with_subtitles
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -190,14 +190,17 @@ def generate_audio_command(
     voice: str = typer.Option("fr-FR-HenriNeural", "--voice", help="Voix Microsoft Edge-TTS."),
     rate: str = typer.Option("-8%", "--rate", help="Vitesse de parole, par exemple -8%."),
     pitch: str = typer.Option("-8Hz", "--pitch", help="Hauteur de voix, par exemple -8Hz."),
+    subtitles_file: str = typer.Option("output/narration.srt", "--subtitles", help="Sous-titres calés sur les repères vocaux."),
 ) -> None:
-    """Générer la voix off MP3 avec Edge-TTS (connexion Internet requise)."""
+    """Générer la voix off MP3 et les sous-titres synchronisés avec Edge-TTS."""
     try:
         project = load_project(project_file)
-        console.print(f"Génération audio avec {voice}…")
-        result = generate_audio(project, output_file, voice=voice, rate=rate, pitch=pitch)
+        console.print(f"Génération audio et repères de sous-titres avec {voice}…")
+        result, subtitles = generate_audio_with_subtitles(
+            project, output_file, subtitles_file, voice=voice, rate=rate, pitch=pitch
+        )
         console.print(f"[green]Narration MP3 créée : {result}[/green]")
-        console.print("[yellow]Vérifier la prononciation et recaler les sous-titres sur l'audio réel.[/yellow]")
+        console.print(f"[green]Sous-titres synchronisés créés : {subtitles}[/green]")
     except (FileNotFoundError, OSError, ValueError, SpeechError) as exc:
         console.print(f"[red]Génération audio impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
