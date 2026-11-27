@@ -11,16 +11,19 @@ def make_project(approved=True):
     return DocumentaryProject.model_validate({
         "title": "Forêt mystérieuse",
         "target_duration_minutes": 10,
-        "scenes": [{
-            "id": "scene-01", "duration_seconds": 5,
-            "narration": "La forêt se réveille lentement.",
-            "video_prompt": "Cinematic moving forest",
-            "motion_description": "Camera glides forward through moving mist.",
-            "claim_status": "legend",
-            "review_approved": approved,
-            "reviewer": "Rédaction",
-            "reviewed_at": "2026-11-27"
-        }]
+        "scenes": [
+            {
+                "id": f"scene-{i:02d}", "duration_seconds": 12,
+                "narration": "La forêt se réveille lentement.",
+                "video_prompt": "Cinematic moving forest",
+                "motion_description": "Camera glides forward through moving mist.",
+                "claim_status": "legend",
+                "review_approved": approved,
+                "reviewer": "Rédaction",
+                "reviewed_at": "2026-11-27"
+            }
+            for i in range(1, 51)
+        ]
     })
 
 
@@ -33,9 +36,6 @@ def test_pipeline_refuses_unreviewed_scenes(tmp_path):
 def test_pipeline_runs_video_voice_subtitles_and_montage(tmp_path):
     project_file = tmp_path / "project.json"
     project = make_project()
-    clip = tmp_path / "scenes" / "scene-01.mp4"
-    clip.parent.mkdir()
-    clip.write_bytes(b"clip")
 
     def fake_speech(project, audio, subtitles):
         Path(audio).write_bytes(b"audio")
@@ -53,7 +53,7 @@ def test_pipeline_runs_video_voice_subtitles_and_montage(tmp_path):
             project, project_file, tmp_path / "output", api_key="test-key"
         )
 
-    gen.assert_called_once()
+    assert gen.call_count == 50
     assert result["video"].read_bytes() == b"video"
     assert result["subtitles"].read_text() == "srt"
     assert result["report"].is_file()
@@ -79,4 +79,4 @@ def test_pipeline_reuses_existing_generated_scene(tmp_path):
          patch("observateur_actif.pipeline.generate_audio_with_subtitles", side_effect=fake_speech), \
          patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), patch("observateur_actif.pipeline.write_quality_report", return_value=tmp_path / "out/quality_report.json"):
         produce_project(project, tmp_path / "project.json", tmp_path / "out", api_key="key")
-    gen.assert_not_called()
+    assert gen.call_count == 49
