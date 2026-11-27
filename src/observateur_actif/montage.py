@@ -20,7 +20,7 @@ def assemble_documentary(
     music_file: str | Path | None = None,
     ffmpeg: str = "ffmpeg",
 ) -> Path:
-    """Assembler les clips validés en MP4 16:9 720p avec voix off.
+    """Assembler les clips validés en MP4 16:9 1080p, upscalé depuis des clips 720p avec voix off.
 
     Les sous-titres sont intégrés comme piste sélectionnable (pas incrustés).
     Une musique facultative doit être fournie par l'utilisateur avec ses droits.
@@ -74,8 +74,8 @@ def assemble_documentary(
     for index in range(len(clips)):
         label = f"v{index}"
         filters.append(
-            f"[{index}:v:0]scale=1280:720:force_original_aspect_ratio=decrease,"
-            f"pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25,"
+            f"[{index}:v:0]scale=1920:1080:force_original_aspect_ratio=decrease,"
+            f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25,"
             f"format=yuv420p[{label}]"
         )
         labels.append(f"[{label}]")
