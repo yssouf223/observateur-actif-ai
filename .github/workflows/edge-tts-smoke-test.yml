@@ -1,0 +1,71 @@
+name: Test réel Edge-TTS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  edge-tts-smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer Observateur Actif AI
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Préparer un court texte de test
+        run: |
+          mkdir -p output
+          python - <<'PY'
+          import json
+          project = {
+              "title": "Test vocal Edge-TTS",
+              "target_duration_minutes": 10,
+              "aspect_ratio": "16:9",
+              "language": "fr",
+              "sources": [],
+              "scenes": [{
+                  "id": "test-voice",
+                  "duration_seconds": 5,
+                  "narration": "Dans les profondeurs de la forêt africaine, chaque bruit raconte une histoire. Ceci est un test de la voix française Henri pour Observateur Actif.",
+                  "video_prompt": "Test technique, aucune vidéo ne sera générée.",
+                  "motion_description": "Test technique, aucun mouvement vidéo ne sera généré.",
+                  "claim_status": "unconfirmed",
+                  "source_ids": [],
+                  "review_approved": False
+              }]
+          }
+          with open("/tmp/edge_tts_test.json", "w", encoding="utf-8") as f:
+              json.dump(project, f, ensure_ascii=False, indent=2)
+          PY
+
+      - name: Générer le MP3 avec le vrai service Edge-TTS
+        run: |
+          observateur generate-audio /tmp/edge_tts_test.json --output output/edge-tts-test.mp3
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("output/edge-tts-test.mp3")
+          data = p.read_bytes()
+          if len(data) < 1000 or not (data.startswith(b"ID3") or data[:1] == b"\xff"):
+              raise SystemExit("Le fichier généré ne ressemble pas à un MP3 exploitable.")
+          print(f"MP3 réel créé : {p} ({len(data)} octets)")
+          PY
+
+      - name: Déposer le MP3 de test
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge-tts-test-mp3
+          path: output/edge-tts-test.mp3
+          if-no-files-found: error
+          retention-days: 3
