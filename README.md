@@ -93,7 +93,7 @@ Le projet utilise le paquet Python `edge-tts` pour demander une voix française 
 Après installation des dépendances et validation d'un projet :
 
 ```bash
-observateur generate-audio projects/documentary.json --output output/narration.mp3
+observateur generate-audio projects/documentary.json --output output/narration.mp3 --subtitles output/narration.srt
 ```
 
 Pour modifier la voix ou le rendu :
@@ -104,7 +104,7 @@ observateur generate-audio projects/documentary.json --voice fr-FR-HenriNeural -
 
 Cette commande nécessite Internet et envoie le texte de narration au service vocal en ligne. Le paquet `edge-tts` est un client tiers non officiel ; il ne fournit ni garantie de disponibilité ni licence commerciale Microsoft. Les conditions d'utilisation et les droits de diffusion/monétisation des fichiers audio générés par ce moyen ne sont pas clairement confirmés par la documentation publique. Ne pas considérer les MP3 comme autorisés pour une chaîne monétisée sans confirmation écrite de Microsoft. Pour une utilisation commerciale explicitement documentée, Microsoft oriente vers Azure AI Speech et ses conditions applicables. Les tests automatisés simulent la génération et ne prouvent pas qu'un appel réel au service aboutira.
 
-La synchronisation SRT exportée précédemment repose sur les durées théoriques des scènes ; il faudra la recaler sur le MP3 réel avant le montage final.
+La commande `generate-audio` produit désormais le MP3 et un SRT à partir des événements `WordBoundary` renvoyés pendant le flux Edge-TTS. Les sous-titres sont donc horodatés à partir de la parole synthétisée, puis regroupés en segments courts. Vérifier visuellement le SRT et écouter le MP3 avant le montage ; les repères fournis par le service restent une synchronisation automatique à contrôler.
 
 ## Vérifier le registre des affirmations
 
