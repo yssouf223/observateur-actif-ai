@@ -65,5 +65,25 @@ def test_draft_project_forces_human_approval_off(tmp_path):
 
 def test_draft_requires_gemini_key(tmp_path, monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    with pytest.raises(ScriptWriterError, match="GEMINI_API_KEY"):
+    monkeypatch.delenv("AGNES_API_KEY", raising=False)
+    with pytest.raises(ScriptWriterError, match="AGNES_API_KEY"):
         draft_project(docs_file(tmp_path), tmp_path / "project.json")
+
+ 
+def test_draft_uses_agnes_chat_completions_when_no_gemini_key(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    monkeypatch.setenv("SCRIPT_PROVIDER", "agnes")
+    draft = valid_draft()
+    response = Mock(ok=True)
+    response.json.return_value = {
+        "choices": [{"message": {"content": json.dumps(draft)}}]
+    }
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response) as post:
+        output = draft_project(sources, tmp_path / "project.json")
+    assert output.is_file()
+    assert post.call_args.args[0].endswith("/v1/chat/completions")
+    assert post.call_args.kwargs["headers"]["Authorization"] == "Bearer agnes-test-key"
+    assert post.call_args.kwargs["json"]["model"] == "agnes-2.5-flash"
+    assert post.call_args.kwargs["json"]["response_format"] == {"type": "json_object"}
