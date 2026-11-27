@@ -25,12 +25,12 @@ def valid_draft():
         "title": "Mystère documentaire",
         "target_duration_minutes": 10,
         "scenes": [
-            {"id": f"scene-{i}", "duration_seconds": 15,
+            {"id": f"scene-{i}", "duration_seconds": 12,
              "narration": "Une phrase documentaire suffisamment longue.",
              "video_prompt": "A cinematic moving camera shot.",
              "motion_description": "The camera moves continuously through the scene.",
              "claim_status": "unconfirmed", "source_ids": ["source-1"]}
-            for i in range(1, 41)
+            for i in range(1, 51)
         ]
     }
 
