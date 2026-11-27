@@ -1,0 +1,109 @@
+name: Test complet sans publication
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_path:
+        description: "Projet documentaire JSON relu et approuvé"
+        required: true
+        type: string
+        default: "projects/weekly_documentary.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: observateur-actif-test-no-publish
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Génération privée et contrôle qualité
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      VIDEO_PROVIDER: agnes
+      AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+      AGNES_FREE_QUOTA_CONFIRMED: ${{ vars.AGNES_FREE_QUOTA_CONFIRMED }}
+      PROJECT_FILE: ${{ inputs.project_path }}
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Vérifier les validations et la gratuité avant génération
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path(os.environ["PROJECT_FILE"])
+          if not path.is_file():
+              raise SystemExit(f"Projet introuvable : {path}")
+          project = json.loads(path.read_text(encoding="utf-8"))
+          scenes = project.get("scenes", [])
+          if not project.get("release_approved") or not project.get("release_reviewer") or not project.get("release_approved_at"):
+              raise SystemExit("Projet non approuvé par un réviseur identifié : arrêt avant toute génération.")
+          if not scenes or any(not s.get("review_approved") or not s.get("reviewer") or not s.get("reviewed_at") for s in scenes):
+              raise SystemExit("Au moins une scène n'est pas approuvée : arrêt avant toute génération.")
+          print(f"Projet approuvé : {project.get('title')} ; {len(scenes)} scènes.")
+          PY
+          test -n "$AGNES_API_KEY" || { echo "::error::Secret AGNES_API_KEY absent."; exit 1; }
+          if [ "$AGNES_FREE_QUOTA_CONFIRMED" != "true" ]; then
+            echo "::error::Arrêt : quota Agnes réellement gratuit non confirmé. Aucun clip généré."
+            exit 1
+          fi
+
+      - name: Installer Python et Observateur Actif AI
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer le projet et FFmpeg
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Vérifier l'accès au modèle vidéo (sans générer)
+        run: |
+          python - <<'PY'
+          import os, requests
+          response = requests.get(
+              "https://apihub.agnes-ai.com/v1/models",
+              headers={"Authorization": f"Bearer {os.environ['AGNES_API_KEY']}"},
+              timeout=30,
+          )
+          response.raise_for_status()
+          payload = response.json()
+          models = payload.get("data", payload.get("models", []))
+          names = {item.get("id") or item.get("name") for item in models if isinstance(item, dict)}
+          if "agnes-video-2.5-flash" not in names:
+              raise SystemExit("Le modèle Agnes Video 2.5 Flash n'est pas accessible.")
+          print("Clé reconnue ; modèle vidéo visible.")
+          PY
+
+      - name: Générer le documentaire de test
+        run: observateur produce "$PROJECT_FILE" --output-dir output
+
+      - name: Contrôler le MP4 final
+        run: observateur quality-check output/documentary.mp4 --report output/quality_report.json
+
+      - name: Archiver les résultats privés du test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: observateur-actif-test-sans-publication
+          path: |
+            output/documentary.mp4
+            output/scenes/*.mp4
+            output/narration.mp3
+            output/narration.srt
+            output/production_report.json
+            output/quality_report.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Confirmer explicitement l'absence de publication
+        if: always()
+        run: echo "TEST UNIQUEMENT : aucune commande YouTube, aucun téléversement et aucune programmation de publication n'ont été exécutés."
