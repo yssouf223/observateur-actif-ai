@@ -93,3 +93,38 @@ def test_rejects_non_html_content():
         with pytest.raises(SourceFetchError, match="non HTML"):
             fetch_source("https://example.com/article")
     assert response.closed
+
+
+def test_fetch_leads_keeps_errors_and_continues():
+    from observateur_actif.source_fetcher import SourceDocument, fetch_leads
+
+    leads = [
+        {"title": "First", "publisher": "A", "url": "https://example.org/1"},
+        {"title": "Second", "publisher": "B", "url": "https://example.org/2"},
+        {"title": "Duplicate", "publisher": "B", "url": "https://example.org/2"},
+        {"title": "Third", "publisher": "C", "url": "https://example.org/3"},
+    ]
+
+    def fake_fetch(url):
+        if url.endswith("/2"):
+            raise SourceFetchError("page inaccessible")
+        return SourceDocument(
+            url=url, title="Article", text="Texte extrait",
+            fetched_at="2026-11-27T00:00:00+00:00"
+        )
+
+    with patch("observateur_actif.source_fetcher.fetch_source", side_effect=fake_fetch):
+        results = fetch_leads(leads, limit=5)
+
+    assert len(results) == 3
+    assert results[0]["fetch_status"] == "success"
+    assert results[1]["fetch_status"] == "failed"
+    assert results[1]["editorial_status"] == "source_text_unverified"
+    assert results[2]["fetch_status"] == "success"
+
+
+def test_fetch_leads_limit_is_bounded():
+    from observateur_actif.source_fetcher import fetch_leads
+
+    with pytest.raises(ValueError, match="comprise entre 1 et 20"):
+        fetch_leads([], limit=21)
