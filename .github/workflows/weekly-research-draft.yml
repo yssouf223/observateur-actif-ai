@@ -76,10 +76,33 @@ jobs:
       - name: Ouvrir les articles originaux
         run: observateur fetch-leads --input projects/research_leads.json --output projects/source_documents.json --limit 20
 
-      - name: Créer un brouillon documentaire avec Gemini
+      - name: Créer un brouillon documentaire avec Agnes
         run: |
           mkdir -p projects
           observateur draft-project --sources projects/source_documents.json --output projects/weekly_documentary.json --topic "$TOPIC"
+
+      - name: Mettre à jour l'historique des sujets pour éviter les répétitions
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          project = json.loads(Path("projects/weekly_documentary.json").read_text(encoding="utf-8"))
+          history_path = Path("projects/topic_history.json")
+          history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else []
+          title = project.get("title", "").strip()
+          synopsis = " ".join(scene.get("narration", "") for scene in project.get("scenes", [])[:4])[:900]
+          if title and not any(item.get("title", "").casefold() == title.casefold() for item in history):
+              history.append({
+                  "title": title,
+                  "notes": "Brouillon déjà proposé ; éviter de reprendre le même événement, lieu ou histoire, même sous un autre titre. " + synopsis,
+                  "created_at": datetime.now(timezone.utc).isoformat(),
+                  "status": "draft",
+              })
+          history_path.parent.mkdir(parents=True, exist_ok=True)
+          history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          print(f"Historique éditorial : {len(history)} sujet(s).")
+          PY
 
       - name: Exporter le dossier de revue éditoriale
         run: observateur review-project projects/weekly_documentary.json --output projects/editorial_review.md
@@ -88,7 +111,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add projects/weekly_documentary.json projects/editorial_review.md
+          git add projects/weekly_documentary.json projects/editorial_review.md projects/topic_history.json
           if git diff --cached --quiet; then
             echo "Aucun changement de brouillon à enregistrer."
           else
