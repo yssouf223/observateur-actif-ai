@@ -220,7 +220,7 @@ Retourne UNIQUEMENT un objet JSON valide de cette forme :
   "scenes": [
     {{
       "id": "scene-001",
-      "duration_seconds": 10,
+      "duration_seconds": 12,
       "narration": "Texte de narration en français.",
       "video_prompt": "Detailed cinematic text-to-video prompt in English.",
       "motion_description": "Describe actual continuous subject and camera movement.",
