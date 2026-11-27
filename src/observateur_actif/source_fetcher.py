@@ -172,8 +172,8 @@ def fetch_leads(leads: list[dict], *, limit: int = 5) -> list[dict]:
     if not isinstance(leads, list):
         raise ValueError("Les pistes doivent être une liste JSON.")
     results: list[dict] = []
+    grouped: dict[str, list[dict]] = {}
     seen: set[str] = set()
-    attempted = 0
     for lead in leads:
         if not isinstance(lead, dict):
             continue
@@ -181,6 +181,13 @@ def fetch_leads(leads: list[dict], *, limit: int = 5) -> list[dict]:
         if not url or url in seen:
             continue
         seen.add(url)
+        publisher = str(lead.get("publisher") or "éditeur inconnu").strip().casefold()
+        grouped.setdefault(publisher, []).append(lead)
+    per_publisher = max(1, (limit + max(1, len(grouped)) - 1) // max(1, len(grouped)))
+    selected = [lead for group in grouped.values() for lead in group[:per_publisher]][:limit]
+    attempted = 0
+    for lead in selected:
+        url = str(lead.get("url", "")).strip()
         if attempted >= limit:
             break
         attempted += 1
