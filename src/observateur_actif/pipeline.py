@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from observateur_actif.montage import assemble_documentary
+from observateur_actif.quality import write_quality_report
 from observateur_actif.speech import generate_audio_with_subtitles
 from observateur_actif.storyboard import DocumentaryProject
 from observateur_actif.video import generate_video
@@ -76,6 +77,8 @@ def produce_project(
         project, narration_path, final_path, subtitles_file=subtitles_path
     )
 
+    quality_path = root / "quality_report.json"
+    write_quality_report(final_path, quality_path)
     report_path = root / "production_report.json"
     report = {
         "status": "assembled_pending_quality_review",
@@ -88,7 +91,8 @@ def produce_project(
         "subtitles": str(subtitles_path),
         "video": str(final_path),
         "editorial_approval": "human_review_recorded",
-        "quality_control": "pending_ffprobe_and_human_playback",
+        "quality_control": "ffprobe_passed_human_playback_required",
+        "quality_report": str(quality_path),
         "youtube_publication": "not_published",
     }
     report_path.write_text(
