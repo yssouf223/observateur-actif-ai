@@ -43,7 +43,14 @@ Aucun service payant ni aucune carte bancaire ne sont requis pour exécuter les 
 ## Tester le moteur vidéo Agnes (local)
 
 1. Créer une clé API gratuite depuis le portail Agnes : https://platform.agnes-ai.com
-2. Copier `.env.example` vers `.env`.
+2. Sous Windows PowerShell, créer et activer l’environnement puis installer le projet :
+   ```powershell
+   py -m venv .venv
+   .venv\\Scripts\\Activate.ps1
+   pip install -e .
+   Copy-Item .env.example .env
+   notepad .env
+   ```
 3. Dans `.env`, définir :
    ```dotenv
    VIDEO_PROVIDER=agnes
@@ -51,7 +58,7 @@ Aucun service payant ni aucune carte bancaire ne sont requis pour exécuter les 
    ```
 4. Installer les dépendances et lancer un clip de test :
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    observateur video-test --prompt "A slow cinematic aerial shot over a misty African valley at sunrise, trees moving gently in the wind" --seconds 5
    ```
 5. Le résultat est enregistré dans `output/agnes_test.mp4`.
