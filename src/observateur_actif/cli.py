@@ -9,6 +9,7 @@ from rich.table import Table
 
 from observateur_actif import __version__
 from observateur_actif.config import Settings
+from observateur_actif.video import AgnesError, generate_video
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -50,6 +51,33 @@ def doctor() -> None:
     console.print(
         "\n[dim]Ce diagnostic ne lance aucun appel externe et ne consomme aucun crédit vidéo.[/dim]"
     )
+
+
+@app.command("video-test")
+def video_test(
+    prompt: str = typer.Option(..., "--prompt", help="Description de la scène animée."),
+    seconds: int = typer.Option(5, "--seconds", min=4, max=12, help="Durée du clip (4 à 12 secondes)."),
+) -> None:
+    """Générer un clip de test Agnes en 720p, format 16:9."""
+    try:
+        settings = Settings.load()
+        if settings.video_provider != "agnes" or not settings.agnes_api_key:
+            raise AgnesError(
+                "Configure .env avec VIDEO_PROVIDER=agnes et AGNES_API_KEY=ta_cle."
+            )
+        destination = settings.output_dir / "agnes_test.mp4"
+        console.print("Envoi du prompt à Agnes ; la génération peut prendre plusieurs minutes…")
+        result = generate_video(
+            prompt,
+            destination,
+            seconds=seconds,
+            aspect_ratio="16:9",
+            api_key=settings.agnes_api_key,
+        )
+        console.print(f"[green]Clip téléchargé : {result}[/green]")
+    except (AgnesError, ValueError) as exc:
+        console.print(f"[red]Erreur : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
 
 
 if __name__ == "__main__":
