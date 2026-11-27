@@ -1,9 +1,0 @@
-google-genai
-edge-tts
-moviepy==2.1.2
-pillow
-requests
-feedparser
-google-api-python-client
-google-auth-oauthlib
-google-auth-httplib2
