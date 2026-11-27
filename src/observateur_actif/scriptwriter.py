@@ -216,12 +216,24 @@ DOCUMENTS SOURCÉS :
         raise ScriptWriterError(f"Réponse {provider.title()} absente ou illisible : {exc}") from exc
 
     cleaned = text.strip()
-    cleaned = re.sub(r"^\`\`\`(?:json)?\s*", "", cleaned)
-    cleaned = re.sub(r"\s*\`\`\`$", "", cleaned)
+    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+    cleaned = re.sub(r"\s*```$", "", cleaned)
+    first_object = cleaned.find("{")
+    last_object = cleaned.rfind("}")
+    if first_object >= 0 and last_object > first_object:
+        cleaned = cleaned[first_object:last_object + 1]
     try:
         draft = json.loads(cleaned)
-    except json.JSONDecodeError as exc:
-        raise ScriptWriterError(f"{provider.title()} n'a pas renvoyé un JSON valide : {exc}") from exc
+    except json.JSONDecodeError as original_error:
+        try:
+            from json_repair import repair_json
+            repaired = repair_json(cleaned)
+            draft = json.loads(repaired)
+        except Exception as repair_error:
+            raise ScriptWriterError(
+                f"{provider.title()} n'a pas renvoyé un JSON exploitable : "
+                f"{original_error}; réparation : {repair_error}"
+            ) from repair_error
 
     if not isinstance(draft, dict) or not isinstance(draft.get("scenes"), list):
         raise ScriptWriterError(f"Le brouillon {provider.title()} ne contient pas de liste de scènes.")
