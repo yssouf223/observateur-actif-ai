@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import urllib.error
 import urllib.request
+import warnings
 import xml.etree.ElementTree as ET
 
 
@@ -97,9 +98,10 @@ def parse_feed(xml_content: bytes, *, feed_url: str, publisher: str) -> list[dic
 
 
 def collect_feeds(feeds: list[dict], *, timeout: int = 20) -> list[dict]:
-    """Collecter plusieurs flux RSS/Atom décrits par {publisher, url}."""
+    """Collecter les flux accessibles et ignorer les éditeurs momentanément indisponibles."""
     collected: list[dict] = []
     seen: set[str] = set()
+    errors: list[str] = []
     for feed in feeds:
         publisher = str(feed.get("publisher", "")).strip()
         url = str(feed.get("url", "")).strip()
@@ -114,17 +116,24 @@ def collect_feeds(feeds: list[dict], *, timeout: int = 20) -> list[dict]:
                 if response.status < 200 or response.status >= 300:
                     raise ResearchError(f"Flux indisponible ({response.status}) : {url}")
                 payload = response.read(5 * 1024 * 1024 + 1)
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
-            raise ResearchError(f"Impossible de lire le flux {url} : {exc}") from exc
-        if len(payload) > 5 * 1024 * 1024:
-            raise ResearchError(f"Flux trop volumineux (limite 5 Mo) : {url}")
-        for item in parse_feed(payload, feed_url=url, publisher=publisher):
+            if len(payload) > 5 * 1024 * 1024:
+                raise ResearchError(f"Flux trop volumineux (limite 5 Mo) : {url}")
+            items = parse_feed(payload, feed_url=url, publisher=publisher)
+        except (urllib.error.URLError, TimeoutError, OSError, ResearchError) as exc:
+            message = f"{publisher} ({url}) : {exc}"
+            errors.append(message)
+            warnings.warn(f"Flux ignoré : {message}", RuntimeWarning, stacklevel=2)
+            continue
+        for item in items:
             key = item["url"].strip()
             if key not in seen:
                 seen.add(key)
                 collected.append(item)
+    if not collected and errors:
+        raise ResearchError(
+            "Aucun flux RSS exploitable. Erreurs : " + " | ".join(errors)
+        )
     return collected
-
 
 def load_feed_config(path: str | Path) -> list[dict]:
     config_path = Path(path)
