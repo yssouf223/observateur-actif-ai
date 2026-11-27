@@ -45,7 +45,8 @@ La production du samedi refuse un projet tant que chaque scène n'a pas un révi
 - FFmpeg assemble le documentaire en H.264/AAC, 1280×720, 25 fps.
 - Le SRT issu des événements temporels Edge-TTS est inclus comme piste sélectionnable.
 - La voix est normalisée par FFmpeg autour de -16 LUFS avec un plafond de -1,5 dBTP ; la musique facultative est mixée à bas niveau sous la narration.
-- FFmpeg applique `freezedetect` à chaque clip et bloque les séquences pratiquement immobiles de 3 secondes ou plus ; le rapport de production conserve le résultat par scène.\n- ffprobe vérifie les flux, les codecs, la résolution et la durée.
+- FFmpeg applique `freezedetect` à chaque clip et bloque les séquences pratiquement immobiles de 3 secondes ou plus ; le rapport de production conserve le résultat par scène.
+- ffprobe vérifie les flux, les codecs, la résolution et la durée.
 - Le contrôle technique ne remplace pas l'écoute, le visionnage complet, le contrôle des sources et le contrôle des droits.
 
 ## Commandes
