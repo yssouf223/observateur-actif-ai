@@ -203,6 +203,21 @@ def draft_project(
 
     # Ne garder qu'un groupe d'articles qui partagent un lieu ou un sujet précis.
     signatures_by_url = {doc["url"]: signatures(doc) for doc in independent_docs}
+    broad_theme_terms = (
+        "archaeolog", "archéolog", "ancient", "ancien", "prehistor",
+        "préhistoire", "history", "historical", "histoire", "civilisation",
+        "civilization", "mystery", "mystère", "unexplained", "inexpliqué",
+    )
+    broad_theme_by_url = {
+        doc["url"]: any(
+            term in (
+                str(doc.get("title") or doc.get("lead_title") or "")
+                + " " + str(doc.get("text", ""))[:7000]
+            ).casefold()
+            for term in broad_theme_terms
+        )
+        for doc in independent_docs
+    }
     clusters: list[list[dict]] = []
     unseen = {doc["url"] for doc in independent_docs}
     docs_by_url = {doc["url"]: doc for doc in independent_docs}
@@ -215,7 +230,12 @@ def draft_project(
             for candidate_url in list(unseen):
                 candidate_topics, candidate_regions = signatures_by_url[candidate_url]
                 if any(
-                    candidate_topics & signatures_by_url[url][0]
+                    (candidate_topics & signatures_by_url[url][0])
+                    or (
+                        candidate_regions & signatures_by_url[url][1]
+                        and broad_theme_by_url[candidate_url]
+                        and broad_theme_by_url[url]
+                    )
                     for url in cluster_urls
                 ):
                     cluster_urls.add(candidate_url)
@@ -292,7 +312,7 @@ SUJETS DÉJÀ ABORDÉS OU EXCLUS (NE PAS RÉUTILISER LE MÊME ÉVÉNEMENT, LIEU 
 RÈGLES IMPÉRATIVES :
 - La chaîne traite exclusivement de mystères historiques réels, d'archéologie africaine, de civilisations anciennes, de lieux énigmatiques et de phénomènes inexpliqués documentés. Refuse l'actualité politique, le terrorisme, les conflits armés, les faits divers, la santé et le sport.
 - Le sujet central doit être africain et historique/archéologique ; ne choisis pas une actualité de sécurité ou de propagande.
-- Au moins deux éditeurs réellement indépendants doivent documenter le même lieu ou thème précis. Ne compte pas les reprises qui citent une autre publication comme source unique. Si les sources parlent de découvertes distinctes, distingue clairement les cas et ne les fusionne jamais.
+- Au moins deux éditeurs réellement indépendants doivent documenter le même lieu ou thème précis. Ne compte pas les reprises qui citent une autre publication comme source unique. Si les sources parlent de découvertes distinctes dans une même région ou un même thème historique, tu peux créer un documentaire à plusieurs cas : sépare-les en chapitres, cite chaque source pour son propre cas et ne fusionne jamais les lieux, dates ou découvertes.
 - Utilise exclusivement les informations présentes dans les documents fournis.
 - N'invente aucun nom, date, lieu, citation, chiffre, témoignage ou événement.
 - Ne jamais appliquer à un artefact ou à un site la datation générale d'une culture archéologique : si l'âge exact des objets n'est pas établi, le dire explicitement.
