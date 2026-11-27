@@ -10,6 +10,7 @@ from rich.table import Table
 from observateur_actif import __version__
 from observateur_actif.config import Settings
 from observateur_actif.video import AgnesError, generate_video
+from observateur_actif.project_io import load_project
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -52,6 +53,23 @@ def doctor() -> None:
         "\n[dim]Ce diagnostic ne lance aucun appel externe et ne consomme aucun crédit vidéo.[/dim]"
     )
 
+
+
+@app.command("validate-project")
+def validate_project(
+    project_file: str = typer.Argument(..., help="Chemin vers le fichier projet JSON.")
+) -> None:
+    """Valider un projet documentaire et ses références aux sources."""
+    try:
+        project = load_project(project_file)
+        console.print(f"[green]Projet valide : {project.title}[/green]")
+        console.print(
+            f"{len(project.scenes)} scène(s), {len(project.sources)} source(s), "
+            f"format {project.aspect_ratio}, durée cible {project.target_duration_minutes} min."
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=1) from exc
 
 @app.command("video-test")
 def video_test(
