@@ -3,7 +3,7 @@
 ## Calendrier
 
 - Mercredi 14:00 UTC : collecte RSS, ouverture des sources et création d'un storyboard brouillon avec Gemini.
-- Samedi 15:00 UTC : contrôle des prérequis, génération des clips Agnes, voix Edge-TTS, sous-titres, montage FFmpeg, contrôle ffprobe et envoi à YouTube.
+- Vendredi 20:00 UTC : contrôle des prérequis, génération des clips Agnes, voix Edge-TTS, sous-titres, montage FFmpeg, contrôle ffprobe et envoi à YouTube.
 - YouTube reçoit une vidéo privée programmée pour samedi 16:00 UTC (heure du Mali).
 
 Les workflows sont :
