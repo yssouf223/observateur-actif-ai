@@ -42,7 +42,7 @@ def _word_boundaries_to_srt(boundaries: list[tuple[int, int, str]]) -> str:
         candidate = f"{current_text} {word}".strip()
         current_end = current[-1][0] + current[-1][1] if current else start
         would_be_long = len(candidate) > 42
-        would_be_slow = bool(current) and start - current[0][0] > 4_500
+        would_be_slow = bool(current) and start - current[0][0] > 4_500 * TICKS_PER_MILLISECOND
         sentence_end = word.rstrip().endswith((".", "?", "!", "…"))
         if current and (would_be_long or would_be_slow):
             groups.append(current)
