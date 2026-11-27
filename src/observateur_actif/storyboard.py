@@ -1,6 +1,8 @@
 """Schéma de storyboard : chaque scène doit être une vraie séquence animée."""
 
 from enum import Enum
+from urllib.parse import urlparse
+
 from pydantic import BaseModel, Field, model_validator
 
 
@@ -31,6 +33,9 @@ class Scene(BaseModel):
     motion_description: str = Field(min_length=1)
     claim_status: ClaimStatus
     source_ids: list[str] = Field(default_factory=list)
+    review_approved: bool = False
+    reviewer: str | None = None
+    reviewed_at: str | None = None
     generated_video_path: str | None = None
 
     @model_validator(mode="after")
@@ -55,6 +60,9 @@ class DocumentaryProject(BaseModel):
         if self.aspect_ratio != "16:9":
             raise ValueError("Le format documentaire doit être 16:9.")
         known_source_ids = {source.id for source in self.sources}
+        if len(known_source_ids) != len(self.sources):
+            raise ValueError("Les identifiants des sources doivent être uniques.")
+        sources_by_id = {source.id: source for source in self.sources}
         for scene in self.scenes:
             unknown_ids = set(scene.source_ids) - known_source_ids
             if unknown_ids:
@@ -62,8 +70,20 @@ class DocumentaryProject(BaseModel):
                     f"La scène {scene.id} référence des sources inconnues : "
                     f"{', '.join(sorted(unknown_ids))}."
                 )
-            if scene.claim_status == ClaimStatus.VERIFIED and not scene.source_ids:
-                raise ValueError(
-                    f"La scène {scene.id} est déclarée vérifiée sans source associée."
-                )
+            if scene.claim_status == ClaimStatus.VERIFIED:
+                if not scene.review_approved or not scene.reviewer or not scene.reviewed_at:
+                    raise ValueError(
+                        f"La scène {scene.id} est vérifiée sans validation éditoriale humaine."
+                    )
+                supporting = [sources_by_id[source_id] for source_id in scene.source_ids]
+                publishers = {source.publisher.strip().casefold() for source in supporting}
+                hosts = {
+                    (urlparse(source.url).hostname or "").casefold()
+                    for source in supporting
+                }
+                if len(supporting) < 2 or len(publishers) < 2 or len(hosts) < 2:
+                    raise ValueError(
+                        f"La scène {scene.id} exige deux sources de deux éditeurs "
+                        "et domaines distincts pour être déclarée vérifiée."
+                    )
         return self
