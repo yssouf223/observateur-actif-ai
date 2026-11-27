@@ -107,3 +107,24 @@ def test_draft_prompt_excludes_topics_from_history(tmp_path, monkeypatch):
     prompt = post.call_args.kwargs["json"]["messages"][0]["content"]
     assert "Lac Nyos" in prompt
     assert "NE PAS RÉUTILISER" in prompt
+
+
+def test_draft_repairs_malformed_json_from_agnes(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    monkeypatch.setenv("SCRIPT_PROVIDER", "agnes")
+    raw = json.dumps(valid_draft(), ensure_ascii=False)
+    raw = raw.replace(
+        '"narration": "Une phrase documentaire suffisamment longue."',
+        '"narration": "Une phrase "documentaire" suffisamment longue."',
+        1,
+    )
+    response = Mock(ok=True)
+    response.json.return_value = {
+        "choices": [{"message": {"content": raw}}]
+    }
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        output = draft_project(sources, tmp_path / "project.json")
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert result["scenes"][0]["narration"]
+    assert result["release_approved"] is False
