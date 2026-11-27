@@ -3,6 +3,7 @@
 import json
 import shutil
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import typer
@@ -333,6 +334,7 @@ def quality_check_command(
 def publish_youtube_command(
     project_file: str = typer.Argument(..., help="Projet documentaire avec validation de publication."),
     video_file: str = typer.Option("output/documentary.mp4", "--video", help="MP4 final contrôlé."),
+    publish_at: str | None = typer.Option(None, "--publish-at", help="Date ISO 8601 UTC à programmer."),
 ) -> None:
     """Programmer la publication YouTube le samedi à 16 h UTC après approbation."""
     try:
@@ -351,7 +353,10 @@ def publish_youtube_command(
             title=project.title,
             description=description,
             tags=["Observateur Actif", "documentaire", "mystères africains", "histoire africaine"],
-            publish_at=next_saturday_1600_utc(),
+            publish_at=(
+                datetime.fromisoformat(publish_at.replace("Z", "+00:00"))
+                if publish_at else next_saturday_1600_utc()
+            ),
         )
         console.print(f"[green]Vidéo envoyée et programmée : {result['url']}[/green]")
         console.print(f"Publication prévue : {result['publish_at']} (UTC)")
