@@ -44,7 +44,7 @@ def test_assemble_maps_clips_voice_and_soft_subtitles(tmp_path):
 
     args = run.call_args.args[0]
     assert result.read_bytes() == b"mp4"
-    assert "1280:720" in args[args.index("-filter_complex") + 1]
+    assert "1920:1080" in args[args.index("-filter_complex") + 1]
     assert "mov_text" in args
     assert "loudnorm=I=-16:TP=-1.5:LRA=11" in args[args.index("-filter_complex") + 1]
     assert "-shortest" in args
