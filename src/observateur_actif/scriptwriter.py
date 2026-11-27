@@ -408,6 +408,76 @@ DOCUMENTS SOURCÉS :
     except Exception as exc:
         raise ScriptWriterError(f"Le storyboard généré ne respecte pas le schéma : {exc}") from exc
 
+    used_text = " ".join(
+        source["text"] for source in source_texts
+        if source["source_id"] in used_source_ids
+    ).casefold()
+    narration_text = " ".join(scene.narration for scene in project.scenes)
+    narration_lower = narration_text.casefold()
+    video_prompts = " ".join(scene.video_prompt for scene in project.scenes).casefold()
+
+    unknown_age_reported = bool(re.search(
+        r"(?:exact|precise|specific).{0,40}age.{0,80}(?:unknown|not yet|not been|unresolved|undetermined|not established|yet to be established)"
+        r"|age.{0,60}(?:unknown|not yet established|unresolved|undetermined|yet to be established)",
+        used_text,
+    ))
+    if unknown_age_reported:
+        age_disclaimer = re.search(
+            r"(?:âge|datation).{0,90}(?:inconnu|inconnue|pas encore établi|pas établie|non établi|non établie|pas encore daté|pas encore déterminé|reste à déterminer)",
+            narration_lower,
+        )
+        if not age_disclaimer:
+            raise ScriptWriterError(
+                "Brouillon rejeté : une source précise que l'âge exact des artefacts "
+                "n'est pas établi, mais la narration ne le dit pas explicitement."
+            )
+        for sentence in re.split(r"[.!?]", narration_lower):
+            if re.search(r"(?:million|millions)", sentence) and not re.search(
+                r"(?:tradition|acheuléen|acheulean)", sentence
+            ):
+                raise ScriptWriterError(
+                    "Brouillon rejeté : une date générale de tradition archéologique "
+                    "est attribuée à un site ou à des objets non datés."
+                )
+
+    approximate_hundred = bool(re.search(
+        r"(?:nearly|close to|almost|about|approximately)\\s+100|(?:près de|environ|presque)\\s+(?:100|cent)",
+        used_text,
+    ))
+    if approximate_hundred:
+        title_lower = project.title.casefold()
+        if re.search(r"\\b(?:cent|100)\\s+haches\\b", title_lower) and not re.search(
+            r"(?:près de|environ|presque)\\s+(?:cent|100)", title_lower
+        ):
+            raise ScriptWriterError(
+                "Brouillon rejeté : le titre transforme une quantité approximative "
+                "('nearly 100') en nombre exact."
+            )
+        for sentence in re.split(r"[.!?]", narration_lower):
+            if re.search(r"\\b(?:cent|100)\\s+(?:haches|handaxes|hand axes)\\b", sentence) and not re.search(
+                r"(?:près de|environ|presque|nearly|about|approximately)\\s+(?:cent|100)", sentence
+            ):
+                raise ScriptWriterError(
+                    "Brouillon rejeté : la narration transforme 'près de 100' en quantité exacte."
+                )
+
+    if "calcrete" in used_text and "calcite" in narration_lower:
+        raise ScriptWriterError(
+            "Brouillon rejeté : 'calcrete' a été traduit à tort par 'calcite' ; "
+            "utiliser 'calcrète' ou décrire le sédiment correctement."
+        )
+
+    if not re.search(r"\\b(?:bone|bones|skeleton|fossil|fossils)\\b", used_text) and re.search(
+        r"\\b(?:bone|bones|skeleton|fossil|fossils)\\b", video_prompts
+    ):
+        raise ScriptWriterError(
+            "Brouillon rejeté : un prompt vidéo invente des os ou fossiles absents des sources utilisées."
+        )
+    if re.search(r"\\b(?:static|still image|slideshow|photograph)\\b", video_prompts):
+        raise ScriptWriterError(
+            "Brouillon rejeté : un prompt vidéo demande une image statique ou un diaporama."
+        )
+
     total_seconds = sum(scene.duration_seconds for scene in project.scenes)
     if any(scene.duration_seconds > 12 for scene in project.scenes):
         raise ScriptWriterError("Chaque scène doit durer au maximum 12 secondes pour correspondre au moteur vidéo.")
