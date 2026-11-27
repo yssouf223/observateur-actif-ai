@@ -99,6 +99,10 @@ def produce_project(
     report = {
         "status": "assembled_pending_human_playback",
         "title": project.title,
+        "sources": [
+            {"id": source.id, "title": source.title, "publisher": source.publisher, "url": source.url}
+            for source in project.sources
+        ],
         "scene_count": len(project.scenes),
         "video_resolution": "1280x720",
         "aspect_ratio": project.aspect_ratio,
