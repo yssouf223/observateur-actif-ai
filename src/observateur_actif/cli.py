@@ -344,11 +344,20 @@ def publish_youtube_command(
             raise YouTubePublishError(
                 "Publication bloquée : release_approved=true, release_reviewer et release_approved_at sont requis."
             )
+        source_lines = [
+            f"- {source.title} — {source.url}"
+            for source in project.sources
+        ]
+        source_section = (
+            "\\n\\nSources consultées :\\n" + "\\n".join(source_lines)
+            if source_lines else ""
+        )
         description = (
             f"{project.title} — documentaire Observateur Actif. "
             "Les faits, hypothèses, témoignages et traditions sont distingués dans le récit. "
             "Abonnez-vous à Observateur Actif pour découvrir nos prochains documentaires."
-        )
+            + source_section
+        )[:4900]
         result = publish_video(
             video_file,
             title=project.title,
