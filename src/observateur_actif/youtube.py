@@ -49,9 +49,6 @@ def publish_video(
     client_secret = os.getenv("YOUTUBE_CLIENT_SECRET", "").strip()
     refresh_token = os.getenv("YOUTUBE_REFRESH_TOKEN", "").strip()
     channel_id = (expected_channel_id or os.getenv("YOUTUBE_CHANNEL_ID", "")).strip()
-    project_verified = os.getenv("YOUTUBE_API_PROJECT_VERIFIED", "").strip().lower() == "true"
-    if not project_verified:
-        raise YouTubePublishError("Publication bloquée : confirme la vérification du projet YouTube Data API via YOUTUBE_API_PROJECT_VERIFIED=true.")
     missing = [
         name for name, value in (
             ("YOUTUBE_CLIENT_ID", client_id),
