@@ -280,7 +280,7 @@ def assemble_video_command(
             subtitles_file=subtitles_file, music_file=music_file,
         )
         console.print(f"[green]Documentaire assemblé : {result}[/green]")
-        console.print("[yellow]Sortie 16:9 en 720p : les clips Agnes actuels sont générés en 720p.[/yellow]")
+        console.print("[yellow]Sortie 16:9 en 1080p upscalé depuis les clips Agnes 720p ; résolution non native.[/yellow]")
         if music_file is None:
             console.print("Aucune musique de fond ajoutée.")
     except (FileNotFoundError, OSError, ValueError, MontageError) as exc:
