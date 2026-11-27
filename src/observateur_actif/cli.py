@@ -345,7 +345,7 @@ def publish_youtube_command(
                 "Publication bloquée : release_approved=true, release_reviewer et release_approved_at sont requis."
             )
         source_lines = [
-            f"- {source.title} — {source.url}"
+            f"- {source.publisher} : {source.title} — {source.url}"
             for source in project.sources
         ]
         source_section = (
