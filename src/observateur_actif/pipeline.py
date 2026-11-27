@@ -85,6 +85,10 @@ def produce_project(
 
     quality_path = root / "quality_report.json"
     write_quality_report(final_path, quality_path)
+    quality_data = json.loads(quality_path.read_text(encoding="utf-8"))
+    actual_seconds = float(quality_data.get("duration_seconds", 0))
+    if not target_seconds * 0.9 <= actual_seconds <= target_seconds * 1.1:
+        raise ProductionError(f"Durée MP4 finale incohérente : {actual_seconds:.1f}s pour une cible de {target_seconds}s.")
     report_path = root / "production_report.json"
     report = {
         "status": "assembled_pending_human_playback",
