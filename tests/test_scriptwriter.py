@@ -250,3 +250,25 @@ def test_draft_rejects_near_duplicate_articles_from_different_domains(tmp_path, 
     monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
     with pytest.raises(ScriptWriterError, match="réellement indépendantes"):
         draft_project(path, tmp_path / "project.json")
+
+
+def test_draft_accepts_distinct_cases_in_same_african_archaeology_theme(tmp_path, monkeypatch):
+    path = tmp_path / "egypt_sources.json"
+    path.write_text(json.dumps([
+        {"fetch_status": "success", "url": "https://archaeology.example/alexandria",
+         "title": "Ptolemaic foundation unearthed in Alexandria",
+         "publisher": "Archaeology Publisher",
+         "text": "Archaeologists uncovered an ancient Ptolemaic foundation in Alexandria, Egypt."},
+        {"fetch_status": "success", "url": "https://science.example/crocodiles",
+         "title": "Beeswax and pine link crocodile mummies at an Egyptian site",
+         "publisher": "Science Publisher",
+         "text": "Researchers studied ancient crocodile mummies at an archaeological site in Egypt."}
+    ]), encoding="utf-8")
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    draft = valid_draft()
+    response = Mock(ok=True)
+    response.json.return_value = {"choices": [{"message": {"content": json.dumps(draft)}}]}
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        output = draft_project(path, tmp_path / "project.json")
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert len({source_id for scene in result["scenes"] for source_id in scene["source_ids"]}) == 2
