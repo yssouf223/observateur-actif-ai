@@ -1,0 +1,66 @@
+name: Prévalidation API vidéo Agnes (sans génération)
+
+on:
+  push:
+    paths:
+      - ".github/workflows/agnes-api-preflight.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: Vérifier clé et accès au modèle sans consommer de crédit vidéo
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+    steps:
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Vérifier la clé et la disponibilité du modèle
+        run: |
+          python - <<'PY'
+          import os
+          import requests
+
+          key = os.environ.get("AGNES_API_KEY", "").strip()
+          if not key:
+              raise SystemExit(
+                  "Secret AGNES_API_KEY absent ou vide. "
+                  "Aucune demande de génération vidéo n'a été envoyée."
+              )
+
+          response = requests.get(
+              "https://apihub.agnes-ai.com/v1/models",
+              headers={"Authorization": f"Bearer {key}"},
+              timeout=30,
+          )
+          if response.status_code in (401, 403):
+              raise SystemExit(
+                  f"Agnes refuse la clé (HTTP {response.status_code}). "
+                  "Aucune vidéo n'a été générée."
+              )
+          response.raise_for_status()
+          payload = response.json()
+          models = payload.get("data", payload.get("models", []))
+          names = {
+              item.get("id") or item.get("name")
+              for item in models
+              if isinstance(item, dict)
+          }
+          target = "agnes-video-2.5-flash"
+          if target not in names:
+              available = ", ".join(sorted(str(x) for x in names if x)) or "aucun modèle listé"
+              raise SystemExit(
+                  f"Clé reconnue, mais modèle {target} non trouvé. "
+                  f"Modèles visibles : {available}. Aucun crédit vidéo consommé."
+              )
+          print("SUCCÈS : clé Agnes reconnue.")
+          print(f"SUCCÈS : modèle {target} visible pour cette clé.")
+          print("Aucune vidéo n'a été demandée ; aucun crédit de génération vidéo consommé.")
+          PY
