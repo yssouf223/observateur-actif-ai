@@ -20,6 +20,7 @@ def test_after_saturday_1600_schedules_following_week():
 def test_publish_requires_oauth_secrets(tmp_path, monkeypatch):
     video = tmp_path / "video.mp4"
     video.write_bytes(b"video")
+    monkeypatch.setenv("YOUTUBE_API_PROJECT_VERIFIED", "true")
     for name in ("YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN", "YOUTUBE_CHANNEL_ID"):
         monkeypatch.delenv(name, raising=False)
     with patch("observateur_actif.youtube.inspect_video", return_value={}):
@@ -89,6 +90,7 @@ def test_successful_upload_is_private_until_future_publish_time(tmp_path, monkey
     monkeypatch.setenv("YOUTUBE_CLIENT_SECRET", "secret")
     monkeypatch.setenv("YOUTUBE_REFRESH_TOKEN", "refresh")
     monkeypatch.setenv("YOUTUBE_CHANNEL_ID", "channel-123")
+    monkeypatch.setenv("YOUTUBE_API_PROJECT_VERIFIED", "true")
 
     video = tmp_path / "final.mp4"
     video.write_bytes(b"mp4")
