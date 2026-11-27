@@ -102,6 +102,7 @@ def test_successful_upload_is_private_until_future_publish_time(tmp_path, monkey
 
     assert result["video_id"] == "youtube-video-123"
     assert captured["body"]["status"]["privacyStatus"] == "private"
+    assert captured["body"]["status"]["containsSyntheticMedia"] is True
     assert captured["body"]["status"]["publishAt"].endswith("Z")
     assert captured["body"]["snippet"]["categoryId"] == "27"
     assert "https://www.googleapis.com/auth/youtube.upload" in captured["scopes"]
