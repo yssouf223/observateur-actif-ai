@@ -1,6 +1,7 @@
 """Contrôles techniques du MP4 final avec ffprobe."""
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -72,3 +73,52 @@ def write_quality_report(video_file: str | Path, report_file: str | Path) -> Pat
     destination.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n",
                            encoding="utf-8")
     return destination
+
+
+def inspect_clip_motion(
+    video_file: str | Path,
+    *,
+    ffmpeg: str = "ffmpeg",
+    freeze_threshold_db: int = -60,
+    freeze_duration_seconds: float = 3.0,
+) -> dict:
+    """Refuser les clips presque immobiles sur une longue durée.
+
+    Le filtre FFmpeg freezedetect signale les séquences dont les images restent
+    pratiquement identiques pendant le seuil demandé. Il s'agit d'un garde-fou
+    automatique, pas d'une appréciation artistique du mouvement.
+    """
+    executable = shutil.which(ffmpeg)
+    if not executable:
+        raise QualityError("FFmpeg est introuvable pour le contrôle du mouvement.")
+    path = Path(video_file)
+    if not path.is_file() or path.stat().st_size == 0:
+        raise QualityError(f"Clip absent ou vide : {path}")
+    command = [
+        executable, "-hide_banner", "-i", str(path),
+        "-vf", f"freezedetect=n={freeze_threshold_db}dB:d={freeze_duration_seconds}",
+        "-an", "-f", "null", "-",
+    ]
+    try:
+        result = subprocess.run(command, check=False, capture_output=True, text=True)
+    except OSError as exc:
+        raise QualityError(f"Impossible d'analyser le mouvement du clip : {exc}") from exc
+    if result.returncode != 0:
+        details = (result.stderr or result.stdout or "erreur FFmpeg")[-1200:]
+        raise QualityError(f"Analyse de mouvement impossible pour {path} : {details}")
+    freezes = [
+        float(value)
+        for value in re.findall(r"freeze_duration:\s*([0-9]+(?:\\.[0-9]+)?)", result.stderr or "")
+    ]
+    long_freezes = [duration for duration in freezes if duration >= freeze_duration_seconds]
+    if long_freezes:
+        raise QualityError(
+            f"Mouvement insuffisant dans {path} : gel détecté pendant "
+            f"{max(long_freezes):.1f} secondes."
+        )
+    return {
+        "status": "motion_check_passed",
+        "file": str(path),
+        "freeze_threshold_seconds": freeze_duration_seconds,
+        "detected_freeze_durations": freezes,
+    }
