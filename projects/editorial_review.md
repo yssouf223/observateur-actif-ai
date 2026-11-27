@@ -1,19 +1,23 @@
-# Revue éditoriale — Enquête : la mutation silencieuse du djihadisme en Afrique
+# Revue éditoriale — Les rives oubliées : cent haches de pierre au cœur du Kalahari
 
-- Durée cible : 10 minutes
-- Scènes : 50
-- Durée storyboard : 600 secondes
+- Durée cible : 11 minutes
+- Scènes : 55
+- Durée storyboard : 660 secondes
 - Approbation de publication : NON
 
 ## Sources à contrôler
 
-- **NASA — APOD: 2026 November 27 – The Moon Watchers - NASA Science**
-  - URL : https://science.nasa.gov/image-article/apod-2026-november-27-the-moon-watchers/
-  - Collectée le : 2026-11-27T12:04:15.996844+00:00
+- **Science in Poland — History and Culture — Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland**
+  - URL : https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert
+  - Collectée le : 2026-11-27T12:11:52.976953+00:00
   - Note : Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine.
-- **BBC Afrique — Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique**
-  - URL : https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss
-  - Collectée le : 2026-11-27T12:04:16.727245+00:00
+- **Archaeology Magazine — News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine**
+  - URL : https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/
+  - Collectée le : 2026-11-27T12:11:51.918477+00:00
+  - Note : Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine.
+- **The Conversation Africa — A new fossil from South Africa offers clues to how giant plant-eating dinosaurs evolved**
+  - URL : https://theconversation.com/a-new-fossil-from-south-africa-offers-clues-to-how-giant-plant-eating-dinosaurs-evolved-297204
+  - Collectée le : 2026-11-27T12:11:56.156689+00:00
   - Note : Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine.
 
 ## Scènes
@@ -23,1050 +27,1211 @@
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Riz, pâtes, sucre, huile de cuisson et haricots. Dans la propagande d'Al-Shabab, ces denrées figurent parmi les aides distribuées à des centaines de familles somaliennes en août.
+Au sud de l'Afrique, un vaste désert de buissons dissimule une mémoire de pierre vieille d'un million et demi d'années. Le Kalahari retient des secrets que la végétation a protégés des regards.
 
 **Prompt vidéo**
 
-Slow aerial drone push over arid Somali farmland at dawn, dry golden grass swaying, distant village huts emerging from haze.
+Aerial drone slowly descending over endless golden Kalahari bush, low haze, vast flat terrain stretching to horizon.
 
 **Mouvement**
 
-Aerial drone pushes forward over swaying grass toward village.
+Camera descends steadily from high altitude toward the flat bush landscape.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-002
-- Durée : 12 s
-- Statut éditorial : testimony
-- Approuvée : NON
-- Réviseur : aucun
-- Sources : source-2
-
-**Narration**
-
-Une femme filmée par le groupe prononce une prière de remerciement. Cette scène s'inscrit dans une stratégie délibérée visant à gagner la confiance des communautés locales du sud et du centre de la Somalie.
-
-**Prompt vidéo**
-
-Hand-held close-up of a woman's face in soft natural light, her hands clasped in prayer, camera slowly pulling back to reveal a modest dirt-floored room.
-
-**Mouvement**
-
-Camera slowly pulls back from woman's clasped hands to room.
-
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
-
-### scene-003
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Tout au long de l'année 2026, ce groupe, qui contrôle de vastes zones rurales, a mis en avant son travail humanitaire via ses réseaux sociaux et sa station de radio.
+La vallée d'Okwa s'étire vers la frontière entre le Botswana et la Namibie. Son accès est rendu presque impossible par une brousse dense qui limite toute exploration systématique.
 
 **Prompt vidéo**
 
-Slow lateral tracking shot along a dusty rural road, radio antenna silhouetted against a hazy amber sky, dust particles drifting in wind.
+Ground-level tracking shot through dense thorny Kalahari shrubs, camera pushing forward slowly, branches brushing the lens.
 
 **Mouvement**
 
-Lateral tracking shot follows dusty road, antenna sways in wind.
+Camera pushes forward through dense shrubs at walking pace.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
+
+### scene-003
+- Durée : 12 s
+- Statut éditorial : testimony
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1, source-2
+
+**Narration**
+
+Le professeur Mirosław Masojć, directeur de l'Institut d'archéologie de l'Université de Wrocław, décrit cette zone comme exceptionnellement difficile pour la recherche archéologique.
+
+**Prompt vidéo**
+
+Medium shot of a researcher brushing dirt off a stone in dense bush, camera slowly panning right to reveal open valley.
+
+**Mouvement**
+
+Camera pans slowly right from close brush to open valley.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-004
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Un quart de siècle après les attentats du 11-Septembre, douze ans après la proclamation du califat de l'État islamique, le mouvement djihadiste a profondément changé d'aspect.
+Cette brousse, obstacle majeur, est précisément la raison pour laquelle cette partie du Kalahari demeure si peu explorée à ce jour. Le désert garde ses traces intactes.
 
 **Prompt vidéo**
 
-Slow zoom out from a weathered wall covered in peeling propaganda posters to reveal a vast open Saharan landscape under harsh midday sun.
+Wide static-then-slow-tilt-up shot of uninterrupted bush canopy filling the entire frame, sunlight filtering through.
 
 **Mouvement**
 
-Camera zooms out from peeling posters to wide desert landscape.
+Camera tilts up slowly from ground to full canopy.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-005
 - Durée : 12 s
-- Statut éditorial : hypothesis
+- Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Plutôt que de viser l'Occident ou un État islamique mondial, certains groupes liés à Al-Qaïda s'efforcent désormais de conquérir le pouvoir au niveau national et de faire des compromis.
+Pendant le Pléistocène, un réseau étendu de rivières et de lacs couvrait cette région aujourd'hui aride. Les sédiments enregistrent les traces de ce monde disparu.
 
 **Prompt vidéo**
 
-Slow push-in on a satellite map projection on a dark screen, camera tilting up to reveal blurred silhouettes of analysts in a dim room.
+Slow aerial forward dolly over a dry riverbed with cracked earth, camera descending toward a shallow pale lake bed.
 
 **Mouvement**
 
-Camera pushes into map, tilts up to silhouetted figures.
+Aerial camera glides forward and descends toward the lake bed.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-006
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-L'État islamique a perdu son dernier bastion territorial en 2019. Ni Al-Qaïda ni l'EI n'ont réalisé leur rêve ultime de gouverner un pays selon leur interprétation stricte de l'islam.
+Parmi ces sédiments, l'équipe a identifié les vestiges de rivières anciennes et un lac pléistocène. C'est le long de sa rive que les haches de pierre ont été retrouvées.
 
 **Prompt vidéo**
 
-Slow overhead descent onto a cracked, abandoned urban rooftop, debris shifting in wind, camera continuing to lower through dust and faded rubble.
+Close-up of layered sediment cross-section in a quarry wall, camera slowly tracking right along the strata.
 
 **Mouvement**
 
-Overhead camera descends through dust onto cracked abandoned rooftop.
+Camera tracks right along sediment layers in quarry wall.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-007
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Mais le djihadisme n'a pas disparu. L'Afrique est aujourd'hui le principal champ de bataille, où le JNIM au Sahel et Al-Shabab en Somalie mènent des insurrections de longue durée.
+La tradition acheuléenne, l'une des plus anciennes technologies de production d'outils en pierre connues, émerge en Afrique il y a environ un million sept cent mille ans.
 
 **Prompt vidéo**
 
-Slow dolly forward across a flat acacia savanna at dusk, a lone column of vehicles moving in the far distance, headlights cutting through orange haze.
+Slow overhead top-down shot of a hand grinding a stone flake on flat rock, sparks of dust rising.
 
 **Mouvement**
 
-Dolly forward across savanna toward distant vehicle column at dusk.
+Camera slowly orbits a hand grinding stone from above.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-008
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Le rival de ces branches, l'État islamique, est actif au Nigeria, en République démocratique du Congo, au Sahel, au Mozambique et en Somalie.
+Son expression la plus caractéristique est la hache de main, un outil de pierre de grande taille. La tradition persiste jusqu'à environ deux cent mille ans avant aujourd'hui.
 
 **Prompt vidéo**
 
-Slow pan across a dark desk, fingers tracing a hand-drawn map of Africa with red lines connecting five regions, pencil dust scattering in lamplight.
+Slow dolly-in on a large bifacial handaxe resting on ochre sand, shallow depth of field, warm light.
 
 **Mouvement**
 
-Pan across desk, fingers trace red lines on hand-drawn map.
+Camera dollies in slowly toward the handaxe on sand.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-009
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-En fin d'année 2024, le JNIM a abandonné le logo familier d'Al-Qaïda dans ses vidéos. Le groupe se présente désormais comme un défenseur des gens ordinaires contre les dirigeants corrompus.
+L'acheuléen est une grande évolution technologique du Paléolithique inférieur, connue en Afrique, en Asie et en Europe. Les outils retrouvés ici appartiennent à cette lignée.
 
 **Prompt vidéo**
 
-Slow tracking shot along a long wall of faded and peeling emblems, camera passing over blank patches where logos once were, dust swirling at the base.
+Pan left across a row of stone tools laid on a white field cloth, camera gliding at table height.
 
 **Mouvement**
 
-Tracking shot passes over blank wall patches, dust swirls.
+Camera pans left across laid-out stone tools on cloth.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-010
 - Durée : 12 s
-- Statut éditorial : testimony
+- Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Le JNIM accuse le gouvernement militaire malien et ses alliés russes de tuer des civils et d'aggraver les conditions de vie de la population locale.
+Cette année, l'équipe a découvert environ quarante haches de main sur un seul site, accompagnées de fragments laissés lors de leur fabrication et de blocs bruts travaillés.
 
 **Prompt vidéo**
 
-Slow handheld push through a crowded market, vendors turning to face camera, baskets of goods swaying, the crowd parting like a river around the lens.
+Hands carefully lifting a handaxe from loose soil, camera tilting up slowly to reveal the small excavation pit.
 
 **Mouvement**
 
-Handheld pushes through swaying market crowd, vendors turn to face.
+Camera tilts up from hands in soil to pit edge.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-011
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-En avril, le groupe a lancé un appel à tous les patriotes sincères pour construire un nouveau Mali, promettant sécurité, justice et prospérité dans le respect de la loi islamique.
+Ces découvertes portent à près de cent le nombre total de haches de main recueillies par les archéologues dans le Kalahari. Un corpus déjà considérable.
 
 **Prompt vidéo**
 
-Slow crane up from a crowd of silhouetted figures raising fists to a vast golden sky, banners and cloth flapping in strong wind.
+Slow pull-back from a single handaxe to reveal dozens more scattered across a wide sandy floor.
 
 **Mouvement**
 
-Crane rises from raised fists to banners flapping in wind.
+Camera pulls back revealing dozens of handaxes scattered on sand.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-012
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Le JNIM a même laissé entendre qu'il pourrait entretenir des relations équilibrées avec la Russie, tout en combattant les forces russes soutenant le gouvernement malien.
+Les outils sont actuellement conservés à l'Université de Sciences et Technologies AGH, à Cracovie. Ils y subissent une analyse détaillée de leur structure et de leur techno-logie.
 
 **Prompt vidéo**
 
-Slow lateral dolly past two opposing rows of soldiers in dust, camera moving steadily between them, wind pushing sand against their boots and uniforms.
+Slow push-in on gloved hands examining a stone tool under bright lab light, camera moving forward.
 
 **Mouvement**
 
-Lateral dolly moves between two opposing rows of soldiers in dust.
+Camera pushes in slowly on hands examining stone tool.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-013
 - Durée : 12 s
-- Statut éditorial : unconfirmed
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Fin avril, le JNIM s'est allié aux séparatistes touaregs nationalistes, qu'il avait parfois combattus, pour lancer une offensive majeure menaçant le pouvoir militaire malien.
+L'équipe prévoit de comparer ces haches du Kalahari à celles retrouvées dans les régions septentrionales du désert et au matériel acheuléen sud-africain. Un dialogue entre sites.
 
 **Prompt vidéo**
 
-Slow aerial orbit around a dusty rally where two groups of men in different uniforms stand shoulder to shoulder, ground swirling beneath.
+Split-screen slow lateral tracking of two identical handaxes side by side, camera sliding left across both.
 
 **Mouvement**
 
-Aerial orbits around two allied groups standing together at dusty rally.
+Camera slides left across two handaxes displayed side by side.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-014
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Le groupe est même allé jusqu'à qualifier les Touaregs de frères. Un pragmatisme remarquable qui détone avec la rhétorique jihadiste mondiale d'antan.
+La recherche est conduite en collaboration avec l'Université du Botswana, l'Institut coréen KIGAM et le Département de géologie régionale du Institut polonais de géologie, à Varsovie.
 
 **Prompt vidéo**
 
-Slow push-in on two men's hands clasping in a firm handshake, camera rising to reveal their contrasting headwraps against a dusty backdrop.
+Slow zoom-out from a map on a table showing Botswana, camera pulling back to reveal a team around it.
 
 **Mouvement**
 
-Push-in on handshake, camera rises to reveal contrasting headwraps.
+Camera zooms out from map to reveal team around table.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-015
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Une source majeure d'inspiration pour les djihadistes est le nouveau président syrien, Ahmed al-Sharaa, ancien commandant recherché par les États-Unis, arrivé au pouvoir en décembre 2024.
+Le projet bénéficie d'une subvention du Centre polonais des sciences nationales. C'est cette dotation qui a ouvert l'accès à l'ensemble du Kalahari pour l'Université de Wrocław.
 
 **Prompt vidéo**
 
-Slow tracking shot through a narrow Damascus alley, camera gliding past weathered brick walls and hanging laundry, light shifting as clouds pass overhead.
+Overhead slow rotation of a grant document on a wooden desk, camera orbiting the paper steadily.
 
 **Mouvement**
 
-Tracking shot glides through narrow alley, light shifts on walls.
+Camera orbits slowly overhead around a grant document on desk.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-016
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Anciennement connu sous le nom de guerre Abu Mohammed al-Jolani, il a dirigé le Front al-Nosra puis Hayat Tahrir al-Sham avant de rompre ses liens avec l'EI et Al-Qaïda.
+Là où la brousse résiste, la technique a trouvé une parade. Les carrières de calcite, utilisées pour la construction de routes, exposent les couches de sédiments du Kalahari.
 
 **Prompt vidéo**
 
-Slow dissolve-free tracking shot along a long corridor of peeling propaganda murals, camera moving steadily forward, figures on the walls growing larger.
+Time-lapse style slow push into a quarry excavation revealing layered sediment walls, camera advancing steadily.
 
 **Mouvement**
 
-Tracking shot moves forward along peeling mural corridor, figures grow.
+Camera advances steadily into a quarry exposing sediment layers.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-017
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Il a concentré ses efforts sur la Syrie, établissant une base de pouvoir dans la province d'Idlib, au nord-ouest du pays, et cherchant à rassurer la communauté internationale.
+Ces sédiments, cimentés par le carbonate de calcium, sont extraits de nombreuses carrières dans la région. Les fouilles ont offert une fenêtre inestimable sur la structure géologique de la vallée.
 
 **Prompt vidéo**
 
-Slow aerial descent over arid Idlib hills, camera dropping through thin cloud layer to reveal a patchwork of small cultivated fields and stone houses below.
+Slow lateral tracking along a pale calcite quarry wall, layers visible, camera gliding at eye level.
 
 **Mouvement**
 
-Aerial descends through cloud layer over arid Idlib hills and fields.
+Camera tracks laterally along calcite quarry wall at eye level.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-018
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Ses dirigeants ont même sollicité l'aide de la Russie, alliée clé du président Bachar al-Assad, afin d'apaiser les craintes d'une prise de pouvoir islamiste.
+Dans les dépôts mis à jour, les chercheurs ont identifié des traces de rivières anciennes et un lac pléistocène. Le paysage était alors radicalement différent de ce qu'il est aujourd'hui.
 
 **Prompt vidéo**
 
-Slow lateral dolly past a long table where two delegations face each other, documents being slid across, chairs creaking slightly as weight shifts.
+Slow dissolve between a dry cracked earth surface and a gently rippling lake, cross-fade over six seconds.
 
 **Mouvement**
 
-Lateral dolly past negotiation table, documents slide, chairs creak.
+Cross-dissolve from dry cracked earth to rippling water surface.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-019
 - Durée : 12 s
-- Statut éditorial : unconfirmed
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Ce pragmatisme, combiné à une Russie et un Iran affaiblis, lui a permis de prendre le pouvoir en Syrie. Son accueil par les dirigeants du monde entier est resté remarquable.
+Les haches de pierre ont été retrouvées le long de la rive de ce plan d'eau préhistorique. La présence d'eau douce a sans doute attiré les communautés de hominins.
 
 **Prompt vidéo**
 
-Slow push-in on a rotating globe, camera closing in on the Middle East region, the turntable spinning beneath, light glinting off the glass surface.
+Slow crane descent from sky to shoreline where scattered stone tools rest on ancient sandy bank.
 
 **Mouvement**
 
-Push-in on rotating globe, camera closes on Middle East region.
+Crane descends from sky to shoreline with scattered stone tools.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-020
 - Durée : 12 s
-- Statut éditorial : testimony
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Lors de la visite de Sharaa à la Maison Blanche en novembre 2025, le président Trump l'a aspergé de son propre parfum et l'a qualifié de dirigeant très fort.
+En combinant l'analyse technologique des outils à l'étude des sédiments, de la chronologie et de l'environnement ancien, les chercheurs espèrent reconstituer l'usage du paysage par les premières communautés humaines.
 
 **Prompt vidéo**
 
-Slow handheld shot in a vast marble hall, camera drifting laterally past columns, two figures walking in the far distance toward each other.
+Slow orbit around a geologist brushing sediment from a bone fragment, camera circling at knee height.
 
 **Mouvement**
 
-Handheld drifts laterally past marble columns toward distant figures.
+Camera orbits a geologist brushing sediment from bone fragment.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-021
 - Durée : 12 s
 - Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Pour certains djihadistes, le succès de Sharaa est une source d'inspiration. D'autres perçoivent ses actions comme une trahison de tout ce en quoi ils croient.
+L'objectif est de comprendre comment ces communautés s'adaptaient aux changements environnementaux en Afrique australe. Le Kalahari, loin de tous les centres de population modernes, en est le laboratoire.
 
 **Prompt vidéo**
 
-Slow split tracking shot dividing two groups of men walking in opposite directions on a dusty road, dust trailing behind each column.
+Wide slow forward dolly across an empty arid valley, lone researcher figure walking toward distant hills.
 
 **Mouvement**
 
-Split tracking follows two groups walking opposite directions on dust road.
+Camera dollies forward across empty valley toward distant hills.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-022
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-L'État islamique a déclaré le djihad contre le nouveau gouvernement syrien, qualifiant Sharaa et ses collaborateurs d'apostats, et a mené des attaques sur cette base.
+La vallée d'Okwa s'étend sur une longue distance vers la frontière namibienne. Les équipes travaillent dans une zone dépourvue de toute occupation humaine contemporaine.
 
 **Prompt vidéo**
 
-Slow overhead shot of a village square at night, a single flare arcing across the sky, casting shifting orange light over clustered rooftops and silhouetted trees.
+Aerial slow forward flight over a long dry valley narrowing toward a distant border horizon.
 
 **Mouvement**
 
-Overhead captures flare arcing over village, light shifts on rooftops.
+Aerial camera flies forward along a long dry valley.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-023
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Depuis 2025, un débat virulent en ligne oppose les djihadistes radicaux aux pragmatiques. Ils s'accusent mutuellement de trahison et publient des ouvrages concurrents.
+Les chercheurs cherchent avant tout les preuves les plus anciennes de la présence et des déplacements des hominins, ainsi que des sites permettant une recherche directe sur le terrain.
 
 **Prompt vidéo**
 
-Slow push-in on a scrolling document on a screen, text blurring past, camera tilting up to reveal a pair of eyes reflected in the glowing display.
+Slow push-in on a hand brushing away topsoil to reveal a dark stone surface beneath, camera advancing.
 
 **Mouvement**
 
-Push-in on scrolling text, tilts up to reflected eyes in screen.
+Camera pushes in on hand brushing topsoil to reveal stone.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-024
 - Durée : 12 s
-- Statut éditorial : hypothesis
+- Statut éditorial : testimony
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Pour les extrémistes, aller trop loin peut signifier renoncer à imposer leur interprétation stricte de la loi islamique ou à accepter des lois faites par les hommes.
+Comme le souligne Masojć, on peut dire que l'Université de Wrocław s'est vu conférer l'accès à l'ensemble du désert du Kalahari pour ses recherches sur les premiers chapitres de l'histoire humaine.
 
 **Prompt vidéo**
 
-Slow tilt-down from a high ceiling with carved details to a wooden desk where a heavy book is being closed, its cover catching the lamplight.
+Slow zoom out from a single researcher to reveal the vast expanse of desert surrounding them.
 
 **Mouvement**
 
-Tilt-down from ceiling to heavy book being closed on desk.
+Camera zooms out from researcher to vast desert expanse.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-025
 - Durée : 12 s
-- Statut éditorial : hypothesis
+- Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Cela peut aussi impliquer de participer aux élections, de collaborer avec des groupes non islamistes ou de nouer des liens avec des gouvernements considérés comme infidèles.
+Les fragments de pierre laissés durant la fabrication des haches sont tout aussi précieuses que les outils finis. Ils révèlent la séquence de débitage et le choix des matières premières.
 
 **Prompt vidéo**
 
-Slow tracking shot past a row of ballot boxes in a dim polling station, a hand dropping a paper into the slot, the pile inside shifting.
+Close-up slow tilt from a flake scatter on the ground up to a finished handaxe held in hand.
 
 **Mouvement**
 
-Tracking past ballot boxes, hand drops paper into slot.
+Camera tilts from flake scatter up to finished handaxe in hand.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-026
 - Durée : 12 s
-- Statut éditorial : unconfirmed
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Une autre source d'inspiration est le retour au pouvoir des talibans en Afghanistan en 2021, démontrant qu'un mouvement islamiste pouvait reprendre le contrôle d'un pays.
+Le travail de gros blocs de matière première, retrouvé sur place, indique que la production des outils s'est effectuée ici et non importée depuis d'autres sites.
 
 **Prompt vidéo**
 
-Slow aerial pull-back from a dusty road where a convoy of vehicles moves slowly, the camera rising to reveal the vast green and brown Afghan landscape.
+Slow lateral pan across a row of large unworked stone blocks on reddish Kalahari sand.
 
 **Mouvement**
 
-Aerial pulls back and rises from convoy to vast Afghan landscape.
+Camera pans laterally across large unworked stone blocks.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-027
 - Durée : 12 s
-- Statut éditorial : unconfirmed
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Les talibans ont mobilisé des groupes locaux, consolidé progressivement leur pouvoir, eu recours à la diplomatie internationale et attendu leur heure avant une offensive éclair sur Kaboul.
+La brousse dense du Kalahari, qui rend l'exploration si difficile, a paradoxalement protégé ces vestiges de la perturbation. Le désert a été son propre conservatoire.
 
 **Prompt vidéo**
 
-Slow dolly forward through a narrow corridor of stacked sandbags and concrete blocks, light filtering through gaps, dust motes floating in the beams.
+Slow push through swaying dry grass and thorn bushes, light shafts cutting through, camera advancing.
 
 **Mouvement**
 
-Dolly moves forward through sandbag corridor, light filters through gaps.
+Camera pushes forward through swaying dry grass and thorns.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-028
 - Durée : 12 s
 - Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Cette stratégie en plusieurs étapes, du compromis local à la prise de contrôle nationale, résonne directement avec l'approche de Sharaa à Idlib et du JNIM au Mali.
+Le contexte de la rive du lac pléistocène est crucial. L'eau douce, dans un environnement désormais aride, aurait constitué une ressource structurante pour les groupes mobiles.
 
 **Prompt vidéo**
 
-Slow orbit around a chessboard where pieces are being moved by two hands, camera circling, the board's grain and reflections shifting with the light.
+Slow drone forward flight over a pale dry lakebed with a single dark water seep in the center.
 
 **Mouvement**
 
-Orbit around chessboard, hands move pieces, light shifts on board.
+Drone flies forward over dry lakebed toward a water seep.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-029
 - Durée : 12 s
-- Statut éditorial : hypothesis
+- Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Les similitudes avec l'approche de Sharaa en Syrie sont frappantes : construire des alliances locales, rassurer les ennemis potentiels, éviter d'offrir une raison aux puissances extérieures d'intervenir.
+Les sédiments exposés par les carrières révèlent la stratigraphie complète de la vallée. Chaque couche correspond à une phase environnementale distincte du Pléistocène.
 
 **Prompt vidéo**
 
-Slow push-in on a round table where several men lean forward in discussion, papers spreading between them, the camera closing in past their elbows.
+Slow vertical tilt down along a multi-colored sediment cliff face, each band visible, camera descending.
 
 **Mouvement**
 
-Push-in past leaning elbows toward round discussion table and papers.
+Camera tilts down along multi-colored sediment cliff face.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-030
 - Durée : 12 s
 - Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Mais les pragmatiques incarnent-ils un véritable changement ou simplement une évolution tactique visant à atteindre le même objectif ultime : un État appliquant leur interprétation stricte de la charia ?
+L'analyse des outils permettra de comprendre s'ils présentent des différences significatives avec les haches acheuléennes trouvées au nord du Kalahari ou en Afrique du Sud.
 
 **Prompt vidéo**
 
-Slow tilt-up from a pair of worn boots on dusty ground to a towering, unfinished concrete structure against a vast, empty sky.
+Slow side-by-side comparison shot of two handaxes, camera sliding between them, back-and-forth lateral movement.
 
 **Mouvement**
 
-Tilt-up from worn boots to towering unfinished structure against empty sky.
+Camera slides laterally between two handaxes for comparison.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-031
 - Durée : 12 s
-- Statut éditorial : unconfirmed
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Al-Shabab, en Somalie, poursuit cette logique de légitimation communautaire. Le groupe contrôle de vastes zones rurales et s'efforce de se présenter comme bien plus qu'un groupe djihadiste.
+Une telle comparaison inter-régionale aidera à tracer les routes de circulation des outils et, par extension, les aires de mobilité des communautés du Pléistocène.
 
 **Prompt vidéo**
 
-Slow crane rise over a rural Somali landscape, the camera climbing above rooftops and acacia trees to reveal a long line of people waiting in a queue.
+Slow zoom out from a handaxe on a map of southern Africa to the entire continent.
 
 **Mouvement**
 
-Crane rises above rooftops and trees to reveal long waiting queue.
+Camera zooms out from handaxe on map to entire continent.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-032
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-La distribution d'aide alimentaire en août, relayée sur les réseaux sociaux et la radio, constitue un changement notable dans la stratégie de communication du groupe.
+Le consensus scientifique situe l'émergence de l'acheuléen à environ un million sept cent mille ans. La période de persistance, jusqu'à deux cent mille ans, est largement documentée.
 
 **Prompt vidéo**
 
-Slow handheld pan across a pile of stacked rice sacks and cooking oil jerrycans, workers' hands untying ropes, the sacks shifting and rolling.
+Slow forward dolly along a long timeline graphic projected on a dark laboratory wall.
 
 **Mouvement**
 
-Handheld pans across stacked sacks, hands untie ropes, sacks shift.
+Camera dollies forward along a projected timeline graphic.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-033
-- Durée : 12 s
-- Statut éditorial : testimony
-- Approuvée : NON
-- Réviseur : aucun
-- Sources : source-2
-
-**Narration**
-
-Aman Bezreh, spécialiste de la sécurité, observe que le JNIM se concentre de plus en plus sur les problèmes locaux, abandonnant la rhétorique du djihad mondial.
-
-**Prompt vidéo**
-
-Slow dolly past a window where a figure in silhouette stares at a distant horizon, rain streaking the glass, the outdoor light flickering as clouds pass.
-
-**Mouvement**
-
-Dolly past rainy window, silhouette stares at flickering horizon.
-
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
-
-### scene-034
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Le JNIM s'est de plus en plus focalisé sur les problèmes locaux, se présentant comme un défenseur des gens ordinaires, un changement net depuis la fin de l'année 2024.
+Les outils acheuléens du Kalahari s'inscrivent dans cette longue séquence. Leur présence dans cette vallée éloignée confirme l'ampleur géographique de cette tradition technologique.
 
 **Prompt vidéo**
 
-Slow tracking shot through a crowded outdoor clinic, patients and families moving past the camera, a nurse walking in the opposite direction, the crowd parting.
+Slow push-in on a handaxe placed on a geologist's field notebook, camera advancing at table level.
 
 **Mouvement**
 
-Tracking through crowded clinic, families move, nurse walks opposite.
+Camera pushes in on handaxe on a field notebook.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
+
+### scene-034
+- Durée : 12 s
+- Statut éditorial : hypothesis
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1
+
+**Narration**
+
+Les conditions actuelles du Kalahari, chaudes et sèches, contrastent radicalement avec le paysage riverain pléistocène. La reconstruction de cet environnement reste un objectif central.
+
+**Prompt vidéo**
+
+Slow cross-dissolve between a dry sun-bleached Kalahari landscape and a lush riverine plain.
+
+**Mouvement**
+
+Cross-dissolve from dry Kalahari to lush riverine plain.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-035
 - Durée : 12 s
-- Statut éditorial : hypothesis
+- Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Cette bascule, du djihad mondial au localisme, pose une question centrale : s'agit-il d'une mutation idéologique ou d'un simple calcul stratégique pour accéder au pouvoir ?
+Les carrières de calcite, exploitées pour la construction de routes, ont involontairement ouvert un accès direct aux couches profondes. Un hasard géologique au service de l'archéologie.
 
 **Prompt vidéo**
 
-Slow zoom into a single candle flame in a dark room, the wick burning, light and shadow shifting across the surrounding walls in a slow pulse.
+Slow dolly into a road-construction quarry where fresh sediment layers are freshly exposed, camera advancing.
 
 **Mouvement**
 
-Zoom into candle flame, shadow pulses slowly on surrounding walls.
+Camera advances into a road-construction quarry with fresh layers.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-036
 - Durée : 12 s
-- Statut éditorial : testimony
+- Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Les tenants de la ligne dure rejettent tout compromis. Ils estiment que l'adoption de lois faites par les hommes ou la participation aux élections équivaut à une trahison.
+Chaque excavation dans ces carrières expose la structure géologique de la vallée. Les archéologues y lisent la mémoire des rivières disparues et des lacs anciens.
 
 **Prompt vidéo**
 
-Slow lateral tracking past a row of men sitting cross-legged in a circle, one figure gesturing emphatically, the others turning their heads in unison to follow.
+Slow lateral tracking along an exposed quarry wall with visible ancient river channel deposits.
 
 **Mouvement**
 
-Lateral tracks past seated men, one gestures, others turn heads.
+Camera tracks laterally along quarry wall with river deposits.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-037
 - Durée : 12 s
-- Statut éditorial : hypothesis
+- Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Les pragmatiques, à l'inverse, voient dans la collaboration avec des groupes locaux et d'anciens ennemis un moyen d'accéder au pouvoir, quitte à repenser la méthode.
+La collaboration avec l'Université du Botswana et l'institut coréen KIGAM apporte une expertise géologique complémentaire à l'approche archéologique polonaise.
 
 **Prompt vidéo**
 
-Slow crane over a long table where two groups of men in different attire reach across to shake hands, the camera gliding above their joined fingers.
+Slow push-in on a multi-flagged conference table with geological maps and core samples, camera advancing.
 
 **Mouvement**
 
-Crane glides above two groups reaching across table to shake hands.
+Camera pushes in on conference table with maps and samples.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-038
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Le débat entre ces deux camps s'intensifie. Des voix rivales publient des ouvrages concurrents, s'accusant mutuellement de trahison depuis 2025.
+L'Institut polonais de géologie, à Varsovie, contribue à l'étude des dépôts régionaux. La convergence de ces disciplines est essentielle pour une lecture fine du site.
 
 **Prompt vidéo**
 
-Slow push-in on two books side by side on a shelf, a hand reaching in to slide one forward, its spine catching the light as it moves.
+Slow zoom out from a hand turning a sediment core sample to reveal the full laboratory bench.
 
 **Mouvement**
 
-Push-in on shelf, hand slides one book forward, spine glints.
+Camera zooms out from sediment core to full lab bench.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-039
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-L'État islamique a réagi en déclarant le djihad contre le gouvernement syrien et en qualifiant Sharaa et ses collaborateurs d'apostats. Les attaques ont suivi.
+Les haches de main, avec leur double bifaciale et leur pointe travaillée, témoignent d'une capacité de planification et de transmission technique remarquable chez les hominins du Pléistocène.
 
 **Prompt vidéo**
 
-Slow overhead shot of a field at night, a distant bright flash illuminating the terrain for a split second, then darkness rushing back over the landscape.
+Slow 360-degree rotation around a single bifacial handaxe on a rotating turntable, studio lighting.
 
 **Mouvement**
 
-Overhead captures distant flash illuminating field, darkness rushes back.
+Camera rotates 360 degrees around a handaxe on turntable.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-040
 - Durée : 12 s
-- Statut éditorial : unconfirmed
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-D'autres religieux radicaux ont adopté une position similaire, mais se sont abstenus d'appeler ouvertement au djihad. Une nuance qui dit beaucoup sur les fractures internes.
+La présence de fragments de débitage à proximité des outils finis suggère que la vallée servait de site de production et non seulement de lieu de passage.
 
 **Prompt vidéo**
 
-Slow tracking shot down a long, narrow staircase carved in stone, the camera descending, the walls closing in, light fading with each step.
+Slow push-in on a cluster of stone flakes and a finished handaxe on the same sandy spot.
 
 **Mouvement**
 
-Tracking descends stone staircase, walls close in, light fades.
+Camera pushes in on flakes and handaxe on sandy spot.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-041
 - Durée : 12 s
 - Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-La question qui traverse l'ensemble de ce paysage est la suivante : cette collaboration, ces alliances, ce localisme constituent-ils une transformation réelle ou une tactique temporaire ?
+Le travail de gros blocs de matière première, observé sur le site, indique que les groupes disposaient de ressources en pierre à distance des rivières actuelles.
 
 **Prompt vidéo**
 
-Slow zoom out from a single point of light in a vast dark expanse, the camera pulling back steadily, the light growing smaller but the darkness expanding.
+Slow lateral pan across large quartzite blocks with fresh flake scars on a dry riverbed.
 
 **Mouvement**
 
-Zoom out from single light point, darkness expands, light shrinks.
+Camera pans across quartzite blocks with flake scars on riverbed.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-042
 - Durée : 12 s
-- Statut éditorial : hypothesis
+- Statut éditorial : testimony
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-L'objectif ultime reste, pour beaucoup, l'établissement d'un État appliquant leur interprétation stricte de la charia, tant sur le plan intérieur que dans les relations extérieures.
+Les chercheurs soulignent que la vallée d'Okwa est d'un accès exceptionnellement difficile. Cette difficulté a préservé le site de toute perturbation archéologique antérieure.
 
 **Prompt vidéo**
 
-Slow push-in on a large, weathered document covered in handwritten annotations, the camera moving past the ink marks, the paper edges curling slightly.
+Slow dolly through a narrow dirt track in dense bush, trees closing in on both sides.
 
 **Mouvement**
 
-Push-in past handwritten annotations on weathered document, edges curl.
+Camera dollies forward through narrow dirt track in dense bush.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-043
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Ni Al-Qaïda ni l'État islamique n'ont encore gouverné un pays selon leurs critères. Le chemin reste long, les défaites multiples, les pertes de chefs réelles.
+À ce stade, la datation absolue des haches de Okwa n'est pas encore publiée. L'analyse en cours à Cracovie permettra de préciser le calendrier de la séquence acheuléenne locale.
 
 **Prompt vidéo**
 
-Slow aerial fly-over of a vast, scarred battlefield at low altitude, tire tracks and craters stretching to the horizon, the wind pushing dry grass in waves.
+Slow push-in on a radiocarbon dating instrument screen showing indeterminate results, camera advancing toward the monitor.
 
 **Mouvement**
 
-Low-altitude aerial over scarred battlefield, grass waves in wind.
+Camera pushes in toward a dating instrument monitor.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
 ### scene-044
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-L'Afrique, avec ses insurrections de longue durée au Sahel et en Somalie, est devenue le principal terrain de bataille. Le continent porte désormais le poids de ce débat.
+Les limites de l'exploration actuelle sont réelles : la brousse empêche une prospection systématique. Une partie significative du potentiel archéologique de la vallée reste inconnue.
 
 **Prompt vidéo**
 
-Slow pan across a vast African savanna at sunset, the horizon line burning orange, a herd of animals moving slowly in the middle distance, their silhouettes sharp.
+Slow aerial pull-back from a small cleared research patch to the endless surrounding bush.
 
 **Mouvement**
 
-Pan across burning sunset savanna, animal silhouettes drift in distance.
+Aerial camera pulls back from research patch to endless bush.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-045
 - Durée : 12 s
 - Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Les stratégies du JNIM et d'Al-Shabab, si différentes en apparence, dessinent en réalité les mêmes contours : ancrage local, dialogue sélectif, patience stratégique.
+Les haches de main d'Okwa s'inscrivent dans une tradition millénaire qui a structuré la préhistoire africaine. Leur étude éclairera les premières stratégies d'adaptation humaines au continent.
 
 **Prompt vidéo**
 
-Slow orbit around two separate stone monuments in an open field, the camera circling both, connecting them in a single frame, wind ruffling the tall grass between.
+Slow zoom out from a single handaxe to a vast golden landscape under a low sun.
 
 **Mouvement**
 
-Orbit circles two stone monuments, connecting them in one frame.
+Camera zooms out from handaxe to vast golden landscape.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-046
 - Durée : 12 s
-- Statut éditorial : testimony
+- Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1, source-2
 
 **Narration**
 
-Que Dieu les récompense. Cette phrase prononcée par une femme dans une vidéo d'Al-Shabab résume l'ambiguïté d'un mouvement qui distribue le riz et compose les slogans.
+La rive du lac pléistocène, lieu de concentration des outils, témoigne d'une relation étroite entre l'eau, la pierre et la vie des premiers groupes humains australs.
 
 **Prompt vidéo**
 
-Slow push-in on a small bowl of rice on a worn wooden table, steam rising gently, the camera descending to eye level with the bowl, light shifting on the steam.
+Slow crane up from the shoreline with stone tools to the vast dry basin beyond.
 
 **Mouvement**
 
-Push-in descends to eye level with steaming bowl of rice.
+Crane rises from shoreline with tools to dry basin.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ### scene-047
-- Durée : 12 s
-- Statut éditorial : hypothesis
-- Approuvée : NON
-- Réviseur : aucun
-- Sources : source-2
-
-**Narration**
-
-Le djihadisme mondial a-t-il échoué ou est-il simplement en train de changer de forme ? La réponse, à ce stade, demeure ouverte et contestée.
-
-**Prompt vidéo**
-
-Slow pull-back from a closed wooden door in a dim corridor, the camera retreating steadily, the door's shadow lengthening behind it, the light at the far end growing brighter.
-
-**Mouvement**
-
-Pull-back from closed door, shadow lengthens, far light brightens.
-
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
-
-### scene-048
-- Durée : 12 s
-- Statut éditorial : hypothesis
-- Approuvée : NON
-- Réviseur : aucun
-- Sources : source-2
-
-**Narration**
-
-Les divisions internes, les alliances improbables, les ruptures de discours trahissent un mouvement en mutation. Mais l'objectif final, pour les plus radicaux, n'a pas changé.
-
-**Prompt vidéo**
-
-Slow tracking shot through a maze of narrow alleys, the camera weaving between walls, a distant figure standing still at the intersection, unmoving, watching.
-
-**Mouvement**
-
-Tracking weaves through narrow alleys toward still figure at intersection.
-
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
-
-### scene-049
 - Durée : 12 s
 - Statut éditorial : unconfirmed
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-De la Somalie au Sahel, de la Syrie à l'Afghanistan, les lignes de fracture redessinent la géopolitique du monde musulman. L'Afrique en est le front principal.
+Le carbonate de calcium qui cimente les sédiments forme une croûte dure, la calcite, qui a préservé les couches sur des millions d'années. Sans elle, la mémoire géologique serait effacée.
 
 **Prompt vidéo**
 
-Slow aerial rise from a desert road to a high-altitude view, the road shrinking below, the terrain stretching endlessly in every direction under a vast sky.
+Slow close-up push into a calcite-cemented sediment surface, texture becoming visible, camera advancing.
 
 **Mouvement**
 
-Aerial rises from desert road, terrain stretches endlessly below.
+Camera pushes into calcite-cemented sediment surface texture.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
 
-### scene-050
+### scene-048
+- Durée : 12 s
+- Statut éditorial : unconfirmed
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1
+
+**Narration**
+
+Les carrières de calcite, creusées pour la construction de routes botswanaises, ont révélé cette stratigraphie par un hasard pragmatique. L'infrastructure moderne a ouvert une fenêtre archéologique.
+
+**Prompt vidéo**
+
+Slow dolly along a freshly cut quarry road revealing stratified walls on both sides.
+
+**Mouvement**
+
+Camera dollies along freshly cut quarry road with stratified walls.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+### scene-049
 - Durée : 12 s
 - Statut éditorial : hypothesis
 - Approuvée : NON
 - Réviseur : aucun
-- Sources : source-2
+- Sources : source-1
 
 **Narration**
 
-Le djihadisme africain n'a pas disparu. Il change de visage, de langue, de stratégie. Et dans cette transformation silencieuse, se joue peut-être l'avenir de tout un continent.
+L'ensemble des données collectées, sédimentologiques, technologiques et chronologiques, sera intégré dans un modèle de reconstruction de l'environnement pléistocène de la vallée d'Okwa.
 
 **Prompt vidéo**
 
-Final slow dissolve-free pull-back from a lone tree on a wide plain at dawn, the camera retreating to a vast landscape, the horizon line settling into stillness.
+Slow rotation around a 3D geological model of a valley on a laboratory monitor, camera circling.
 
 **Mouvement**
 
-Pull-back from lone tree to vast still horizon at dawn.
+Camera circles a 3D geological valley model on monitor.
 
-Source liée : [Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique](https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss) — BBC Afrique
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+### scene-050
+- Durée : 12 s
+- Statut éditorial : unconfirmed
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1
+
+**Narration**
+
+Ce qui demeure ouvert : la fréquence d'occupation de la rive, la durée des séjours, et les interactions entre groupes. Les données actuelles ne permettent pas de répondre à ces questions.
+
+**Prompt vidéo**
+
+Slow lateral tracking of an empty shoreline at dusk, wind stirring dry grass, no human presence.
+
+**Mouvement**
+
+Camera tracks laterally along empty shoreline at dusk.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+### scene-051
+- Durée : 12 s
+- Statut éditorial : unconfirmed
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1, source-2
+
+**Narration**
+
+Les près de cent haches constituent un corpus solide, mais la prospection du Kalahari reste largement incomplète. D'autres sites acheuléens attendent encore d'être découverts dans la brousse.
+
+**Prompt vidéo**
+
+Slow aerial forward flight over unexplored dense bush, camera moving steadily toward a hidden valley.
+
+**Mouvement**
+
+Aerial camera moves forward over unexplored dense bush.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
+
+### scene-052
+- Durée : 12 s
+- Statut éditorial : hypothesis
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1, source-2
+
+**Narration**
+
+L'histoire des premiers outils en pierre s'écrit encore, à la lisière des buissons du Kalahari, où chaque couche de sédiment protège un fragment de mémoire profonde.
+
+**Prompt vidéo**
+
+Slow push through final thorn bush into open space where a single handaxe gleams on pale sand.
+
+**Mouvement**
+
+Camera pushes through thorn bush into open space with handaxe.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
+
+### scene-053
+- Durée : 12 s
+- Statut éditorial : unconfirmed
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1, source-2
+
+**Narration**
+
+La vallée d'Okwa, entre le Botswana et la Namibie, garde encore son silence. Le désert, qui a été lac, raconte une histoire que nous ne faisons que commencer à lire.
+
+**Prompt vidéo**
+
+Slow zoom out from a lone handaxe on sand to the vast empty valley under a wide sky.
+
+**Mouvement**
+
+Camera zooms out from handaxe to vast empty valley.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
+
+### scene-054
+- Durée : 12 s
+- Statut éditorial : unconfirmed
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1
+
+**Narration**
+
+Les travaux se poursuivent. Chaque saison de prospection, chaque analyse en laboratoire, chaque nouvelle couche ouverte par une carrière, avancent d'un pas la reconstitution de ce monde ancien.
+
+**Prompt vidéo**
+
+Slow time-lapse of a small excavation pit deepening, workers moving in and out, camera static overhead.
+
+**Mouvement**
+
+Static overhead camera watching excavation pit deepen in time-lapse.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+### scene-055
+- Durée : 12 s
+- Statut éditorial : unconfirmed
+- Approuvée : NON
+- Réviseur : aucun
+- Sources : source-1, source-2
+
+**Narration**
+
+Au fond de la brousse du Kalahari, cent haches de pierre attendent la suite de leur histoire. Elles sont les té muets des premiers pas de l'humanité sur ce continent.
+
+**Prompt vidéo**
+
+Final slow dissolve to black over a wide static shot of the golden Kalahari under a setting sun.
+
+**Mouvement**
+
+Wide static shot dissolving to black over setting sun.
+
+Source liée : [Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland](https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert) — Science in Poland — History and Culture
+
+Source liée : [News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine](https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/) — Archaeology Magazine
 
 ## Décision éditoriale
 
