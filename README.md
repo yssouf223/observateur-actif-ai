@@ -39,3 +39,23 @@ Copier `.env.example` vers `.env`. Ne jamais publier le fichier `.env`, les clé
 
 ## Gratuité
 Aucun service payant ni aucune carte bancaire ne sont requis pour exécuter les outils locaux de cette première étape. Les quotas et conditions des services externes doivent être confirmés avant leur activation.
+
+## Tester le moteur vidéo Agnes (local)
+
+1. Créer une clé API gratuite depuis le portail Agnes : https://platform.agnes-ai.com
+2. Copier `.env.example` vers `.env`.
+3. Dans `.env`, définir :
+   ```dotenv
+   VIDEO_PROVIDER=agnes
+   AGNES_API_KEY=COLLER_LA_CLE_ICI
+   ```
+4. Installer les dépendances et lancer un clip de test :
+   ```bash
+   pip install -r requirements.txt
+   observateur video-test --prompt "A slow cinematic aerial shot over a misty African valley at sunrise, trees moving gently in the wind" --seconds 5
+   ```
+5. Le résultat est enregistré dans `output/agnes_test.mp4`.
+
+Ne jamais envoyer la clé API dans une conversation, un commit, une capture d'écran ou un fichier suivi par Git. Le fichier `.env` est exclu par `.gitignore`.
+
+Le moteur Flash gratuit renvoie du 720p. Les erreurs de file pleine (HTTP 503) sont signalées sans relance agressive. La génération réelle nécessite une clé valide et n'est pas simulée par les tests automatiques.
