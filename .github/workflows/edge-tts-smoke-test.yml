@@ -23,6 +23,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Installer FFmpeg pour vérifier le MP3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          command -v ffprobe
+
       - name: Installer Observateur Actif AI
         run: |
           python -m pip install --upgrade pip
@@ -69,11 +75,32 @@ jobs:
       - name: Vérifier le MP3 et les sous-titres synchronisés
         run: |
           test -s output/edge-tts-test.mp3
-          test -s output/edge-tts-test.srt
-          grep -q -- '-->' output/edge-tts-test.srt
-          test -s output/edge-tts-test.srt
-          grep -q -- '-->' output/edge-tts-test.srt
-          echo "MP3 et SRT WordBoundary présents."
+          duration="$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 output/edge-tts-test.mp3)"
+          python - "$duration" <<'PY'
+          import re, sys
+          from pathlib import Path
+          duration = float(sys.argv[1])
+          if duration < 1:
+              raise SystemExit(f"Durée MP3 anormale : {duration}s")
+          srt = Path("output/edge-tts-test.srt").read_text(encoding="utf-8")
+          pattern = re.compile(r"^(\\d{2}:\\d{2}:\\d{2},\\d{3}) --> (\\d{2}:\\d{2}:\\d{2},\\d{3})$", re.M)
+          matches = pattern.findall(srt)
+          if not matches:
+              raise SystemExit("Aucun intervalle SRT valide.")
+          def ms(value):
+              h, m, rest = value.split(":")
+              sec, milli = rest.split(",")
+              return ((int(h) * 60 + int(m)) * 60 + int(sec)) * 1000 + int(milli)
+          previous_end = -1
+          for start, end in matches:
+              a, b = ms(start), ms(end)
+              if a < previous_end or b <= a:
+                  raise SystemExit("Les repères SRT ne sont pas chronologiques ou ont une durée nulle.")
+              previous_end = b
+              if b > duration * 1000 + 1500:
+                  raise SystemExit("Un sous-titre dépasse anormalement la durée du MP3.")
+          print(f"MP3 décodable : {duration:.2f}s ; {len(matches)} segments SRT valides et chronologiques.")
+          PY
 
       - name: Déposer le MP3 de test
         uses: actions/upload-artifact@v4
