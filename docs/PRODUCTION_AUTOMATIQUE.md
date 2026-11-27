@@ -25,6 +25,7 @@ Variables à configurer dans Settings > Secrets and variables > Actions > Variab
 
 - `GEMINI_FREE_TIER_CONFIRMED=true` : confirme que le projet Gemini utilisé reste sur le palier gratuit.
 - `AGNES_FREE_QUOTA_CONFIRMED=true` : confirme que les générations vidéo prévues sont couvertes par un quota gratuit disponible.
+- `YOUTUBE_API_PROJECT_VERIFIED=true` : confirme que le projet Google Cloud associé à l'API YouTube a passé la vérification nécessaire à la publication publique.
 
 Le client YouTube demande les autorisations OAuth `youtube.upload` et `youtube.readonly` et vérifie l'identifiant de chaîne configuré. L'application Google Cloud doit avoir l'API YouTube Data activée et être autorisée à publier ; les projets API non vérifiés peuvent être limités aux vidéos privées. La programmation est envoyée avec `privacyStatus=private` et un `publishAt` futur, conformément aux règles YouTube. Voir [OAuth YouTube](https://developers.google.com/youtube/data/guides/authentication) et [ressource vidéo / publishAt](https://developers.google.com/youtube/data/reference/rest/v3/videos).
 
