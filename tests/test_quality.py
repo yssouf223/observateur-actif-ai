@@ -58,3 +58,14 @@ def test_write_report(tmp_path):
          patch("observateur_actif.quality.subprocess.run", return_value=Mock(stdout=json.dumps(probe_result()))):
         report = write_quality_report(video, tmp_path / "quality.json")
     assert json.loads(report.read_text())["status"] == "technical_checks_passed"
+
+
+def test_rejects_missing_subtitle_stream(tmp_path):
+    video = tmp_path / "doc.mp4"
+    video.write_bytes(b"video")
+    data = probe_result()
+    data["streams"] = data["streams"][:2]
+    with patch("observateur_actif.quality.shutil.which", return_value="/usr/bin/ffprobe"), \
+         patch("observateur_actif.quality.subprocess.run", return_value=Mock(stdout=json.dumps(data))):
+        with pytest.raises(QualityError, match="piste de sous-titres"):
+            inspect_video(video)
