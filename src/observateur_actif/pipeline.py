@@ -104,7 +104,10 @@ def produce_project(
             for source in project.sources
         ],
         "scene_count": len(project.scenes),
-        "video_resolution": "1280x720",
+        "video_resolution": "1920x1080",
+        "source_clip_resolution": "1280x720",
+        "resolution_native": False,
+        "resolution_note": "1080p upscaled from 720p Agnes source clips; not native 1080p.",
         "aspect_ratio": project.aspect_ratio,
         "clips": [str(path) for path in generated],
         "motion_checks": motion_reports,
