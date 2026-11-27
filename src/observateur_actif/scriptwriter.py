@@ -533,4 +533,22 @@ DOCUMENTS SOURCÉS :
     destination = Path(output_file)
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(project.model_dump_json(indent=2), encoding="utf-8")
+
+    # Persist successful topics so future runs can avoid repeating the same story.
+    from datetime import datetime, timezone
+    history_entry = {
+        "title": project.title,
+        "topic": topic.strip(),
+        "sources": [
+            {"title": source["title"], "url": source["url"], "publisher": source["publisher"]}
+            for source in sources
+        ],
+        "recorded_at": datetime.now(timezone.utc).isoformat(),
+    }
+    topic_history.append(history_entry)
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    history_path.write_text(
+        json.dumps(topic_history[-100:], ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     return destination
