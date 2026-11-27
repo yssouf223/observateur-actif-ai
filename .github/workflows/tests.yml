@@ -26,5 +26,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           pip install pytest
+      - name: Vérifier les commandes utilisées par la recherche hebdomadaire
+        run: |
+          observateur research-rss --help
+          observateur fetch-leads --help
+          observateur draft-project --help
+          observateur extract-claims --help
+          observateur review-queue --help
+          observateur review-project --help
+
       - name: Exécuter les tests
         run: pytest -q
