@@ -171,3 +171,14 @@ observateur validate-claims projects/claim_candidates.json
 ```
 
 Aucune phrase n'est automatiquement transformée en fait établi.
+
+
+## Préparer la revue humaine
+
+Pour transformer le registre de phrases candidates en dossier de travail lisible, générer une file de revue Markdown :
+
+```bash
+observateur review-queue --input projects/claim_candidates.json --output projects/editorial_review.md
+```
+
+Le rapport regroupe chaque affirmation en attente, ses liens vers les sources, leur éditeur et une liste de contrôles à effectuer : contexte complet, dates, lieux, chiffres, indépendance des publications et catégorie éditoriale. Le rapport ne modifie pas le registre et n'approuve aucune affirmation. Après enquête, les décisions doivent être saisies dans le registre JSON puis contrôlées avec `validate-claims`. Une source extraite automatiquement est marquée non favorable par défaut ; le réviseur doit examiner le document et renseigner honnêtement les éléments de preuve avant de la considérer comme favorable.
