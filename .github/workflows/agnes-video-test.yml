@@ -1,0 +1,69 @@
+name: Test vidéo Agnes
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Description de la scène à générer"
+        required: true
+        type: string
+        default: "A cinematic documentary shot of a mysterious ancient African forest at dawn, realistic moving mist, slow natural camera movement, no text, no subtitles."
+      seconds:
+        description: "Durée du clip"
+        required: true
+        type: choice
+        options:
+          - "4"
+          - "5"
+          - "6"
+          - "8"
+          - "10"
+          - "12"
+        default: "5"
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    name: Générer un clip de test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VIDEO_PROVIDER: agnes
+      AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+      VIDEO_PROMPT: ${{ inputs.prompt }}
+      VIDEO_SECONDS: ${{ inputs.seconds }}
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer Observateur Actif AI
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Vérifier la présence de la clé
+        run: |
+          if [ -z "$AGNES_API_KEY" ]; then
+            echo "::error::Le secret AGNES_API_KEY est absent. Ajoute-le dans Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "Secret détecté (valeur masquée)."
+
+      - name: Générer la vidéo avec Agnes
+        run: |
+          observateur video-test --prompt "$VIDEO_PROMPT" --seconds "$VIDEO_SECONDS"
+
+      - name: Publier le MP4 en artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agnes-test-video
+          path: output/agnes_test.mp4
+          if-no-files-found: error
+          retention-days: 3
