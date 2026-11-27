@@ -2,6 +2,10 @@ name: Test réel Edge-TTS
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'src/observateur_actif/speech.py'
+      - '.github/workflows/edge-tts-smoke-test.yml'
 
 permissions:
   contents: read
@@ -65,6 +69,8 @@ jobs:
       - name: Vérifier le MP3 et les sous-titres synchronisés
         run: |
           test -s output/edge-tts-test.mp3
+          test -s output/edge-tts-test.srt
+          grep -q -- '-->' output/edge-tts-test.srt
           test -s output/edge-tts-test.srt
           grep -q -- '-->' output/edge-tts-test.srt
           echo "MP3 et SRT WordBoundary présents."
