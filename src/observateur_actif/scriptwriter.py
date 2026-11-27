@@ -192,8 +192,7 @@ def draft_project(
             for candidate_url in list(unseen):
                 candidate_topics, candidate_regions = signatures_by_url[candidate_url]
                 if any(
-                    (candidate_topics & signatures_by_url[url][0])
-                    or (candidate_regions & signatures_by_url[url][1])
+                    candidate_topics & signatures_by_url[url][0]
                     for url in cluster_urls
                 ):
                     cluster_urls.add(candidate_url)
