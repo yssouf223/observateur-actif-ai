@@ -272,3 +272,21 @@ def test_draft_accepts_distinct_cases_in_same_african_archaeology_theme(tmp_path
         output = draft_project(path, tmp_path / "project.json")
     result = json.loads(output.read_text(encoding="utf-8"))
     assert len({source_id for scene in result["scenes"] for source_id in scene["source_ids"]}) == 2
+
+
+def test_successful_draft_is_added_to_topic_history(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    monkeypatch.setenv("SCRIPT_PROVIDER", "agnes")
+    history = tmp_path / "history" / "topic_history.json"
+    response = Mock(ok=True)
+    response.json.return_value = {
+        "choices": [{"message": {"content": json.dumps(valid_draft())}}]
+    }
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        draft_project(sources, tmp_path / "project.json", topic_history_file=history)
+    entries = json.loads(history.read_text(encoding="utf-8"))
+    assert len(entries) == 1
+    assert entries[0]["title"] == "Mystère documentaire"
+    assert len(entries[0]["sources"]) == 2
+    assert all(source["url"].startswith("https://") for source in entries[0]["sources"])
