@@ -15,7 +15,7 @@ from observateur_actif.video import AgnesError, generate_video
 from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
 from observateur_actif.claim_review import load_claim_registry
-from observateur_actif.source_fetcher import SourceFetchError, fetch_source
+from observateur_actif.source_fetcher import SourceFetchError, fetch_source, fetch_leads
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -91,6 +91,32 @@ def fetch_source_command(
         console.print("[yellow]Source non vérifiée : recouper les affirmations avant utilisation.[/yellow]")
     except (SourceFetchError, OSError) as exc:
         console.print(f"[red]Erreur de lecture de la source : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("fetch-leads")
+def fetch_leads_command(
+    input_file: str = typer.Option("projects/research_leads.json", "--input", help="Pistes JSON produites par research-rss."),
+    output_file: str = typer.Option("projects/source_documents.json", "--output", help="Résultat des lectures de sources."),
+    limit: int = typer.Option(5, "--limit", min=1, max=20, help="Nombre maximal d'articles à ouvrir."),
+) -> None:
+    """Ouvrir les sources originales d'un lot de pistes RSS."""
+    try:
+        leads = json.loads(Path(input_file).read_text(encoding="utf-8"))
+        results = fetch_leads(leads, limit=limit)
+        destination = Path(output_file)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(
+            json.dumps(results, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        succeeded = sum(item["fetch_status"] == "success" for item in results)
+        failed = len(results) - succeeded
+        console.print(f"[green]{succeeded} source(s) lue(s).[/green] [yellow]{failed} échec(s).[/yellow]")
+        console.print(f"Résultat : {destination}")
+        console.print("[yellow]Tous les textes extraits restent non vérifiés.[/yellow]")
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        console.print(f"[red]Impossible de traiter les pistes : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
