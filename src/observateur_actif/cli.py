@@ -311,7 +311,7 @@ def produce_command(
         console.print(f"[green]Sous-titres : {result['subtitles']}[/green]")
         console.print(f"Rapport : {result['report']}")
         console.print("[yellow]Le contrôle qualité final et la publication YouTube restent séparés.[/yellow]")
-    except (FileNotFoundError, OSError, ValueError, ProductionError) as exc:
+    except (FileNotFoundError, OSError, ValueError, ProductionError, AgnesError, SpeechError, MontageError, QualityError) as exc:
         console.print(f"[red]Production interrompue : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
@@ -361,7 +361,7 @@ def publish_youtube_command(
         )
         console.print(f"[green]Vidéo envoyée et programmée : {result['url']}[/green]")
         console.print(f"Publication prévue : {result['publish_at']} (UTC)")
-    except (FileNotFoundError, OSError, ValueError, YouTubePublishError) as exc:
+    except (FileNotFoundError, OSError, ValueError, YouTubePublishError, QualityError) as exc:
         console.print(f"[red]Publication impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
