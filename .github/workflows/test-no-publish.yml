@@ -110,4 +110,5 @@ jobs:
 
       - name: Confirmer explicitement l'absence de publication
         if: always()
-        run: echo "TEST UNIQUEMENT : aucune commande YouTube, aucun téléversement et aucune programmation de publication n'ont été exécutés."
+        run: |
+          echo "TEST UNIQUEMENT : aucune commande YouTube, aucun téléversement et aucune programmation de publication n'ont été exécutés."
