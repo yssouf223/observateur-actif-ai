@@ -46,6 +46,7 @@ def test_assemble_maps_clips_voice_and_soft_subtitles(tmp_path):
     assert result.read_bytes() == b"mp4"
     assert "1280:720" in args[args.index("-filter_complex") + 1]
     assert "mov_text" in args
+    assert "loudnorm=I=-16:TP=-1.5:LRA=11" in args[args.index("-filter_complex") + 1]
     assert "-shortest" in args
 
 
@@ -67,6 +68,7 @@ def test_optional_music_is_mixed_below_voice(tmp_path):
     graph = run.call_args.args[0][run.call_args.args[0].index("-filter_complex") + 1]
     assert "volume=0.12" in graph
     assert "amix=inputs=2:duration=first" in graph
+    assert "loudnorm=I=-16:TP=-1.5:LRA=11" in graph
 
 
 def test_missing_generated_scene_clip_is_rejected(tmp_path):
