@@ -2,8 +2,8 @@ name: Production hebdomadaire Observateur Actif
 
 on:
   schedule:
-    # Le samedi à 15:00 UTC, pour programmer la publication à 16:00 UTC (Mali).
-    - cron: "0 15 * * 6"
+    # Le vendredi à 20:00 UTC, pour laisser le temps de générer avant samedi 16:00 UTC.
+    - cron: "0 20 * * 5"
   workflow_dispatch:
     inputs:
       project_path:
