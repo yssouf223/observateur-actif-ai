@@ -1,8 +1,10 @@
-# Revue éditoriale — Les rives oubliées : cent haches de pierre au cœur du Kalahari
+# REJETÉ — Revue éditoriale — Les rives oubliées : cent haches de pierre au cœur du Kalahari
 
 - Durée cible : 11 minutes
 - Scènes : 55
 - Durée storyboard : 660 secondes
+> Rejet automatique : sources non indépendantes et affirmation d'âge non étayée. Ne pas produire ni publier ce brouillon.
+
 - Approbation de publication : NON
 
 ## Sources à contrôler
