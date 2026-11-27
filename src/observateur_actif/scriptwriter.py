@@ -125,12 +125,89 @@ def draft_project(
         (doc for doc in candidates if relevance(doc) > 0),
         key=relevance,
         reverse=True,
-    )[:6]
+    )[:12]
     if len(usable) < 2:
         raise ScriptWriterError(
             "Aucun sujet de mystère historique ou archéologique africain ne dispose "
             "d'au moins deux sources pertinentes. Aucun brouillon hors sujet ne sera créé."
         )
+
+    # Écarter les reprises qui citent explicitement une autre publication comme source.
+    dependency_markers = (
+        "according to", "as reported by", "reported by", "according to a report",
+        "d'après", "selon", "comme l'a rapporté", "comme rapporté par",
+    )
+    publisher_bases = {
+        str(doc.get("publisher") or "").split(" — ")[0].strip().casefold()
+        for doc in usable
+    }
+    independent_docs = []
+    for doc in usable:
+        body = (
+            str(doc.get("title") or doc.get("lead_title") or "")
+            + " " + str(doc.get("text", ""))[:7000]
+        ).casefold()
+        is_republication = any(
+            other and other not in str(doc.get("publisher") or "").casefold()
+            and other in body
+            and any(marker in body for marker in dependency_markers)
+            for other in publisher_bases
+        )
+        if not is_republication:
+            independent_docs.append(doc)
+
+    generic_topics = {
+        "ancient", "ancien", "history", "histoire", "historical", "historical",
+        "mystery", "mystère", "civilisation", "civilization", "archaeolog",
+        "archéolog", "prehistor", "préhistoire",
+    }
+    generic_regions = {"africa", "african", "afrique", "sahara", "sahel"}
+
+    def signatures(doc: dict) -> tuple[set[str], set[str]]:
+        combined = (
+            str(doc.get("title") or doc.get("lead_title") or "")
+            + " " + str(doc.get("text", ""))[:7000]
+        ).casefold()
+        topics = {
+            keyword for keyword in strong_topics
+            if keyword not in generic_topics and keyword in combined
+        }
+        regions = {
+            keyword for keyword in african_regions
+            if keyword not in generic_regions and keyword in combined
+        }
+        return topics, regions
+
+    # Ne garder qu'un groupe d'articles qui partagent un lieu ou un sujet précis.
+    signatures_by_url = {doc["url"]: signatures(doc) for doc in independent_docs}
+    clusters: list[list[dict]] = []
+    unseen = {doc["url"] for doc in independent_docs}
+    docs_by_url = {doc["url"]: doc for doc in independent_docs}
+    while unseen:
+        seed = unseen.pop()
+        cluster_urls = {seed}
+        changed = True
+        while changed:
+            changed = False
+            for candidate_url in list(unseen):
+                candidate_topics, candidate_regions = signatures_by_url[candidate_url]
+                if any(
+                    (candidate_topics & signatures_by_url[url][0])
+                    or (candidate_regions & signatures_by_url[url][1])
+                    for url in cluster_urls
+                ):
+                    cluster_urls.add(candidate_url)
+                    unseen.remove(candidate_url)
+                    changed = True
+        clusters.append([docs_by_url[url] for url in cluster_urls])
+
+    usable = max(clusters, key=len) if clusters else []
+    if len(usable) < 2:
+        raise ScriptWriterError(
+            "Aucun sujet ne dispose de deux sources réellement indépendantes "
+            "couvrant le même lieu ou le même thème précis. Aucun brouillon ne sera créé."
+        )
+
     sources = []
     source_texts = []
     seen_hosts = set()
@@ -193,7 +270,7 @@ SUJETS DÉJÀ ABORDÉS OU EXCLUS (NE PAS RÉUTILISER LE MÊME ÉVÉNEMENT, LIEU 
 RÈGLES IMPÉRATIVES :
 - La chaîne traite exclusivement de mystères historiques réels, d'archéologie africaine, de civilisations anciennes, de lieux énigmatiques et de phénomènes inexpliqués documentés. Refuse l'actualité politique, le terrorisme, les conflits armés, les faits divers, la santé et le sport.
 - Le sujet central doit être africain et historique/archéologique ; ne choisis pas une actualité de sécurité ou de propagande.
-- Au moins deux éditeurs indépendants doivent documenter le MÊME sujet central. Utilise leurs source_ids dans les scènes correspondantes ; ne cite jamais une source sans rapport.
+- Au moins deux éditeurs réellement indépendants doivent documenter le même lieu ou thème précis. Ne compte pas les reprises qui citent une autre publication comme source unique. Si les sources parlent de découvertes distinctes, distingue clairement les cas et ne les fusionne jamais.
 - Utilise exclusivement les informations présentes dans les documents fournis.
 - N'invente aucun nom, date, lieu, citation, chiffre, témoignage ou événement.
 - Ne jamais appliquer à un artefact ou à un site la datation générale d'une culture archéologique : si l'âge exact des objets n'est pas établi, le dire explicitement.
