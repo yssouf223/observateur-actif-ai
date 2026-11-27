@@ -122,7 +122,6 @@ jobs:
           retention-days: 14
 
       - name: Enregistrer le brouillon dans le dépôt
-        if: always() && steps.preflight.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -133,7 +132,11 @@ jobs:
             git commit -m "Prepare weekly documentary draft"
             for attempt in 1 2 3; do
               git fetch origin main
-              git rebase origin/main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                sleep $((attempt * 3))
+                continue
+              fi
               if git push; then
                 echo "Brouillon enregistré dans main."
                 exit 0
