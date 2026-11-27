@@ -88,10 +88,11 @@ def assemble_documentary(
         filters.append(f"[{music_index}:a:0]volume=0.12[music]")
         filters.append(
             f"[{voice_label}][music]amix=inputs=2:duration=first:"
-            "dropout_transition=2[aout]"
+            "dropout_transition=2[mixed]"
         )
+        filters.append("[mixed]loudnorm=I=-16:TP=-1.5:LRA=11[aout]")
     else:
-        filters.append(f"[{voice_label}]anull[aout]")
+        filters.append(f"[{voice_label}]loudnorm=I=-16:TP=-1.5:LRA=11[aout]")
 
     command.extend([
         "-filter_complex", ";".join(filters),
