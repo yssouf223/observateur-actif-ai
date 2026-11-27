@@ -84,3 +84,46 @@ Aucun service payant ni aucune carte bancaire ne sont requis pour exécuter les 
 Ne jamais envoyer la clé API dans une conversation, un commit, une capture d'écran ou un fichier suivi par Git. Le fichier `.env` est exclu par `.gitignore`.
 
 Le client vidéo est configuré pour demander du 720p. En cas de réponse HTTP 503 indiquant explicitement que la file est pleine, il effectue au maximum deux nouvelles tentatives (30 puis 60 secondes). Les tests automatisés simulent l'API et ne prouvent pas qu'une génération réelle aboutira. Le coût et les quotas du fournisseur doivent être vérifiés dans le compte Agnes.
+
+
+## Vérifier le registre des affirmations
+
+Le registre JSON sépare le statut éditorial de la décision de revue. Une affirmation ne peut être déclarée `verified` que si :
+- une personne responsable a explicitement approuvé la revue et indiqué son nom et la date ;
+- au moins deux sources favorables sont référencées ;
+- ces sources ont des éditeurs et des domaines distincts.
+
+Exemple de structure (à adapter avec de vraies références) :
+
+```json
+{
+  "sources": [
+    {
+      "id": "archive-1",
+      "title": "Titre du document d'archive",
+      "url": "https://archives.example.org/document",
+      "publisher": "Archives A",
+      "accessed_at": "2026-11-27",
+      "supports_claim": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-1",
+      "statement": "Texte précis de l'affirmation à examiner.",
+      "status": "unconfirmed",
+      "source_ids": ["archive-1"],
+      "notes": "À recouper avant utilisation.",
+      "review_decision": "pending"
+    }
+  ]
+}
+```
+
+Lancer le contrôle :
+
+```bash
+observateur validate-claims projects/claims.json
+```
+
+Cette commande contrôle la structure, les liens entre affirmations et sources, et les exigences minimales de revue. Elle ne télécharge pas les pages et ne prouve pas que les sources sont exactes, indépendantes dans leur contenu ou correctement interprétées. Deux domaines différents ne suffisent pas, à eux seuls, à établir la vérité : la vérification humaine des documents originaux reste obligatoire. Les affirmations non examinées doivent rester `unconfirmed`, `hypothesis`, `testimony`, `oral_tradition` ou `legend` selon leur nature.
