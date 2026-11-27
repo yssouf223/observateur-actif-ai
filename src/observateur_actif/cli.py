@@ -18,6 +18,7 @@ from observateur_actif.claim_review import load_claim_registry
 from observateur_actif.source_fetcher import SourceFetchError, fetch_source, fetch_leads
 from observateur_actif.claim_extractor import extract_claim_candidates
 from observateur_actif.review_queue import write_review_queue
+from observateur_actif.narration import export_narration
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -160,6 +161,24 @@ def review_queue_command(
         console.print("Ouvrir chaque source originale et vérifier le contexte avant toute décision.")
     except (OSError, ValueError) as exc:
         console.print(f"[red]Impossible de créer la file de revue : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("export-narration")
+def export_narration_command(
+    project_file: str = typer.Argument(..., help="Projet documentaire JSON."),
+    text_file: str = typer.Option("output/narration.txt", "--text", help="Fichier de voix off."),
+    subtitles_file: str = typer.Option("output/subtitles.srt", "--subtitles", help="Fichier de sous-titres SRT."),
+) -> None:
+    """Exporter le texte de voix off et les sous-titres synchronisés aux scènes."""
+    try:
+        project = load_project(project_file)
+        text_path, srt_path = export_narration(project, text_file, subtitles_file)
+        console.print(f"[green]Texte de narration : {text_path}[/green]")
+        console.print(f"[green]Sous-titres SRT : {srt_path}[/green]")
+        console.print("[yellow]Aucun fichier audio n'est généré par cette commande.[/yellow]")
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        console.print(f"[red]Export impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
