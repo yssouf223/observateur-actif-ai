@@ -93,7 +93,7 @@ def publish_video(
                 "title": title.strip(),
                 "description": description.strip(),
                 "tags": tags[:30],
-                "categoryId": " documentary" .strip(),
+                "categoryId": "27",
                 "defaultLanguage": "fr",
                 "defaultAudioLanguage": "fr",
             },
