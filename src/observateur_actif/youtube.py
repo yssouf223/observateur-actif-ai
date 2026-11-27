@@ -77,7 +77,7 @@ def publish_video(
         token_uri="https://oauth2.googleapis.com/token",
         client_id=client_id,
         client_secret=client_secret,
-        scopes=["https://www.googleapis.com/auth/youtube.upload"],
+        scopes=["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.readonly"],
     )
     try:
         youtube = build("youtube", "v3", credentials=credentials, cache_discovery=False)
