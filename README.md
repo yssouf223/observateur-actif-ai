@@ -140,3 +140,15 @@ observateur fetch-source "https://exemple.org/article" --output projects/article
 Le module refuse les hôtes résolus vers des adresses privées ou locales, les ports non standards, les redirections et les contenus qui ne sont pas HTML. Le téléchargement est limité à 2 Mio et utilise un délai maximal de 15 secondes. Il n'exécute pas le JavaScript, ne contourne pas les paywalls et n'essaie pas de télécharger les images ou autres ressources de la page.
 
 Le résultat contient le titre, le texte extrait, l'URL et la date de collecte. Son statut reste toujours `source_text_unverified` : l'extraction ne confirme ni la véracité, ni la fiabilité, ni l'indépendance de la source. Vérifier le document original et recouper chaque affirmation avant toute utilisation.
+
+
+## Ouvrir automatiquement un petit lot de pistes RSS
+
+Après la collecte, l'agent peut ouvrir les articles originaux, un par un, sans interrompre le lot lorsqu'un article est inaccessible :
+
+```bash
+observateur research-rss
+observateur fetch-leads --input projects/research_leads.json --output projects/source_documents.json --limit 5
+```
+
+La limite est comprise entre 1 et 20 articles par exécution (5 par défaut). Les doublons d'URL sont ignorés. Chaque résultat indique `fetch_status` (`success` ou `failed`) et conserve les erreurs éventuelles. Les textes obtenus portent toujours le statut `source_text_unverified` : cette étape prépare le travail de vérification, elle ne valide aucun fait.
