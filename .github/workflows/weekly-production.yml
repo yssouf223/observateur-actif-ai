@@ -109,6 +109,44 @@ jobs:
           command -v ffprobe
           ffmpeg -version | head -n 1
 
+      - name: Prévalider l'accès Agnes et le compte YouTube avant les clips
+        if: steps.preflight.outputs.ready == 'true'
+        run: |
+          python - <<'PY'
+          import json, os, requests
+          response = requests.get(
+              "https://apihub.agnes-ai.com/v1/models",
+              headers={"Authorization": f"Bearer {os.environ['AGNES_API_KEY']}"},
+              timeout=30,
+          )
+          response.raise_for_status()
+          payload = response.json()
+          models = payload.get("data", payload.get("models", []))
+          names = {item.get("id") or item.get("name") for item in models if isinstance(item, dict)}
+          if "agnes-video-2.5-flash" not in names:
+              raise SystemExit("Le modèle Agnes Video 2.5 Flash n'est pas visible pour cette clé.")
+          print("Clé Agnes valide et modèle vidéo disponible.")
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          credentials = Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=[
+                  "https://www.googleapis.com/auth/youtube.upload",
+                  "https://www.googleapis.com/auth/youtube.readonly",
+              ],
+          )
+          youtube = build("youtube", "v3", credentials=credentials, cache_discovery=False)
+          result = youtube.channels().list(part="id", mine=True).execute()
+          channels = result.get("items", [])
+          if not channels or channels[0].get("id") != os.environ["YOUTUBE_CHANNEL_ID"]:
+              raise SystemExit("OAuth YouTube invalide ou identifiant de chaîne incorrect.")
+          print("Compte OAuth YouTube valide et chaîne confirmée.")
+          PY
+
       - name: Tester Edge-TTS et les repères de sous-titres avant les clips vidéo
         if: steps.preflight.outputs.ready == 'true'
         run: |
