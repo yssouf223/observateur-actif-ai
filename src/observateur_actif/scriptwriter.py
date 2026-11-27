@@ -90,9 +90,10 @@ def draft_project(
         "eritrea", "érythrée", "djibouti", "gabon", "liberia", "libéria",
     )
     off_topic = (
-        "jihad", "djihad", "terror", "terrorisme", "al-shabaab", "al-shabab",
-        "jnim", "boko haram", "election", "élection", "football", "sport",
-        "nutrition", "santé", "health", "ukraine",
+        "jihad", "jihadist", "djihad", "djihadiste", "terrorism", "terrorist",
+        "terrorisme", "terroriste", "al-shabaab", "al-shabab", "jnim", "boko haram",
+        "election", "elections", "élection", "élections", "football", "nutrition",
+        "santé", "health", "ukraine",
     )
 
     def relevance(doc: dict) -> int:
@@ -102,7 +103,7 @@ def draft_project(
         topic_hits = sum(1 for keyword in strong_topics if keyword in combined)
         title_hits = sum(1 for keyword in strong_topics if keyword in title)
         region_hits = sum(1 for keyword in african_regions if keyword in combined)
-        excluded_hits = sum(1 for keyword in off_topic if keyword in combined)
+        excluded_hits = sum(1 for keyword in off_topic if re.search(rf"\\b{re.escape(keyword)}\\b", combined))
         if topic_hits == 0 or region_hits == 0 or excluded_hits > 0:
             return 0
         return topic_hits * 3 + title_hits * 5 + region_hits * 2
