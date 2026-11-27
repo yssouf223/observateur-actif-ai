@@ -16,6 +16,7 @@ BASE_URL = "https://apihub.agnes-ai.com"
 MODEL = "agnes-video-2.5-flash"
 CREATE_TIMEOUT = 60
 DOWNLOAD_TIMEOUT = 120
+QUEUE_RETRY_DELAYS = (30, 60)
 
 
 class AgnesError(RuntimeError):
@@ -52,8 +53,8 @@ def generate_video(
 ) -> Path:
     """Générer un clip 720p et l'enregistrer localement.
 
-    Une réponse 503/429 à la création est remontée sans relance automatique :
-    une file saturée ne crée pas de tâche et l'utilisateur garde le contrôle.
+    Si Agnes refuse la création parce que sa file vidéo est pleine,
+    le client effectue deux nouvelles tentatives espacées de 30 puis 60 s.
     """
     key = (api_key or os.getenv("AGNES_API_KEY", "")).strip()
     if not key:
@@ -77,17 +78,44 @@ def generate_video(
         "aspect_ratio": aspect_ratio,
     }
 
-    try:
-        response = requests.post(
-            f"{BASE_URL}/v1/videos",
-            headers=headers,
-            json=body,
-            timeout=CREATE_TIMEOUT,
+    response = None
+    for attempt in range(len(QUEUE_RETRY_DELAYS) + 1):
+        try:
+            response = requests.post(
+                f"{BASE_URL}/v1/videos",
+                headers=headers,
+                json=body,
+                timeout=CREATE_TIMEOUT,
+            )
+        except requests.RequestException as exc:
+            raise AgnesError(
+                f"Impossible de contacter Agnes pour créer la vidéo : {exc}"
+            ) from exc
+
+        if response.ok:
+            break
+
+        try:
+            error_payload = response.json()
+            error_message = str(
+                error_payload.get("message") or error_payload.get("error") or ""
+            ).lower()
+        except (ValueError, AttributeError):
+            error_message = ""
+
+        queue_is_full = response.status_code == 503 and "queue" in error_message and "full" in error_message
+        if not queue_is_full or attempt >= len(QUEUE_RETRY_DELAYS):
+            raise _api_error(response)
+
+        delay = QUEUE_RETRY_DELAYS[attempt]
+        print(
+            f"File vidéo Agnes saturée ; nouvelle tentative "
+            f"{attempt + 2}/{len(QUEUE_RETRY_DELAYS) + 1} dans {delay} secondes..."
         )
-    except requests.RequestException as exc:
-        raise AgnesError(f"Impossible de contacter Agnes pour créer la vidéo : {exc}") from exc
-    if not response.ok:
-        raise _api_error(response)
+        time.sleep(delay)
+
+    if response is None or not response.ok:
+        raise AgnesError("Agnes n'a pas accepté la demande de génération.")
 
     try:
         created = response.json()
