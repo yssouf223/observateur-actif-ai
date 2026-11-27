@@ -80,18 +80,19 @@ def inspect_clip_motion(
     video_file: str | Path,
     *,
     ffmpeg: str = "ffmpeg",
+    ffprobe: str = "ffprobe",
     freeze_threshold_db: int = -60,
     freeze_duration_seconds: float = 3.0,
 ) -> dict:
     """Refuser les clips presque immobiles sur une longue durée.
 
-    Le filtre FFmpeg freezedetect signale les séquences dont les images restent
-    pratiquement identiques pendant le seuil demandé. Il s'agit d'un garde-fou
-    automatique, pas d'une appréciation artistique du mouvement.
+    FFmpeg freezedetect peut signaler un freeze final uniquement par
+    freeze_start ; ffprobe fournit donc la durée totale pour calculer ce gel.
     """
     executable = shutil.which(ffmpeg)
-    if not executable:
-        raise QualityError("FFmpeg est introuvable pour le contrôle du mouvement.")
+    probe_executable = shutil.which(ffprobe)
+    if not executable or not probe_executable:
+        raise QualityError("FFmpeg et ffprobe sont requis pour le contrôle du mouvement.")
     path = Path(video_file)
     if not path.is_file() or path.stat().st_size == 0:
         raise QualityError(f"Clip absent ou vide : {path}")
@@ -102,15 +103,29 @@ def inspect_clip_motion(
     ]
     try:
         result = subprocess.run(command, check=False, capture_output=True, text=True)
-    except OSError as exc:
-        raise QualityError(f"Impossible d'analyser le mouvement du clip : {exc}") from exc
+        probe = subprocess.run(
+            [probe_executable, "-v", "error", "-show_entries", "format=duration",
+             "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
+            check=True, capture_output=True, text=True,
+        )
+        clip_duration = float(probe.stdout.strip())
+    except (OSError, subprocess.CalledProcessError, ValueError) as exc:
+        raise QualityError(f"Analyse du mouvement impossible pour {path} : {exc}") from exc
     if result.returncode != 0:
         details = (result.stderr or result.stdout or "erreur FFmpeg")[-1200:]
         raise QualityError(f"Analyse de mouvement impossible pour {path} : {details}")
+
+    stderr = result.stderr or ""
     freezes = [
         float(value)
-        for value in re.findall(r"freeze_duration:\s*([0-9]+(?:\\.[0-9]+)?)", result.stderr or "")
+        for value in re.findall(r"freeze_duration:\s*([0-9]+(?:\.[0-9]+)?)", stderr)
     ]
+    freeze_starts = [
+        float(value)
+        for value in re.findall(r"freeze_start:\s*([0-9]+(?:\.[0-9]+)?)", stderr)
+    ]
+    if len(freeze_starts) > len(freezes):
+        freezes.append(max(0.0, clip_duration - freeze_starts[-1]))
     long_freezes = [duration for duration in freezes if duration >= freeze_duration_seconds]
     if long_freezes:
         raise QualityError(
@@ -120,6 +135,7 @@ def inspect_clip_motion(
     return {
         "status": "motion_check_passed",
         "file": str(path),
+        "clip_duration_seconds": round(clip_duration, 3),
         "freeze_threshold_seconds": freeze_duration_seconds,
         "detected_freeze_durations": freezes,
     }
