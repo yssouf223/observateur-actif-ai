@@ -71,7 +71,7 @@ def test_queue_full_retries_then_succeeds(tmp_path):
 
     assert output.read_bytes() == b"fake-mp4"
     assert post.call_count == 2
-    sleep.assert_any_call(30)
+    sleep.assert_any_call(60)
 
 
 def test_queue_full_stops_after_limited_retries(tmp_path):
