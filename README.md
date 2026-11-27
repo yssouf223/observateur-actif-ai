@@ -86,6 +86,26 @@ Ne jamais envoyer la clé API dans une conversation, un commit, une capture d'é
 Le client vidéo est configuré pour demander du 720p. En cas de réponse HTTP 503 indiquant explicitement que la file est pleine, il effectue au maximum deux nouvelles tentatives (30 puis 60 secondes). Les tests automatisés simulent l'API et ne prouvent pas qu'une génération réelle aboutira. Le coût et les quotas du fournisseur doivent être vérifiés dans le compte Agnes.
 
 
+## Générer la narration MP3 avec Edge-TTS
+
+Le projet utilise le paquet Python `edge-tts` pour demander une voix française masculine au service vocal en ligne de Microsoft Edge. La voix par défaut est `fr-FR-HenriNeural`, avec une vitesse légèrement réduite (`-8%`) et une hauteur abaissée (`-8Hz`) pour tester une narration documentaire.
+
+Après installation des dépendances et validation d'un projet :
+
+```bash
+observateur generate-audio projects/documentary.json --output output/narration.mp3
+```
+
+Pour modifier la voix ou le rendu :
+
+```bash
+observateur generate-audio projects/documentary.json --voice fr-FR-HenriNeural --rate=-8% --pitch=-8Hz
+```
+
+Cette commande nécessite Internet et envoie le texte de narration au service vocal en ligne. Le paquet `edge-tts` est un client tiers non officiel ; il ne fournit ni garantie de disponibilité ni licence commerciale Microsoft. Les conditions d'utilisation et les droits de diffusion/monétisation des fichiers audio générés par ce moyen ne sont pas clairement confirmés par la documentation publique. Ne pas considérer les MP3 comme autorisés pour une chaîne monétisée sans confirmation écrite de Microsoft. Pour une utilisation commerciale explicitement documentée, Microsoft oriente vers Azure AI Speech et ses conditions applicables. Les tests automatisés simulent la génération et ne prouvent pas qu'un appel réel au service aboutira.
+
+La synchronisation SRT exportée précédemment repose sur les durées théoriques des scènes ; il faudra la recaler sur le MP3 réel avant le montage final.
+
 ## Vérifier le registre des affirmations
 
 Le registre JSON sépare le statut éditorial de la décision de revue. Une affirmation ne peut être déclarée `verified` que si :
