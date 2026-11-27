@@ -213,3 +213,17 @@ observateur export-narration projects/documentary.json --text output/narration.t
 ```
 
 Le texte rassemble les répliques dans l'ordre des scènes et rappelle la direction vocale prévue : voix française masculine, grave et posée. Le fichier SRT utilise les durées de chaque scène pour calculer les horodatages. Cet export prépare les fichiers pour une future étape de synthèse vocale ; il ne crée pas encore de voix audio et la synchronisation devra être ajustée après le montage réel.
+
+
+## Assembler un documentaire avec FFmpeg
+
+Chaque scène du fichier projet doit référencer son clip réellement généré dans `generated_video_path`. Après génération du MP3 et du SRT synchronisé :
+
+```bash
+observateur generate-audio projects/documentary.json --output output/narration.mp3 --subtitles output/narration.srt
+observateur assemble-video projects/documentary.json --narration output/narration.mp3 --subtitles output/narration.srt --output output/documentary.mp4
+```
+
+Le montage concatène les clips dans l'ordre du storyboard, les normalise en 16:9 1280×720 à 25 images/s, ajoute la voix off et inclut le SRT comme piste de sous-titres sélectionnable. Une musique peut être ajoutée avec `--music chemin/vers/musique.mp3` ; elle est mixée à 12 % sous la voix. N'utiliser qu'un fichier dont les droits autorisent explicitement la diffusion et la monétisation. Aucune musique n'est téléchargée automatiquement.
+
+**Limite de résolution :** les clips Agnes demandés actuellement sont en 720p. Le montage reste donc en 720p ; il ne prétend pas être un master natif 1080p. Cette commande assemble des clips déjà générés et ne résout pas la disponibilité de l'API Agnes. Les tests vérifient la construction de la commande FFmpeg, pas le rendu audiovisuel complet sur un vrai jeu de clips.
