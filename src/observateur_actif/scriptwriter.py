@@ -164,14 +164,26 @@ def draft_project(
     generic_regions = {"africa", "african", "afrique", "sahara", "sahel"}
 
     def signatures(doc: dict) -> tuple[set[str], set[str]]:
-        combined = (
-            str(doc.get("title") or doc.get("lead_title") or "")
-            + " " + str(doc.get("text", ""))[:7000]
-        ).casefold()
+        title = str(doc.get("title") or doc.get("lead_title") or "").casefold()
+        combined = (title + " " + str(doc.get("text", ""))[:7000]).casefold()
+        title_stopwords = {
+            "archaeology", "archaeological", "archaeologists", "archaeologist",
+            "ancient", "new", "discovery", "discovered", "discover", "found",
+            "uncovered", "study", "research", "researchers", "scientists",
+            "african", "africa", "afrique", "south", "north", "east", "west",
+            "history", "historical", "mystery", "mysterious", "site", "sites",
+            "report", "reports", "find", "finds", "world", "years", "year",
+            "old", "near", "nearly", "almost", "about", "evidence", "stone",
+            "tools", "tool", "desert", "valley", "region", "university",
+        }
+        title_terms = {
+            token for token in re.findall(r"[a-zà-ÿ]{4,}", title)
+            if token not in title_stopwords
+        }
         topics = {
             keyword for keyword in strong_topics
             if keyword not in generic_topics and keyword in combined
-        }
+        } | title_terms
         regions = {
             keyword for keyword in african_regions
             if keyword not in generic_regions and keyword in combined
