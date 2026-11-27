@@ -43,8 +43,8 @@
   },
   {
     "title": "Les rives oubliées : cent haches de pierre au cœur du Kalahari",
-    "notes": "Brouillon déjà proposé ; éviter de reprendre le même événement, lieu ou histoire, même sous un autre titre. Au sud de l'Afrique, un vaste désert de buissons dissimule une mémoire de pierre vieille d'un million et demi d'années. Le Kalahari retient des secrets que la végétation a protégés des regards. La vallée d'Okwa s'étire vers la frontière entre le Botswana et la Namibie. Son accès est rendu presque impossible par une brousse dense qui limite toute exploration systématique. Le professeur Mirosław Masojć, directeur de l'Institut d'archéologie de l'Université de Wrocław, décrit cette zone comme exceptionnellement difficile pour la recherche archéologique. Cette brousse, obstacle majeur, est précisément la raison pour laquelle cette partie du Kalahari demeure si peu explorée à ce jour. Le désert garde ses traces intactes.",
+    "notes": "Brouillon rejeté avant toute production : les deux articles cités ne sont pas indépendants (Archaeology Magazine renvoie à Science in Poland), l'âge exact des artefacts n'est pas établi mais le texte leur attribue 1,5 million d'années, et le titre transforme « près de 100 » en « cent ». Ne pas reprendre sans source primaire indépendante et correction complète.",
     "created_at": "2026-11-27T12:13:00.970404+00:00",
-    "status": "draft"
+    "status": "rejected_fact_check"
   }
 ]
