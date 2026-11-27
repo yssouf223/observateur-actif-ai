@@ -32,7 +32,7 @@ Les workflows arrêtent le traitement si les variables de gratuité ne sont pas 
 
 ## Contrôle éditorial obligatoire
 
-Le workflow du mercredi produit un brouillon. Il force toujours :
+Le workflow du mercredi produit un brouillon et un dossier Markdown de revue qui rassemble les scènes, les narrations et les liens vers leurs sources. Le workflow du mercredi produit un brouillon. Il force toujours :
 
 - `review_approved=false` pour chaque scène ;
 - `release_approved=false` pour le projet ;
@@ -57,6 +57,7 @@ Le moteur de brouillon utilise Gemini 3.8 Flash via la Developer API. Le palier 
 observateur research-rss
 observateur fetch-leads --input projects/research_leads.json --output projects/source_documents.json --limit 20
 observateur draft-project --sources projects/source_documents.json --output projects/weekly_documentary.json
+observateur review-project projects/weekly_documentary.json --output projects/editorial_review.md
 observateur produce projects/weekly_documentary.json --output-dir output
 observateur quality-check output/documentary.mp4
 observateur publish-youtube projects/weekly_documentary.json --video output/documentary.mp4
