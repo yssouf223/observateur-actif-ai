@@ -96,6 +96,8 @@ def test_edge_tts_stream_writes_audio_and_word_timed_srt(tmp_path, monkeypatch):
     class FakeCommunicate:
         def __init__(self, text, **kwargs):
             self.text = text
+            self.kwargs = kwargs
+            FakeCommunicate.last_kwargs = kwargs
 
         async def stream(self):
             yield {"type": "audio", "data": b"fake-mp3"}
@@ -110,3 +112,4 @@ def test_edge_tts_stream_writes_audio_and_word_timed_srt(tmp_path, monkeypatch):
     assert audio.read_bytes() == b"fake-mp3"
     assert "Bonjour monde." in srt
     assert "-->" in srt
+    assert FakeCommunicate.last_kwargs["boundary"] == "WordBoundary"
