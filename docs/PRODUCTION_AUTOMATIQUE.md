@@ -48,6 +48,9 @@ La production du samedi refuse un projet tant que chaque scène n'a pas un révi
 
 ## Commandes
 
+Le moteur de brouillon utilise Gemini 3.8 Flash via la Developer API. Le palier gratuit dépend des quotas et de l'éligibilité du projet ; sur le palier gratuit, Google indique que le contenu peut être utilisé pour améliorer ses produits. N'envoyer que des documents publics, jamais des données confidentielles. Voir [tarifs Gemini](https://ai.google.dev/gemini-api/docs/pricing).
+
+
 ```bash
 observateur research-rss
 observateur fetch-leads --input projects/research_leads.json --output projects/source_documents.json --limit 20
