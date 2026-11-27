@@ -71,17 +71,21 @@ class DocumentaryProject(BaseModel):
                     f"{', '.join(sorted(unknown_ids))}."
                 )
             if scene.claim_status == ClaimStatus.VERIFIED:
+                supporting = [sources_by_id[source_id] for source_id in scene.source_ids]
+                if len(supporting) < 2:
+                    raise ValueError(
+                        f"La scène {scene.id} est vérifiée sans deux sources indépendantes associées."
+                    )
                 if not scene.review_approved or not scene.reviewer or not scene.reviewed_at:
                     raise ValueError(
                         f"La scène {scene.id} est vérifiée sans validation éditoriale humaine."
                     )
-                supporting = [sources_by_id[source_id] for source_id in scene.source_ids]
                 publishers = {source.publisher.strip().casefold() for source in supporting}
                 hosts = {
                     (urlparse(source.url).hostname or "").casefold()
                     for source in supporting
                 }
-                if len(supporting) < 2 or len(publishers) < 2 or len(hosts) < 2:
+                if len(publishers) < 2 or len(hosts) < 2:
                     raise ValueError(
                         f"La scène {scene.id} exige deux sources de deux éditeurs "
                         "et domaines distincts pour être déclarée vérifiée."
