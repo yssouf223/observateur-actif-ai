@@ -134,5 +134,6 @@ jobs:
             output/production_report.json
             output/quality_report.json
             projects/weekly_documentary.json
+            projects/editorial_review.md
           if-no-files-found: warn
           retention-days: 7
