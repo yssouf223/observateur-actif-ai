@@ -141,9 +141,9 @@ RÈGLES IMPÉRATIVES :
 - Si une information n'est pas documentée, ne l'ajoute pas comme fait. Signale les limites.
 - Pas de dialogues fictifs, de citations reconstituées ni de scènes historiques présentées comme archives réelles.
 - Voix off en français, masculine grave, calme, journalistique, sans emphase artificielle.
-- Documentaire de 10 à 15 minutes, environ 1 300 à 1 700 mots de narration répartis sur 50 à 75 scènes.
-- Chaque scène doit avoir un prompt vidéo en anglais pour un plan réellement animé, avec mouvement physique/caméra clairement décrit ; aucun diaporama, aucune image fixe, aucun texte incrusté.
-- Chaque scène doit durer 10 à 12 secondes. Les scènes doivent donc prévoir des actions visuelles simples et cohérentes.
+- Documentaire de 10 à 15 minutes, environ 1 300 à 1 700 mots de narration répartis sur 50 à 75 scènes.\n- Chaque scène dure exactement 12 secondes : 50 scènes pour 10 minutes, 55 pour 11 minutes, jusqu'à 75 pour 15 minutes. Choisis un nombre de scènes cohérent avec la durée cible.
+- Chaque scène doit avoir un prompt vidéo en anglais, concis (15 à 25 mots), pour un plan réellement animé, avec mouvement physique/caméra clairement décrit ; aucun diaporama, aucune image fixe, aucun texte incrusté.\n- motion_description doit rester concise (8 à 15 mots) ; narration 25 à 35 mots par scène.
+- Chaque scène doit durer exactement 12 secondes. Les scènes doivent donc prévoir des actions visuelles simples et cohérentes.
 - Le projet doit être un BROUILLON : review_approved=false partout, reviewer=null, reviewed_at=null, release_approved=false.
 - N'ajoute pas de source qui n'existe pas dans la liste.
 
@@ -175,7 +175,7 @@ DOCUMENTS SOURCÉS :
             "model": selected_model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.25,
-            "max_tokens": 16000,
+            "max_tokens": 32000,
             "response_format": {"type": "json_object"},
         }
         endpoint = AGNES_CHAT_URL
@@ -186,7 +186,7 @@ DOCUMENTS SOURCÉS :
             "generationConfig": {
                 "responseMimeType": "application/json",
                 "temperature": 0.25,
-                "maxOutputTokens": 16000,
+                "maxOutputTokens": 32000,
             },
         }
         endpoint = f"{GEMINI_API_ROOT}/{selected_model}:generateContent"
@@ -203,7 +203,7 @@ DOCUMENTS SOURCÉS :
             raise ScriptWriterError(f"{provider.title()} API HTTP {response.status_code}: {detail}")
         data = response.json()
         if provider == "agnes":
-            text = data["choices"][0]["message"]["content"]
+            text = data["choices"][0]["message"]["content"]\n            if isinstance(text, list):\n                text = "".join(part.get("text", "") if isinstance(part, dict) else str(part) for part in text)
         else:
             text = data["candidates"][0]["content"]["parts"][0]["text"]
     except ScriptWriterError:
