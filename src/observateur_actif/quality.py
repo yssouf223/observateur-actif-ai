@@ -39,9 +39,9 @@ def inspect_video(video_file: str | Path, *, ffprobe: str = "ffprobe") -> dict:
     if not subtitles:
         raise QualityError("Aucune piste de sous-titres détectée dans le MP4 final.")
     width, height = video.get("width"), video.get("height")
-    if width != 1280 or height != 720:
+    if width != 1920 or height != 1080:
         raise QualityError(
-            f"Résolution inattendue : {width}x{height}; attendu 1280x720."
+            f"Résolution inattendue : {width}x{height}; attendu 1920x1080 (sortie upscalée depuis 720p)."
         )
     duration = float(data.get("format", {}).get("duration", 0) or 0)
     if duration <= 0:
@@ -52,6 +52,7 @@ def inspect_video(video_file: str | Path, *, ffprobe: str = "ffprobe") -> dict:
         "size_bytes": path.stat().st_size,
         "duration_seconds": round(duration, 3),
         "width": width,
+        "resolution_origin": "upscaled_from_720p_sources",
         "height": height,
         "video_codec": video.get("codec_name"),
         "audio_codec": audio.get("codec_name"),
