@@ -1,4 +1,5 @@
 import sys
+import asyncio
 import types
 
 import pytest
@@ -87,3 +88,25 @@ def test_empty_project_narration_is_rejected():
     })
     with pytest.raises(SpeechError):
         build_speech_text(project)
+
+
+def test_edge_tts_stream_writes_audio_and_word_timed_srt(tmp_path, monkeypatch):
+    import observateur_actif.speech as speech
+
+    class FakeCommunicate:
+        def __init__(self, text, **kwargs):
+            self.text = text
+
+        async def stream(self):
+            yield {"type": "audio", "data": b"fake-mp3"}
+            yield {"type": "WordBoundary", "offset": 0, "duration": 2_000_000, "text": "Bonjour"}
+            yield {"type": "WordBoundary", "offset": 2_000_000, "duration": 3_000_000, "text": "monde."}
+
+    monkeypatch.setattr(speech.edge_tts, "Communicate", FakeCommunicate)
+    audio = tmp_path / "voice.mp3"
+    srt = asyncio.run(speech._stream_audio_and_timing(
+        "Bonjour monde.", audio, DEFAULT_VOICE, "-8%", "-8Hz"
+    ))
+    assert audio.read_bytes() == b"fake-mp3"
+    assert "Bonjour monde." in srt
+    assert "-->" in srt
