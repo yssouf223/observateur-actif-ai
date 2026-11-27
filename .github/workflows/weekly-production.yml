@@ -1,0 +1,105 @@
+name: Production hebdomadaire Observateur Actif
+
+on:
+  schedule:
+    # Le samedi à 15:00 UTC, pour programmer la publication à 16:00 UTC (Mali).
+    - cron: "0 15 * * 6"
+  workflow_dispatch:
+    inputs:
+      project_path:
+        description: "Chemin du projet documentaire JSON déjà approuvé"
+        required: true
+        type: string
+        default: "projects/weekly_documentary.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: observateur-actif-weekly-production
+  cancel-in-progress: false
+
+jobs:
+  production:
+    name: Génération, contrôle et programmation YouTube
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      VIDEO_PROVIDER: agnes
+      AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+      PROJECT_FILE: ${{ inputs.project_path || 'projects/weekly_documentary.json' }}
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Vérifier le projet et les autorisations avant toute dépense
+        id: preflight
+        shell: bash
+        run: |
+          if [ ! -f "$PROJECT_FILE" ]; then
+            echo "Projet absent : $PROJECT_FILE. Aucun crédit vidéo ne sera consommé."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          for name in AGNES_API_KEY YOUTUBE_CLIENT_ID YOUTUBE_CLIENT_SECRET YOUTUBE_REFRESH_TOKEN YOUTUBE_CHANNEL_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Secret requis absent : $name"
+              exit 1
+            fi
+          done
+          python - <<'PY'
+          import json, os, sys
+          path = os.environ["PROJECT_FILE"]
+          with open(path, encoding="utf-8") as f:
+              project = json.load(f)
+          if not project.get("release_approved") or not project.get("release_reviewer") or not project.get("release_approved_at"):
+              sys.exit("Publication bloquée : le projet n'a pas d'approbation éditoriale explicite.")
+          scenes = project.get("scenes", [])
+          if not scenes or any(not s.get("review_approved") or not s.get("reviewer") or not s.get("reviewed_at") for s in scenes):
+              sys.exit("Production bloquée : chaque scène doit être approuvée par un réviseur identifié.")
+          print(f"Projet approuvé : {project.get('title')} ({len(scenes)} scènes).")
+          PY
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: Installer Python
+        if: steps.preflight.outputs.ready == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer Observateur Actif AI et les outils YouTube
+        if: steps.preflight.outputs.ready == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install '.[youtube]'
+
+      - name: Générer les scènes, la voix off, les sous-titres et le montage
+        if: steps.preflight.outputs.ready == 'true'
+        run: observateur produce "$PROJECT_FILE" --output-dir output
+
+      - name: Vérifier techniquement le MP4 final
+        if: steps.preflight.outputs.ready == 'true'
+        run: observateur quality-check output/documentary.mp4 --report output/quality_report.json
+
+      - name: Programmer la publication YouTube pour samedi 16 h UTC
+        if: steps.preflight.outputs.ready == 'true'
+        run: observateur publish-youtube "$PROJECT_FILE" --video output/documentary.mp4
+
+      - name: Archiver la vidéo et les rapports
+        if: always() && steps.preflight.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: observateur-actif-documentary
+          path: |
+            output/documentary.mp4
+            output/narration.mp3
+            output/narration.srt
+            output/production_report.json
+            output/quality_report.json
+          if-no-files-found: warn
+          retention-days: 7
