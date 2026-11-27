@@ -12,7 +12,7 @@ from observateur_actif.storyboard import DocumentaryProject
 def make_project():
     return DocumentaryProject.model_validate({
         "title": "Test",
-        "target_duration_minutes": 1,
+        "target_duration_minutes": 10,
         "scenes": [
             {"id": "s1", "duration_seconds": 5, "narration": "La nuit tombe.",
              "video_prompt": "Night shot", "motion_description": "Camera moves.",
@@ -58,7 +58,7 @@ def test_generate_audio_saves_mp3_and_uses_documentary_voice(tmp_path, monkeypat
 
 def test_empty_project_narration_is_rejected():
     project = DocumentaryProject.model_validate({
-        "title": "Vide", "target_duration_minutes": 1, "scenes": []
+        "title": "Vide", "target_duration_minutes": 10, "scenes": [{"id": "s1", "duration_seconds": 5, "narration": "   ", "video_prompt": "Empty", "motion_description": "Still", "claim_status": "legend"}]
     })
     with pytest.raises(SpeechError):
         build_speech_text(project)
