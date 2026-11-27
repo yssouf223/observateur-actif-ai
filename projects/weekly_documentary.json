@@ -1,0 +1,781 @@
+{
+  "title": "Enquête : la mutation silencieuse du djihadisme en Afrique",
+  "target_duration_minutes": 10,
+  "aspect_ratio": "16:9",
+  "language": "fr",
+  "sources": [
+    {
+      "id": "source-1",
+      "title": "APOD: 2026 November 27 – The Moon Watchers - NASA Science",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-27-the-moon-watchers/",
+      "publisher": "NASA",
+      "published_at": null,
+      "accessed_at": "2026-11-27T12:04:15.996844+00:00",
+      "reliability_note": "Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine."
+    },
+    {
+      "id": "source-2",
+      "title": "Le djihadisme mondial a-t-il échoué ou change-t-il de forme ? - BBC News Afrique",
+      "url": "https://www.bbc.com/afrique/articles/cme395yv2949o?at_medium=RSS&at_campaign=rss",
+      "publisher": "BBC Afrique",
+      "published_at": null,
+      "accessed_at": "2026-11-27T12:04:16.727245+00:00",
+      "reliability_note": "Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine."
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene-001",
+      "duration_seconds": 12,
+      "narration": "Riz, pâtes, sucre, huile de cuisson et haricots. Dans la propagande d'Al-Shabab, ces denrées figurent parmi les aides distribuées à des centaines de familles somaliennes en août.",
+      "video_prompt": "Slow aerial drone push over arid Somali farmland at dawn, dry golden grass swaying, distant village huts emerging from haze.",
+      "motion_description": "Aerial drone pushes forward over swaying grass toward village.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-002",
+      "duration_seconds": 12,
+      "narration": "Une femme filmée par le groupe prononce une prière de remerciement. Cette scène s'inscrit dans une stratégie délibérée visant à gagner la confiance des communautés locales du sud et du centre de la Somalie.",
+      "video_prompt": "Hand-held close-up of a woman's face in soft natural light, her hands clasped in prayer, camera slowly pulling back to reveal a modest dirt-floored room.",
+      "motion_description": "Camera slowly pulls back from woman's clasped hands to room.",
+      "claim_status": "testimony",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-003",
+      "duration_seconds": 12,
+      "narration": "Tout au long de l'année 2026, ce groupe, qui contrôle de vastes zones rurales, a mis en avant son travail humanitaire via ses réseaux sociaux et sa station de radio.",
+      "video_prompt": "Slow lateral tracking shot along a dusty rural road, radio antenna silhouetted against a hazy amber sky, dust particles drifting in wind.",
+      "motion_description": "Lateral tracking shot follows dusty road, antenna sways in wind.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-004",
+      "duration_seconds": 12,
+      "narration": "Un quart de siècle après les attentats du 11-Septembre, douze ans après la proclamation du califat de l'État islamique, le mouvement djihadiste a profondément changé d'aspect.",
+      "video_prompt": "Slow zoom out from a weathered wall covered in peeling propaganda posters to reveal a vast open Saharan landscape under harsh midday sun.",
+      "motion_description": "Camera zooms out from peeling posters to wide desert landscape.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-005",
+      "duration_seconds": 12,
+      "narration": "Plutôt que de viser l'Occident ou un État islamique mondial, certains groupes liés à Al-Qaïda s'efforcent désormais de conquérir le pouvoir au niveau national et de faire des compromis.",
+      "video_prompt": "Slow push-in on a satellite map projection on a dark screen, camera tilting up to reveal blurred silhouettes of analysts in a dim room.",
+      "motion_description": "Camera pushes into map, tilts up to silhouetted figures.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-006",
+      "duration_seconds": 12,
+      "narration": "L'État islamique a perdu son dernier bastion territorial en 2019. Ni Al-Qaïda ni l'EI n'ont réalisé leur rêve ultime de gouverner un pays selon leur interprétation stricte de l'islam.",
+      "video_prompt": "Slow overhead descent onto a cracked, abandoned urban rooftop, debris shifting in wind, camera continuing to lower through dust and faded rubble.",
+      "motion_description": "Overhead camera descends through dust onto cracked abandoned rooftop.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-007",
+      "duration_seconds": 12,
+      "narration": "Mais le djihadisme n'a pas disparu. L'Afrique est aujourd'hui le principal champ de bataille, où le JNIM au Sahel et Al-Shabab en Somalie mènent des insurrections de longue durée.",
+      "video_prompt": "Slow dolly forward across a flat acacia savanna at dusk, a lone column of vehicles moving in the far distance, headlights cutting through orange haze.",
+      "motion_description": "Dolly forward across savanna toward distant vehicle column at dusk.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-008",
+      "duration_seconds": 12,
+      "narration": "Le rival de ces branches, l'État islamique, est actif au Nigeria, en République démocratique du Congo, au Sahel, au Mozambique et en Somalie.",
+      "video_prompt": "Slow pan across a dark desk, fingers tracing a hand-drawn map of Africa with red lines connecting five regions, pencil dust scattering in lamplight.",
+      "motion_description": "Pan across desk, fingers trace red lines on hand-drawn map.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-009",
+      "duration_seconds": 12,
+      "narration": "En fin d'année 2024, le JNIM a abandonné le logo familier d'Al-Qaïda dans ses vidéos. Le groupe se présente désormais comme un défenseur des gens ordinaires contre les dirigeants corrompus.",
+      "video_prompt": "Slow tracking shot along a long wall of faded and peeling emblems, camera passing over blank patches where logos once were, dust swirling at the base.",
+      "motion_description": "Tracking shot passes over blank wall patches, dust swirls.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-010",
+      "duration_seconds": 12,
+      "narration": "Le JNIM accuse le gouvernement militaire malien et ses alliés russes de tuer des civils et d'aggraver les conditions de vie de la population locale.",
+      "video_prompt": "Slow handheld push through a crowded market, vendors turning to face camera, baskets of goods swaying, the crowd parting like a river around the lens.",
+      "motion_description": "Handheld pushes through swaying market crowd, vendors turn to face.",
+      "claim_status": "testimony",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-011",
+      "duration_seconds": 12,
+      "narration": "En avril, le groupe a lancé un appel à tous les patriotes sincères pour construire un nouveau Mali, promettant sécurité, justice et prospérité dans le respect de la loi islamique.",
+      "video_prompt": "Slow crane up from a crowd of silhouetted figures raising fists to a vast golden sky, banners and cloth flapping in strong wind.",
+      "motion_description": "Crane rises from raised fists to banners flapping in wind.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-012",
+      "duration_seconds": 12,
+      "narration": "Le JNIM a même laissé entendre qu'il pourrait entretenir des relations équilibrées avec la Russie, tout en combattant les forces russes soutenant le gouvernement malien.",
+      "video_prompt": "Slow lateral dolly past two opposing rows of soldiers in dust, camera moving steadily between them, wind pushing sand against their boots and uniforms.",
+      "motion_description": "Lateral dolly moves between two opposing rows of soldiers in dust.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-013",
+      "duration_seconds": 12,
+      "narration": "Fin avril, le JNIM s'est allié aux séparatistes touaregs nationalistes, qu'il avait parfois combattus, pour lancer une offensive majeure menaçant le pouvoir militaire malien.",
+      "video_prompt": "Slow aerial orbit around a dusty rally where two groups of men in different uniforms stand shoulder to shoulder, ground swirling beneath.",
+      "motion_description": "Aerial orbits around two allied groups standing together at dusty rally.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-014",
+      "duration_seconds": 12,
+      "narration": "Le groupe est même allé jusqu'à qualifier les Touaregs de frères. Un pragmatisme remarquable qui détone avec la rhétorique jihadiste mondiale d'antan.",
+      "video_prompt": "Slow push-in on two men's hands clasping in a firm handshake, camera rising to reveal their contrasting headwraps against a dusty backdrop.",
+      "motion_description": "Push-in on handshake, camera rises to reveal contrasting headwraps.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-015",
+      "duration_seconds": 12,
+      "narration": "Une source majeure d'inspiration pour les djihadistes est le nouveau président syrien, Ahmed al-Sharaa, ancien commandant recherché par les États-Unis, arrivé au pouvoir en décembre 2024.",
+      "video_prompt": "Slow tracking shot through a narrow Damascus alley, camera gliding past weathered brick walls and hanging laundry, light shifting as clouds pass overhead.",
+      "motion_description": "Tracking shot glides through narrow alley, light shifts on walls.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-016",
+      "duration_seconds": 12,
+      "narration": "Anciennement connu sous le nom de guerre Abu Mohammed al-Jolani, il a dirigé le Front al-Nosra puis Hayat Tahrir al-Sham avant de rompre ses liens avec l'EI et Al-Qaïda.",
+      "video_prompt": "Slow dissolve-free tracking shot along a long corridor of peeling propaganda murals, camera moving steadily forward, figures on the walls growing larger.",
+      "motion_description": "Tracking shot moves forward along peeling mural corridor, figures grow.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-017",
+      "duration_seconds": 12,
+      "narration": "Il a concentré ses efforts sur la Syrie, établissant une base de pouvoir dans la province d'Idlib, au nord-ouest du pays, et cherchant à rassurer la communauté internationale.",
+      "video_prompt": "Slow aerial descent over arid Idlib hills, camera dropping through thin cloud layer to reveal a patchwork of small cultivated fields and stone houses below.",
+      "motion_description": "Aerial descends through cloud layer over arid Idlib hills and fields.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-018",
+      "duration_seconds": 12,
+      "narration": "Ses dirigeants ont même sollicité l'aide de la Russie, alliée clé du président Bachar al-Assad, afin d'apaiser les craintes d'une prise de pouvoir islamiste.",
+      "video_prompt": "Slow lateral dolly past a long table where two delegations face each other, documents being slid across, chairs creaking slightly as weight shifts.",
+      "motion_description": "Lateral dolly past negotiation table, documents slide, chairs creak.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-019",
+      "duration_seconds": 12,
+      "narration": "Ce pragmatisme, combiné à une Russie et un Iran affaiblis, lui a permis de prendre le pouvoir en Syrie. Son accueil par les dirigeants du monde entier est resté remarquable.",
+      "video_prompt": "Slow push-in on a rotating globe, camera closing in on the Middle East region, the turntable spinning beneath, light glinting off the glass surface.",
+      "motion_description": "Push-in on rotating globe, camera closes on Middle East region.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-020",
+      "duration_seconds": 12,
+      "narration": "Lors de la visite de Sharaa à la Maison Blanche en novembre 2025, le président Trump l'a aspergé de son propre parfum et l'a qualifié de dirigeant très fort.",
+      "video_prompt": "Slow handheld shot in a vast marble hall, camera drifting laterally past columns, two figures walking in the far distance toward each other.",
+      "motion_description": "Handheld drifts laterally past marble columns toward distant figures.",
+      "claim_status": "testimony",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-021",
+      "duration_seconds": 12,
+      "narration": "Pour certains djihadistes, le succès de Sharaa est une source d'inspiration. D'autres perçoivent ses actions comme une trahison de tout ce en quoi ils croient.",
+      "video_prompt": "Slow split tracking shot dividing two groups of men walking in opposite directions on a dusty road, dust trailing behind each column.",
+      "motion_description": "Split tracking follows two groups walking opposite directions on dust road.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-022",
+      "duration_seconds": 12,
+      "narration": "L'État islamique a déclaré le djihad contre le nouveau gouvernement syrien, qualifiant Sharaa et ses collaborateurs d'apostats, et a mené des attaques sur cette base.",
+      "video_prompt": "Slow overhead shot of a village square at night, a single flare arcing across the sky, casting shifting orange light over clustered rooftops and silhouetted trees.",
+      "motion_description": "Overhead captures flare arcing over village, light shifts on rooftops.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-023",
+      "duration_seconds": 12,
+      "narration": "Depuis 2025, un débat virulent en ligne oppose les djihadistes radicaux aux pragmatiques. Ils s'accusent mutuellement de trahison et publient des ouvrages concurrents.",
+      "video_prompt": "Slow push-in on a scrolling document on a screen, text blurring past, camera tilting up to reveal a pair of eyes reflected in the glowing display.",
+      "motion_description": "Push-in on scrolling text, tilts up to reflected eyes in screen.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-024",
+      "duration_seconds": 12,
+      "narration": "Pour les extrémistes, aller trop loin peut signifier renoncer à imposer leur interprétation stricte de la loi islamique ou à accepter des lois faites par les hommes.",
+      "video_prompt": "Slow tilt-down from a high ceiling with carved details to a wooden desk where a heavy book is being closed, its cover catching the lamplight.",
+      "motion_description": "Tilt-down from ceiling to heavy book being closed on desk.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-025",
+      "duration_seconds": 12,
+      "narration": "Cela peut aussi impliquer de participer aux élections, de collaborer avec des groupes non islamistes ou de nouer des liens avec des gouvernements considérés comme infidèles.",
+      "video_prompt": "Slow tracking shot past a row of ballot boxes in a dim polling station, a hand dropping a paper into the slot, the pile inside shifting.",
+      "motion_description": "Tracking past ballot boxes, hand drops paper into slot.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-026",
+      "duration_seconds": 12,
+      "narration": "Une autre source d'inspiration est le retour au pouvoir des talibans en Afghanistan en 2021, démontrant qu'un mouvement islamiste pouvait reprendre le contrôle d'un pays.",
+      "video_prompt": "Slow aerial pull-back from a dusty road where a convoy of vehicles moves slowly, the camera rising to reveal the vast green and brown Afghan landscape.",
+      "motion_description": "Aerial pulls back and rises from convoy to vast Afghan landscape.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-027",
+      "duration_seconds": 12,
+      "narration": "Les talibans ont mobilisé des groupes locaux, consolidé progressivement leur pouvoir, eu recours à la diplomatie internationale et attendu leur heure avant une offensive éclair sur Kaboul.",
+      "video_prompt": "Slow dolly forward through a narrow corridor of stacked sandbags and concrete blocks, light filtering through gaps, dust motes floating in the beams.",
+      "motion_description": "Dolly moves forward through sandbag corridor, light filters through gaps.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-028",
+      "duration_seconds": 12,
+      "narration": "Cette stratégie en plusieurs étapes, du compromis local à la prise de contrôle nationale, résonne directement avec l'approche de Sharaa à Idlib et du JNIM au Mali.",
+      "video_prompt": "Slow orbit around a chessboard where pieces are being moved by two hands, camera circling, the board's grain and reflections shifting with the light.",
+      "motion_description": "Orbit around chessboard, hands move pieces, light shifts on board.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-029",
+      "duration_seconds": 12,
+      "narration": "Les similitudes avec l'approche de Sharaa en Syrie sont frappantes : construire des alliances locales, rassurer les ennemis potentiels, éviter d'offrir une raison aux puissances extérieures d'intervenir.",
+      "video_prompt": "Slow push-in on a round table where several men lean forward in discussion, papers spreading between them, the camera closing in past their elbows.",
+      "motion_description": "Push-in past leaning elbows toward round discussion table and papers.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-030",
+      "duration_seconds": 12,
+      "narration": "Mais les pragmatiques incarnent-ils un véritable changement ou simplement une évolution tactique visant à atteindre le même objectif ultime : un État appliquant leur interprétation stricte de la charia ?",
+      "video_prompt": "Slow tilt-up from a pair of worn boots on dusty ground to a towering, unfinished concrete structure against a vast, empty sky.",
+      "motion_description": "Tilt-up from worn boots to towering unfinished structure against empty sky.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-031",
+      "duration_seconds": 12,
+      "narration": "Al-Shabab, en Somalie, poursuit cette logique de légitimation communautaire. Le groupe contrôle de vastes zones rurales et s'efforce de se présenter comme bien plus qu'un groupe djihadiste.",
+      "video_prompt": "Slow crane rise over a rural Somali landscape, the camera climbing above rooftops and acacia trees to reveal a long line of people waiting in a queue.",
+      "motion_description": "Crane rises above rooftops and trees to reveal long waiting queue.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-032",
+      "duration_seconds": 12,
+      "narration": "La distribution d'aide alimentaire en août, relayée sur les réseaux sociaux et la radio, constitue un changement notable dans la stratégie de communication du groupe.",
+      "video_prompt": "Slow handheld pan across a pile of stacked rice sacks and cooking oil jerrycans, workers' hands untying ropes, the sacks shifting and rolling.",
+      "motion_description": "Handheld pans across stacked sacks, hands untie ropes, sacks shift.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-033",
+      "duration_seconds": 12,
+      "narration": "Aman Bezreh, spécialiste de la sécurité, observe que le JNIM se concentre de plus en plus sur les problèmes locaux, abandonnant la rhétorique du djihad mondial.",
+      "video_prompt": "Slow dolly past a window where a figure in silhouette stares at a distant horizon, rain streaking the glass, the outdoor light flickering as clouds pass.",
+      "motion_description": "Dolly past rainy window, silhouette stares at flickering horizon.",
+      "claim_status": "testimony",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-034",
+      "duration_seconds": 12,
+      "narration": "Le JNIM s'est de plus en plus focalisé sur les problèmes locaux, se présentant comme un défenseur des gens ordinaires, un changement net depuis la fin de l'année 2024.",
+      "video_prompt": "Slow tracking shot through a crowded outdoor clinic, patients and families moving past the camera, a nurse walking in the opposite direction, the crowd parting.",
+      "motion_description": "Tracking through crowded clinic, families move, nurse walks opposite.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-035",
+      "duration_seconds": 12,
+      "narration": "Cette bascule, du djihad mondial au localisme, pose une question centrale : s'agit-il d'une mutation idéologique ou d'un simple calcul stratégique pour accéder au pouvoir ?",
+      "video_prompt": "Slow zoom into a single candle flame in a dark room, the wick burning, light and shadow shifting across the surrounding walls in a slow pulse.",
+      "motion_description": "Zoom into candle flame, shadow pulses slowly on surrounding walls.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-036",
+      "duration_seconds": 12,
+      "narration": "Les tenants de la ligne dure rejettent tout compromis. Ils estiment que l'adoption de lois faites par les hommes ou la participation aux élections équivaut à une trahison.",
+      "video_prompt": "Slow lateral tracking past a row of men sitting cross-legged in a circle, one figure gesturing emphatically, the others turning their heads in unison to follow.",
+      "motion_description": "Lateral tracks past seated men, one gestures, others turn heads.",
+      "claim_status": "testimony",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-037",
+      "duration_seconds": 12,
+      "narration": "Les pragmatiques, à l'inverse, voient dans la collaboration avec des groupes locaux et d'anciens ennemis un moyen d'accéder au pouvoir, quitte à repenser la méthode.",
+      "video_prompt": "Slow crane over a long table where two groups of men in different attire reach across to shake hands, the camera gliding above their joined fingers.",
+      "motion_description": "Crane glides above two groups reaching across table to shake hands.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-038",
+      "duration_seconds": 12,
+      "narration": "Le débat entre ces deux camps s'intensifie. Des voix rivales publient des ouvrages concurrents, s'accusant mutuellement de trahison depuis 2025.",
+      "video_prompt": "Slow push-in on two books side by side on a shelf, a hand reaching in to slide one forward, its spine catching the light as it moves.",
+      "motion_description": "Push-in on shelf, hand slides one book forward, spine glints.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-039",
+      "duration_seconds": 12,
+      "narration": "L'État islamique a réagi en déclarant le djihad contre le gouvernement syrien et en qualifiant Sharaa et ses collaborateurs d'apostats. Les attaques ont suivi.",
+      "video_prompt": "Slow overhead shot of a field at night, a distant bright flash illuminating the terrain for a split second, then darkness rushing back over the landscape.",
+      "motion_description": "Overhead captures distant flash illuminating field, darkness rushes back.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-040",
+      "duration_seconds": 12,
+      "narration": "D'autres religieux radicaux ont adopté une position similaire, mais se sont abstenus d'appeler ouvertement au djihad. Une nuance qui dit beaucoup sur les fractures internes.",
+      "video_prompt": "Slow tracking shot down a long, narrow staircase carved in stone, the camera descending, the walls closing in, light fading with each step.",
+      "motion_description": "Tracking descends stone staircase, walls close in, light fades.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-041",
+      "duration_seconds": 12,
+      "narration": "La question qui traverse l'ensemble de ce paysage est la suivante : cette collaboration, ces alliances, ce localisme constituent-ils une transformation réelle ou une tactique temporaire ?",
+      "video_prompt": "Slow zoom out from a single point of light in a vast dark expanse, the camera pulling back steadily, the light growing smaller but the darkness expanding.",
+      "motion_description": "Zoom out from single light point, darkness expands, light shrinks.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-042",
+      "duration_seconds": 12,
+      "narration": "L'objectif ultime reste, pour beaucoup, l'établissement d'un État appliquant leur interprétation stricte de la charia, tant sur le plan intérieur que dans les relations extérieures.",
+      "video_prompt": "Slow push-in on a large, weathered document covered in handwritten annotations, the camera moving past the ink marks, the paper edges curling slightly.",
+      "motion_description": "Push-in past handwritten annotations on weathered document, edges curl.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-043",
+      "duration_seconds": 12,
+      "narration": "Ni Al-Qaïda ni l'État islamique n'ont encore gouverné un pays selon leurs critères. Le chemin reste long, les défaites multiples, les pertes de chefs réelles.",
+      "video_prompt": "Slow aerial fly-over of a vast, scarred battlefield at low altitude, tire tracks and craters stretching to the horizon, the wind pushing dry grass in waves.",
+      "motion_description": "Low-altitude aerial over scarred battlefield, grass waves in wind.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-044",
+      "duration_seconds": 12,
+      "narration": "L'Afrique, avec ses insurrections de longue durée au Sahel et en Somalie, est devenue le principal terrain de bataille. Le continent porte désormais le poids de ce débat.",
+      "video_prompt": "Slow pan across a vast African savanna at sunset, the horizon line burning orange, a herd of animals moving slowly in the middle distance, their silhouettes sharp.",
+      "motion_description": "Pan across burning sunset savanna, animal silhouettes drift in distance.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-045",
+      "duration_seconds": 12,
+      "narration": "Les stratégies du JNIM et d'Al-Shabab, si différentes en apparence, dessinent en réalité les mêmes contours : ancrage local, dialogue sélectif, patience stratégique.",
+      "video_prompt": "Slow orbit around two separate stone monuments in an open field, the camera circling both, connecting them in a single frame, wind ruffling the tall grass between.",
+      "motion_description": "Orbit circles two stone monuments, connecting them in one frame.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-046",
+      "duration_seconds": 12,
+      "narration": "Que Dieu les récompense. Cette phrase prononcée par une femme dans une vidéo d'Al-Shabab résume l'ambiguïté d'un mouvement qui distribue le riz et compose les slogans.",
+      "video_prompt": "Slow push-in on a small bowl of rice on a worn wooden table, steam rising gently, the camera descending to eye level with the bowl, light shifting on the steam.",
+      "motion_description": "Push-in descends to eye level with steaming bowl of rice.",
+      "claim_status": "testimony",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-047",
+      "duration_seconds": 12,
+      "narration": "Le djihadisme mondial a-t-il échoué ou est-il simplement en train de changer de forme ? La réponse, à ce stade, demeure ouverte et contestée.",
+      "video_prompt": "Slow pull-back from a closed wooden door in a dim corridor, the camera retreating steadily, the door's shadow lengthening behind it, the light at the far end growing brighter.",
+      "motion_description": "Pull-back from closed door, shadow lengthens, far light brightens.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-048",
+      "duration_seconds": 12,
+      "narration": "Les divisions internes, les alliances improbables, les ruptures de discours trahissent un mouvement en mutation. Mais l'objectif final, pour les plus radicaux, n'a pas changé.",
+      "video_prompt": "Slow tracking shot through a maze of narrow alleys, the camera weaving between walls, a distant figure standing still at the intersection, unmoving, watching.",
+      "motion_description": "Tracking weaves through narrow alleys toward still figure at intersection.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-049",
+      "duration_seconds": 12,
+      "narration": "De la Somalie au Sahel, de la Syrie à l'Afghanistan, les lignes de fracture redessinent la géopolitique du monde musulman. L'Afrique en est le front principal.",
+      "video_prompt": "Slow aerial rise from a desert road to a high-altitude view, the road shrinking below, the terrain stretching endlessly in every direction under a vast sky.",
+      "motion_description": "Aerial rises from desert road, terrain stretches endlessly below.",
+      "claim_status": "unconfirmed",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    },
+    {
+      "id": "scene-050",
+      "duration_seconds": 12,
+      "narration": "Le djihadisme africain n'a pas disparu. Il change de visage, de langue, de stratégie. Et dans cette transformation silencieuse, se joue peut-être l'avenir de tout un continent.",
+      "video_prompt": "Final slow dissolve-free pull-back from a lone tree on a wide plain at dawn, the camera retreating to a vast landscape, the horizon line settling into stillness.",
+      "motion_description": "Pull-back from lone tree to vast still horizon at dawn.",
+      "claim_status": "hypothesis",
+      "source_ids": [
+        "source-2"
+      ],
+      "review_approved": false,
+      "reviewer": null,
+      "reviewed_at": null,
+      "generated_video_path": null
+    }
+  ],
+  "release_approved": false,
+  "release_reviewer": null,
+  "release_approved_at": null
+}
