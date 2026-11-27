@@ -75,7 +75,9 @@ def draft_project(
         "géoglyphe", "historical", "histoire", "history", "pharaoh", "pharaon",
         "artefact", "artifact", "mummy", "momie", "stone circle", "cercle de pierres",
         "cave painting", "peinture rupestre", "mysterious", "mystérieux",
-        "oral tradition", "tradition orale", "lost civilization", "civilisation perdue",\n        "acheulean", "handaxe", "hand axe", "handaxes", "hand axes", "stone tool", "stone tools",\n        "paleolithic", "paléolithique", "pleistocene", "pléistocène", "hominin", "hominine",
+        "oral tradition", "tradition orale", "lost civilization", "civilisation perdue",
+        "acheulean", "handaxe", "hand axe", "handaxes", "hand axes", "stone tool", "stone tools",
+        "paleolithic", "paléolithique", "pleistocene", "pléistocène", "hominin", "hominine",
     )
     african_regions = (
         "africa", "african", "afrique", "sahara", "sahel", "kalahari", "botswana", "okwa", "mali", "niger",
