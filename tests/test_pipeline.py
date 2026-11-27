@@ -78,6 +78,7 @@ def test_pipeline_reuses_existing_generated_scene(tmp_path):
 
     project.scenes[0].generated_video_path = str(clip)
     with patch("observateur_actif.pipeline.generate_video") as gen, \
+         patch("observateur_actif.pipeline.inspect_clip_motion", return_value={"status": "motion_check_passed"}), \
          patch("observateur_actif.pipeline.generate_audio_with_subtitles", side_effect=fake_speech), \
          patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), patch("observateur_actif.pipeline.write_quality_report", side_effect=lambda video, report: (Path(report).write_text(json.dumps({"duration_seconds": 600}), encoding="utf-8") or Path(report))):
         produce_project(project, tmp_path / "project.json", tmp_path / "out", api_key="key")
