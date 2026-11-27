@@ -13,6 +13,7 @@ from observateur_actif import __version__
 from observateur_actif.config import Settings
 from observateur_actif.video import AgnesError, generate_video
 from observateur_actif.montage import MontageError, assemble_documentary
+from observateur_actif.pipeline import ProductionError, produce_project
 from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
 from observateur_actif.claim_review import load_claim_registry
@@ -279,6 +280,34 @@ def assemble_video_command(
             console.print("Aucune musique de fond ajoutée.")
     except (FileNotFoundError, OSError, ValueError, MontageError) as exc:
         console.print(f"[red]Montage impossible : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+
+@app.command("produce")
+def produce_command(
+    project_file: str = typer.Argument(..., help="Projet documentaire JSON avec storyboard approuvé."),
+    output_dir: str = typer.Option("output", "--output-dir", help="Dossier de production."),
+    force_video: bool = typer.Option(False, "--force-video", help="Régénérer même les clips déjà présents."),
+) -> None:
+    """Exécuter la production complète : clips IA, voix, SRT et montage MP4."""
+    try:
+        settings = Settings.load()
+        if settings.video_provider != "agnes" or not settings.agnes_api_key:
+            raise ProductionError("Configure VIDEO_PROVIDER=agnes et AGNES_API_KEY.")
+        project = load_project(project_file)
+        console.print("Production : scènes vidéo, narration, sous-titres et montage…")
+        result = produce_project(
+            project, project_file, output_dir,
+            api_key=settings.agnes_api_key, force_video=force_video,
+        )
+        console.print(f"[green]Vidéo : {result['video']}[/green]")
+        console.print(f"[green]Narration : {result['narration']}[/green]")
+        console.print(f"[green]Sous-titres : {result['subtitles']}[/green]")
+        console.print(f"Rapport : {result['report']}")
+        console.print("[yellow]Le contrôle qualité final et la publication YouTube restent séparés.[/yellow]")
+    except (FileNotFoundError, OSError, ValueError, ProductionError) as exc:
+        console.print(f"[red]Production interrompue : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
