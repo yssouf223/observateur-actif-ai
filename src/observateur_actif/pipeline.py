@@ -87,7 +87,7 @@ def produce_project(
     write_quality_report(final_path, quality_path)
     report_path = root / "production_report.json"
     report = {
-        "status": "assembled_pending_quality_review",
+        "status": "assembled_pending_human_playback",
         "title": project.title,
         "scene_count": len(project.scenes),
         "video_resolution": "1280x720",
