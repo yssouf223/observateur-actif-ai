@@ -168,8 +168,7 @@
       "motion_description": "Camera pans left across laid-out stone tools on cloth.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -184,8 +183,7 @@
       "motion_description": "Camera tilts up from hands in soil to pit edge.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -200,8 +198,7 @@
       "motion_description": "Camera pulls back revealing dozens of handaxes scattered on sand.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -211,7 +208,7 @@
     {
       "id": "scene-012",
       "duration_seconds": 12,
-      "narration": "Les outils sont actuellement conservés à l'Université de Sciences et Technologies AGH, à Cracovie. Ils y subissent une analyse détaillée de leur structure et de leur techno-logie.",
+      "narration": "Les outils sont actuellement conservés à l'Université de Sciences et Technologies AGH, à Cracovie. Ils y subissent une analyse détaillée de leur structure et de leur technologie.",
       "video_prompt": "Slow push-in on gloved hands examining a stone tool under bright lab light, camera moving forward.",
       "motion_description": "Camera pushes in slowly on hands examining stone tool.",
       "claim_status": "unconfirmed",
@@ -231,8 +228,7 @@
       "motion_description": "Camera slides left across two handaxes displayed side by side.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -247,7 +243,8 @@
       "motion_description": "Camera zooms out from map to reveal team around table.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-2"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -278,6 +275,7 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
+        "source-2",
         "source-3"
       ],
       "review_approved": false,
@@ -326,8 +324,7 @@
       "motion_description": "Crane descends from sky to shoreline with scattered stone tools.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -357,8 +354,7 @@
       "motion_description": "Camera dollies forward across empty valley toward distant hills.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -373,7 +369,8 @@
       "motion_description": "Aerial camera flies forward along a long dry valley.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-2"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -388,7 +385,8 @@
       "motion_description": "Camera pushes in on hand brushing topsoil to reveal stone.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-2"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -403,7 +401,8 @@
       "motion_description": "Camera zooms out from researcher to vast desert expanse.",
       "claim_status": "testimony",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-2"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -448,8 +447,7 @@
       "motion_description": "Camera pushes forward through swaying dry grass and thorns.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -464,8 +462,7 @@
       "motion_description": "Drone flies forward over dry lakebed toward a water seep.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -495,8 +492,7 @@
       "motion_description": "Camera slides laterally between two handaxes for comparison.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -526,8 +522,7 @@
       "motion_description": "Camera dollies forward along a projected timeline graphic.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -542,8 +537,7 @@
       "motion_description": "Camera pushes in on handaxe on a field notebook.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -574,6 +568,7 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
+        "source-2",
         "source-3"
       ],
       "review_approved": false,
@@ -590,6 +585,7 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
+        "source-2",
         "source-3"
       ],
       "review_approved": false,
@@ -606,6 +602,7 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
+        "source-2",
         "source-3"
       ],
       "review_approved": false,
@@ -622,6 +619,7 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
+        "source-2",
         "source-3"
       ],
       "review_approved": false,
@@ -637,8 +635,7 @@
       "motion_description": "Camera rotates 360 degrees around a handaxe on turntable.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -683,8 +680,7 @@
       "motion_description": "Camera dollies forward through narrow dirt track in dense bush.",
       "claim_status": "testimony",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -699,6 +695,7 @@
       "motion_description": "Camera pushes in toward a dating instrument monitor.",
       "claim_status": "unconfirmed",
       "source_ids": [
+        "source-1",
         "source-2"
       ],
       "review_approved": false,
@@ -730,8 +727,7 @@
       "motion_description": "Camera zooms out from handaxe to vast golden landscape.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -746,8 +742,7 @@
       "motion_description": "Crane rises from shoreline with tools to dry basin.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -763,6 +758,7 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
+        "source-2",
         "source-3"
       ],
       "review_approved": false,
@@ -779,6 +775,7 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
+        "source-2",
         "source-3"
       ],
       "review_approved": false,
@@ -824,8 +821,7 @@
       "motion_description": "Aerial camera moves forward over unexplored dense bush.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -840,8 +836,7 @@
       "motion_description": "Camera pushes through thorn bush into open space with handaxe.",
       "claim_status": "hypothesis",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -856,8 +851,7 @@
       "motion_description": "Camera zooms out from handaxe to vast empty valley.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
