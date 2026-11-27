@@ -52,10 +52,33 @@ def test_create_poll_download_flow(tmp_path):
     assert get.call_args_list[0].kwargs["params"]["video_id"] == "video-123"
 
 
-def test_queue_full_is_reported_without_polling(tmp_path):
-    rejected = response(status=503, payload={"message": "video_queue_full"})
-    with patch("observateur_actif.video.requests.post", return_value=rejected), \
-         patch("observateur_actif.video.requests.get") as get:
-        with pytest.raises(AgnesError, match="video_queue_full"):
+def test_queue_full_retries_then_succeeds(tmp_path):
+    busy = response(status=503, payload={"message": "video queue is full, please retry later"})
+    created = response(payload={"video_id": "video-123"})
+    completed = response(payload={
+        "status": "completed",
+        "url": "https://cdn.example.org/video.mp4",
+    })
+    downloaded = response(content=b"fake-mp4")
+
+    with patch("observateur_actif.video.requests.post", side_effect=[busy, created]) as post, \
+         patch("observateur_actif.video.requests.get", side_effect=[completed, downloaded]), \
+         patch("observateur_actif.video.time.sleep") as sleep:
+        output = generate_video(
+            "A moving river", tmp_path / "clip.mp4", api_key="test", poll_interval=0
+        )
+
+    assert output.read_bytes() == b"fake-mp4"
+    assert post.call_count == 2
+    sleep.assert_any_call(30)
+
+
+def test_queue_full_stops_after_limited_retries(tmp_path):
+    busy = response(status=503, payload={"message": "video queue is full"})
+    with patch("observateur_actif.video.requests.post", return_value=busy) as post, \
+         patch("observateur_actif.video.requests.get") as get, \
+         patch("observateur_actif.video.time.sleep"):
+        with pytest.raises(AgnesError, match="video queue is full"):
             generate_video("A moving river", tmp_path / "clip.mp4", api_key="test")
+        assert post.call_count == 3
         get.assert_not_called()
