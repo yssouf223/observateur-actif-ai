@@ -73,10 +73,16 @@ jobs:
           with open(path, encoding="utf-8") as f:
               project = json.load(f)
           if not project.get("release_approved") or not project.get("release_reviewer") or not project.get("release_approved_at"):
-              sys.exit("Publication bloquée : le projet n'a pas d'approbation éditoriale explicite.")
+              print("Projet non approuvé : aucune génération vidéo ni publication ne sera lancée.")
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+                  output.write("ready=false\\n")
+              sys.exit(0)
           scenes = project.get("scenes", [])
           if not scenes or any(not s.get("review_approved") or not s.get("reviewer") or not s.get("reviewed_at") for s in scenes):
-              sys.exit("Production bloquée : chaque scène doit être approuvée par un réviseur identifié.")
+              print("Des scènes ne sont pas approuvées : aucune génération vidéo ni publication ne sera lancée.")
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+                  output.write("ready=false\\n")
+              sys.exit(0)
           print(f"Projet approuvé : {project.get('title')} ({len(scenes)} scènes).")
           from datetime import datetime, timedelta, timezone
           now = datetime.now(timezone.utc)
