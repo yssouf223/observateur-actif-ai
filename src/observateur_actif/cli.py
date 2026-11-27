@@ -16,6 +16,7 @@ from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
 from observateur_actif.claim_review import load_claim_registry
 from observateur_actif.source_fetcher import SourceFetchError, fetch_source, fetch_leads
+from observateur_actif.claim_extractor import extract_claim_candidates
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -117,6 +118,31 @@ def fetch_leads_command(
         console.print("[yellow]Tous les textes extraits restent non vérifiés.[/yellow]")
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         console.print(f"[red]Impossible de traiter les pistes : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+
+@app.command("extract-claims")
+def extract_claims_command(
+    input_file: str = typer.Option("projects/source_documents.json", "--input", help="Textes de sources produits par fetch-leads."),
+    output_file: str = typer.Option("projects/claim_candidates.json", "--output", help="Registre JSON des phrases candidates."),
+    max_per_source: int = typer.Option(30, "--max-per-source", min=1, max=100, help="Nombre maximal de phrases candidates par source."),
+) -> None:
+    """Extraire des phrases candidates sans les déclarer vérifiées."""
+    try:
+        documents = json.loads(Path(input_file).read_text(encoding="utf-8"))
+        registry = extract_claim_candidates(documents, max_per_source=max_per_source)
+        destination = Path(output_file)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(
+            json.dumps(registry, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        console.print(f"[green]{len(registry['claims'])} phrase(s) candidate(s) extraite(s).[/green]")
+        console.print(f"{len(registry['sources'])} source(s) référencée(s) : {destination}")
+        console.print("[yellow]Toutes les affirmations restent unconfirmed et pending ; revue humaine obligatoire.[/yellow]")
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        console.print(f"[red]Impossible d'extraire les affirmations : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
