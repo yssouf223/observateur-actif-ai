@@ -12,6 +12,7 @@ from observateur_actif.config import Settings
 from observateur_actif.video import AgnesError, generate_video
 from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
+from observateur_actif.claim_review import load_claim_registry
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -30,13 +31,11 @@ def doctor() -> None:
     table.add_column("Contrôle")
     table.add_column("Résultat")
     table.add_column("Détail")
-
     table.add_row("Python", "OK" if sys.version_info >= (3, 11) else "À METTRE À JOUR",
                   sys.version.split()[0])
     ffmpeg = shutil.which("ffmpeg")
     table.add_row("FFmpeg", "OK" if ffmpeg else "MANQUANT",
                   ffmpeg or "Installer FFmpeg pour le montage vidéo")
-
     try:
         settings = Settings.load()
         settings.projects_dir.mkdir(parents=True, exist_ok=True)
@@ -48,36 +47,29 @@ def doctor() -> None:
             table.add_row("Clé Agnes", "PRÉSENTE", "Valeur masquée")
     except (ValueError, OSError) as exc:
         table.add_row("Configuration", "ERREUR", str(exc))
-
     console.print(table)
-    console.print(
-        "\n[dim]Ce diagnostic ne lance aucun appel externe et ne consomme aucun crédit vidéo.[/dim]"
-    )
-
-
+    console.print("\n[dim]Ce diagnostic ne lance aucun appel externe et ne consomme aucun crédit vidéo.[/dim]")
 
 
 @app.command("research-rss")
 def research_rss(
     feeds_file: str = typer.Option("config/research_feeds.json", "--feeds", help="Fichier JSON des flux RSS/Atom."),
-    output_file: str = typer.Option("projects/research_leads.json", "--output", help="Fichier JSON de sortie.")
+    output_file: str = typer.Option("projects/research_leads.json", "--output", help="Fichier JSON de sortie."),
 ) -> None:
     """Collecter des pistes depuis des flux RSS/Atom (non vérifiées)."""
     try:
-        feeds = load_feed_config(feeds_file)
-        leads = collect_feeds(feeds)
+        leads = collect_feeds(load_feed_config(feeds_file))
         destination = save_leads(leads, output_file)
         console.print(f"[green]{len(leads)} piste(s) collectée(s).[/green]")
         console.print(f"Résultat : {destination}")
-        console.print("[yellow]Attention : aucune piste n'est considérée comme un fait vérifié.[/yellow]")
+        console.print("[yellow]Aucune piste n'est considérée comme un fait vérifié.[/yellow]")
     except (ResearchError, FileNotFoundError, OSError) as exc:
         console.print(f"[red]Erreur de recherche : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
+
 @app.command("validate-project")
-def validate_project(
-    project_file: str = typer.Argument(..., help="Chemin vers le fichier projet JSON.")
-) -> None:
+def validate_project(project_file: str = typer.Argument(..., help="Chemin vers le fichier projet JSON.")) -> None:
     """Valider un projet documentaire et ses références aux sources."""
     try:
         project = load_project(project_file)
@@ -90,6 +82,22 @@ def validate_project(
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(code=1) from exc
 
+
+@app.command("validate-claims")
+def validate_claims(claims_file: str = typer.Argument(..., help="Chemin vers le registre JSON des affirmations.")) -> None:
+    """Contrôler les sources et validations humaines d'un registre d'affirmations."""
+    try:
+        registry = load_claim_registry(claims_file)
+        verified = sum(claim.status.value == "verified" for claim in registry.claims)
+        pending = sum(claim.review_decision.value == "pending" for claim in registry.claims)
+        console.print(f"[green]Registre valide : {len(registry.claims)} affirmation(s), {len(registry.sources)} source(s).[/green]")
+        console.print(f"Affirmations déclarées vérifiées : {verified} | En attente de revue : {pending}")
+        console.print("[yellow]Ce contrôle valide la structure et les règles éditoriales, pas la vérité des contenus.[/yellow]")
+    except (FileNotFoundError, ValueError) as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
 @app.command("video-test")
 def video_test(
     prompt: str = typer.Option(..., "--prompt", help="Description de la scène animée."),
@@ -99,18 +107,11 @@ def video_test(
     try:
         settings = Settings.load()
         if settings.video_provider != "agnes" or not settings.agnes_api_key:
-            raise AgnesError(
-                "Configure .env avec VIDEO_PROVIDER=agnes et AGNES_API_KEY=ta_cle."
-            )
+            raise AgnesError("Configure .env avec VIDEO_PROVIDER=agnes et AGNES_API_KEY=ta_cle.")
         destination = settings.output_dir / "agnes_test.mp4"
         console.print("Envoi du prompt à Agnes ; la génération peut prendre plusieurs minutes…")
-        result = generate_video(
-            prompt,
-            destination,
-            seconds=seconds,
-            aspect_ratio="16:9",
-            api_key=settings.agnes_api_key,
-        )
+        result = generate_video(prompt, destination, seconds=seconds, aspect_ratio="16:9",
+                                api_key=settings.agnes_api_key)
         console.print(f"[green]Clip téléchargé : {result}[/green]")
     except (AgnesError, ValueError) as exc:
         console.print(f"[red]Erreur : {exc}[/red]")
