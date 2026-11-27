@@ -8,6 +8,18 @@
     "url": "https://scienceinpoland.pl/en/historia/rss.xml"
   },
   {
+    "publisher": "Africa Geographic",
+    "url": "https://africageographic.com/feed/"
+  },
+  {
+    "publisher": "ScienceDaily — Archaeology",
+    "url": "https://www.sciencedaily.com/rss/fossils_ruins/archaeology.xml"
+  },
+  {
+    "publisher": "Phys.org — Archaeology",
+    "url": "https://phys.org/rss-feed/archaeology-news/"
+  },
+  {
     "publisher": "The Conversation Africa",
     "url": "https://theconversation.com/africa/articles.atom"
   },
