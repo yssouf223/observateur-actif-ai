@@ -1,4 +1,6 @@
 import json
+import shutil
+import subprocess
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -89,3 +91,26 @@ def test_motion_check_rejects_a_static_clip(tmp_path):
          patch("observateur_actif.quality.subprocess.run", return_value=completed):
         with pytest.raises(QualityError, match="Mouvement insuffisant"):
             inspect_clip_motion(clip)
+
+
+def test_real_ffmpeg_motion_detector_distinguishes_static_and_moving_video(tmp_path):
+    ffmpeg = shutil.which("ffmpeg")
+    if not ffmpeg:
+        pytest.skip("FFmpeg is not installed in this test environment.")
+
+    static_clip = tmp_path / "static.mp4"
+    subprocess.run(
+        [ffmpeg, "-y", "-f", "lavfi", "-i", "color=c=black:s=320x240:r=25:d=5",
+         "-pix_fmt", "yuv420p", str(static_clip)],
+        check=True, capture_output=True,
+    )
+    with pytest.raises(QualityError, match="Mouvement insuffisant"):
+        inspect_clip_motion(static_clip)
+
+    moving_clip = tmp_path / "moving.mp4"
+    subprocess.run(
+        [ffmpeg, "-y", "-f", "lavfi", "-i", "testsrc2=size=320x240:rate=25:duration=5",
+         "-pix_fmt", "yuv420p", str(moving_clip)],
+        check=True, capture_output=True,
+    )
+    assert inspect_clip_motion(moving_clip)["status"] == "motion_check_passed"
