@@ -208,7 +208,7 @@ RÈGLES IMPÉRATIVES :
 - Documentaire de 10 à 15 minutes, environ 1 300 à 1 700 mots de narration répartis sur 50 à 75 scènes.
 - Chaque scène dure exactement 12 secondes : 50 scènes pour 10 minutes, 55 pour 11 minutes, jusqu'à 75 pour 15 minutes. Choisis un nombre de scènes cohérent avec la durée cible.
 - Chaque scène doit avoir un prompt vidéo en anglais, concis (15 à 25 mots), pour un plan réellement animé, avec mouvement physique/caméra clairement décrit ; aucun diaporama, aucune image fixe, aucun texte incrusté.
-- motion_description doit rester concise (8 à 15 mots) ; narration 25 à 35 mots par scène.
+- motion_description doit rester concise (8 à 15 mots) ; narration 18 à 34 mots par scène, en ajustant la longueur pour atteindre 1 300 à 1 700 mots au total.
 - Chaque scène doit durer exactement 12 secondes. Les scènes doivent donc prévoir des actions visuelles simples et cohérentes.
 - Le projet doit être un BROUILLON : review_approved=false partout, reviewer=null, reviewed_at=null, release_approved=false.
 - N'ajoute pas de source qui n'existe pas dans la liste.
