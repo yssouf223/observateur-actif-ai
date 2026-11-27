@@ -14,8 +14,7 @@ Les workflows sont :
 
 Secrets à configurer dans Settings > Secrets and variables > Actions > Secrets :
 
-- `GEMINI_API_KEY` : clé Google AI Studio pour le brouillon de script.
-- `AGNES_API_KEY` : clé du fournisseur de vidéo.
+- `AGNES_API_KEY` : clé Agnes utilisée pour le texte et la génération vidéo.
 - `YOUTUBE_CLIENT_ID`
 - `YOUTUBE_CLIENT_SECRET`
 - `YOUTUBE_REFRESH_TOKEN`
@@ -23,7 +22,6 @@ Secrets à configurer dans Settings > Secrets and variables > Actions > Secrets 
 
 Variables à configurer dans Settings > Secrets and variables > Actions > Variables :
 
-- `GEMINI_FREE_TIER_CONFIRMED=true` : confirme que le projet Gemini utilisé reste sur le palier gratuit.
 - `AGNES_FREE_QUOTA_CONFIRMED=true` : confirme que les générations vidéo prévues sont couvertes par un quota gratuit disponible.
 - `EDGE_TTS_COMMERCIAL_RIGHTS_CONFIRMED=true` : ne doit être activé qu'après confirmation écrite des droits d'utilisation commerciale de la voix Edge-TTS.
 
@@ -52,7 +50,7 @@ La production du samedi refuse un projet tant que chaque scène n'a pas un révi
 
 ## Commandes
 
-Le moteur de brouillon utilise Gemini 3.8 Flash via la Developer API. Le palier gratuit dépend des quotas et de l'éligibilité du projet ; sur le palier gratuit, Google indique que le contenu peut être utilisé pour améliorer ses produits. N'envoyer que des documents publics, jamais des données confidentielles. Voir [tarifs Gemini](https://ai.google.dev/gemini-api/docs/pricing).
+Le moteur de brouillon utilise désormais `agnes-2.5-flash` via l'API compatible OpenAI d'Agnes, avec la même clé `AGNES_API_KEY` que le fournisseur vidéo. Le catalogue public d'Agnes liste actuellement ce modèle texte en promotion gratuite ; disponibilité, limites et prix peuvent changer. Le workflow vérifie l'accès au modèle avant de commencer. N'envoyer que des documents publics.
 
 
 ```bash
