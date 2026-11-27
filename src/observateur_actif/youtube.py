@@ -119,6 +119,10 @@ def publish_video(
     video_id = response.get("id") if response else None
     if not video_id:
         raise YouTubePublishError("YouTube n'a pas renvoyé d'identifiant vidéo.")
+    status = response.get("status", {})
+    expected_publish_at = publish_at.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    if status.get("privacyStatus") != "private" or status.get("publishAt") != expected_publish_at:
+        raise YouTubePublishError("YouTube n'a pas confirmé le statut privé et l'heure de publication programmée.")
     return {
         "video_id": video_id,
         "url": f"https://www.youtube.com/watch?v={video_id}",
