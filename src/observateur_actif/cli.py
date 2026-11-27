@@ -12,6 +12,7 @@ from rich.table import Table
 from observateur_actif import __version__
 from observateur_actif.config import Settings
 from observateur_actif.video import AgnesError, generate_video
+from observateur_actif.montage import MontageError, assemble_documentary
 from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
 from observateur_actif.claim_review import load_claim_registry
@@ -253,6 +254,31 @@ def video_test(
         console.print(f"[green]Clip téléchargé : {result}[/green]")
     except (AgnesError, ValueError) as exc:
         console.print(f"[red]Erreur : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+
+@app.command("assemble-video")
+def assemble_video_command(
+    project_file: str = typer.Argument(..., help="Projet documentaire JSON avec generated_video_path pour chaque scène."),
+    narration_file: str = typer.Option("output/narration.mp3", "--narration", help="Voix off MP3."),
+    output_file: str = typer.Option("output/documentary.mp4", "--output", help="Vidéo MP4 finale."),
+    subtitles_file: str = typer.Option("output/narration.srt", "--subtitles", help="Sous-titres SRT (piste sélectionnable)."),
+    music_file: str | None = typer.Option(None, "--music", help="Musique fournie par l'utilisateur et autorisée pour la diffusion."),
+) -> None:
+    """Assembler les clips IA, la voix off et les sous-titres avec FFmpeg."""
+    try:
+        project = load_project(project_file)
+        result = assemble_documentary(
+            project, narration_file, output_file,
+            subtitles_file=subtitles_file, music_file=music_file,
+        )
+        console.print(f"[green]Documentaire assemblé : {result}[/green]")
+        console.print("[yellow]Sortie 16:9 en 720p : les clips Agnes actuels sont générés en 720p.[/yellow]")
+        if music_file is None:
+            console.print("Aucune musique de fond ajoutée.")
+    except (FileNotFoundError, OSError, ValueError, MontageError) as exc:
+        console.print(f"[red]Montage impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
