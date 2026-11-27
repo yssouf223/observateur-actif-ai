@@ -35,6 +35,8 @@ def inspect_video(video_file: str | Path, *, ffprobe: str = "ffprobe") -> dict:
         raise QualityError("Aucun flux vidéo détecté.")
     if not audio:
         raise QualityError("Aucun flux audio détecté : la narration est absente.")
+    if not subtitles:
+        raise QualityError("Aucune piste de sous-titres détectée dans le MP4 final.")
     width, height = video.get("width"), video.get("height")
     if width != 1280 or height != 720:
         raise QualityError(
