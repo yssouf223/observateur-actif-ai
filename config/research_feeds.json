@@ -4,16 +4,20 @@
     "url": "https://www.archaeology.org/feed"
   },
   {
-    "publisher": "Science in Poland — History and Culture",
-    "url": "https://scienceinpoland.pl/en/historia/rss.xml"
+    "publisher": "Phys.org — Archaeology",
+    "url": "https://phys.org/rss-feed/breaking/science-news/archaeology-fossils/"
+  },
+  {
+    "publisher": "Smithsonian Magazine — History",
+    "url": "https://www.smithsonianmag.com/rss/history/"
   },
   {
     "publisher": "ScienceDaily — Archaeology",
     "url": "https://www.sciencedaily.com/rss/fossils_ruins/archaeology.xml"
   },
   {
-    "publisher": "Phys.org — Archaeology",
-    "url": "https://phys.org/rss-feed/breaking/science-news/archaeology-fossils/"
+    "publisher": "Science in Poland — History and Culture",
+    "url": "https://scienceinpoland.pl/en/historia/rss.xml"
   },
   {
     "publisher": "The Conversation Africa",
@@ -26,10 +30,6 @@
   {
     "publisher": "BBC Afrique",
     "url": "https://feeds.bbci.co.uk/afrique/rss.xml"
-  },
-  {
-    "publisher": "Smithsonian Magazine — History",
-    "url": "https://www.smithsonianmag.com/rss/history/"
   },
   {
     "publisher": "NASA",
