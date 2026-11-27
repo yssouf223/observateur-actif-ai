@@ -7,7 +7,7 @@ import pytest
 from observateur_actif.quality import QualityError, inspect_video, inspect_clip_motion, write_quality_report
 
 
-def probe_result(width=1280, height=720, video_codec="h264", audio_codec="aac"):
+def probe_result(width=1920, height=1080, video_codec="h264", audio_codec="aac"):
     return {
         "streams": [
             {"codec_type": "video", "codec_name": video_codec, "width": width, "height": height},
@@ -33,7 +33,7 @@ def test_inspect_video_checks_codecs_resolution_and_streams(tmp_path):
 def test_rejects_wrong_resolution(tmp_path):
     video = tmp_path / "doc.mp4"
     video.write_bytes(b"video")
-    completed = Mock(stdout=json.dumps(probe_result(width=1920, height=1080)))
+    completed = Mock(stdout=json.dumps(probe_result(width=1280, height=720)))
     with patch("observateur_actif.quality.shutil.which", return_value="/usr/bin/ffprobe"), \
          patch("observateur_actif.quality.subprocess.run", return_value=completed):
         with pytest.raises(QualityError, match="Résolution inattendue"):
