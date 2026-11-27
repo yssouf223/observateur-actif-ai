@@ -16,6 +16,7 @@ from observateur_actif.montage import MontageError, assemble_documentary
 from observateur_actif.pipeline import ProductionError, produce_project
 from observateur_actif.quality import QualityError, write_quality_report
 from observateur_actif.youtube import YouTubePublishError, next_saturday_1600_utc, publish_video
+from observateur_actif.scriptwriter import ScriptWriterError, draft_project
 from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
 from observateur_actif.claim_review import load_claim_registry
@@ -356,6 +357,26 @@ def publish_youtube_command(
         console.print(f"Publication prévue : {result['publish_at']} (UTC)")
     except (FileNotFoundError, OSError, ValueError, YouTubePublishError) as exc:
         console.print(f"[red]Publication impossible : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+
+@app.command("draft-project")
+def draft_project_command(
+    sources_file: str = typer.Option("projects/source_documents.json", "--sources", help="Documents de recherche extraits."),
+    output_file: str = typer.Option("projects/weekly_documentary.json", "--output", help="Storyboard JSON à relire."),
+    topic: str = typer.Option("", "--topic", help="Sujet précis (facultatif)."),
+    model: str = typer.Option("gemini-3.8-flash", "--model", help="Modèle Gemini Developer API."),
+) -> None:
+    """Rédiger un storyboard documentaire à partir de sources publiques extraites."""
+    try:
+        console.print("Rédaction du brouillon avec Gemini ; les validations humaines restent désactivées…")
+        result = draft_project(sources_file, output_file, topic=topic, model=model)
+        console.print(f"[green]Brouillon créé : {result}[/green]")
+        console.print("[yellow]Toutes les scènes et la publication restent non approuvées.[/yellow]")
+        console.print("Vérifier les affirmations et les sources avant de renseigner les champs d'approbation.")
+    except (FileNotFoundError, OSError, ValueError, ScriptWriterError) as exc:
+        console.print(f"[red]Création du brouillon impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
