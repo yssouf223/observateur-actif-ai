@@ -52,7 +52,7 @@ jobs:
 
       - name: Générer le MP3 avec le vrai service Edge-TTS
         run: |
-          observateur generate-audio /tmp/edge_tts_test.json --output output/edge-tts-test.mp3
+          observateur generate-audio /tmp/edge_tts_test.json --output output/edge-tts-test.mp3 --subtitles output/edge-tts-test.srt
           python - <<'PY'
           from pathlib import Path
           p = Path("output/edge-tts-test.mp3")
@@ -66,6 +66,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: edge-tts-test-mp3
-          path: output/edge-tts-test.mp3
+          path: |
+            output/edge-tts-test.mp3
+            output/edge-tts-test.srt
           if-no-files-found: error
           retention-days: 3
