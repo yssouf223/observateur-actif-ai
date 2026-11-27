@@ -54,11 +54,16 @@ class DocumentaryProject(BaseModel):
     language: str = "fr"
     sources: list[Source] = Field(default_factory=list)
     scenes: list[Scene] = Field(min_length=1)
+    release_approved: bool = False
+    release_reviewer: str | None = None
+    release_approved_at: str | None = None
 
     @model_validator(mode="after")
     def validate_storyboard(self):
         if self.aspect_ratio != "16:9":
             raise ValueError("Le format documentaire doit être 16:9.")
+        if self.release_approved and (not self.release_reviewer or not self.release_approved_at):
+            raise ValueError("La publication approuvée exige release_reviewer et release_approved_at.")
         known_source_ids = {source.id for source in self.sources}
         if len(known_source_ids) != len(self.sources):
             raise ValueError("Les identifiants des sources doivent être uniques.")
