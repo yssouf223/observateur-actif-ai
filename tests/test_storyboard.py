@@ -40,8 +40,12 @@ def make_review():
 def test_verified_scene_requires_human_review_and_two_sources():
     with pytest.raises(ValidationError, match="validation éditoriale humaine"):
         DocumentaryProject(
-            title="Test", target_duration_minutes=10, sources=[],
-            scenes=[make_scene()],
+            title="Test", target_duration_minutes=10,
+            sources=[
+                make_source("source-01", "Organisme A", "https://a.example/report"),
+                make_source("source-02", "Université B", "https://b.example/study"),
+            ],
+            scenes=[make_scene(source_ids=["source-01", "source-02"])],
         )
 
 
