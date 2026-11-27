@@ -28,8 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_FREE_TIER_CONFIRMED: ${{ vars.GEMINI_FREE_TIER_CONFIRMED }}
+      AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+      SCRIPT_PROVIDER: agnes
       TOPIC: ${{ inputs.topic }}
     steps:
       - name: Récupérer le dépôt
@@ -45,16 +45,27 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
 
-      - name: Vérifier la clé Gemini
+      - name: Vérifier l'accès au modèle de texte Agnes gratuit
         run: |
-          if [ -z "$GEMINI_API_KEY" ]; then
-            echo "::error::Le secret GEMINI_API_KEY est absent."
+          if [ -z "$AGNES_API_KEY" ]; then
+            echo "::error::Le secret AGNES_API_KEY est absent."
             exit 1
           fi
-          if [ "$GEMINI_FREE_TIER_CONFIRMED" != "true" ]; then
-            echo "::error::Brouillon arrêté : confirme le palier Gemini gratuit via GEMINI_FREE_TIER_CONFIRMED=true."
-            exit 1
-          fi
+          python - <<'PY'
+          import os, requests
+          response = requests.get(
+              "https://apihub.agnes-ai.com/v1/models",
+              headers={"Authorization": f"Bearer {os.environ['AGNES_API_KEY']}"},
+              timeout=30,
+          )
+          response.raise_for_status()
+          payload = response.json()
+          models = payload.get("data", payload.get("models", []))
+          names = {item.get("id") or item.get("name") for item in models if isinstance(item, dict)}
+          if "agnes-2.5-flash" not in names:
+              raise SystemExit("La clé ne donne pas accès à agnes-2.5-flash.")
+          print("Accès au modèle de texte Agnes 2.5 Flash confirmé.")
+          PY
 
       - name: Collecter les pistes RSS
         run: observateur research-rss --output projects/research_leads.json
