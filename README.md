@@ -127,3 +127,16 @@ observateur validate-claims projects/claims.json
 ```
 
 Cette commande contrôle la structure, les liens entre affirmations et sources, et les exigences minimales de revue. Elle ne télécharge pas les pages et ne prouve pas que les sources sont exactes, indépendantes dans leur contenu ou correctement interprétées. Deux domaines différents ne suffisent pas, à eux seuls, à établir la vérité : la vérification humaine des documents originaux reste obligatoire. Les affirmations non examinées doivent rester `unconfirmed`, `hypothesis`, `testimony`, `oral_tradition` ou `legend` selon leur nature.
+
+
+## Ouvrir une source originale
+
+Après avoir repéré une piste avec `research-rss`, extraire le texte d'un article public :
+
+```bash
+observateur fetch-source "https://exemple.org/article" --output projects/article.json
+```
+
+Le module refuse les hôtes résolus vers des adresses privées ou locales, les ports non standards, les redirections et les contenus qui ne sont pas HTML. Le téléchargement est limité à 2 Mio et utilise un délai maximal de 15 secondes. Il n'exécute pas le JavaScript, ne contourne pas les paywalls et n'essaie pas de télécharger les images ou autres ressources de la page.
+
+Le résultat contient le titre, le texte extrait, l'URL et la date de collecte. Son statut reste toujours `source_text_unverified` : l'extraction ne confirme ni la véracité, ni la fiabilité, ni l'indépendance de la source. Vérifier le document original et recouper chaque affirmation avant toute utilisation.
