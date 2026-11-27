@@ -13,8 +13,8 @@ Studio automatisé de documentaires vidéo pour la chaîne Observateur Actif.
 Cette version comprend la configuration, le schéma de storyboard, le chargement et la validation de projets JSON, le client vidéo Agnes expérimental et les tests automatisés. La génération réelle reste dépendante de la disponibilité et des paramètres effectifs de l'API Agnes.
 
 ## Architecture
-1. Recherche et registre des sources.
-2. Vérification éditoriale et classement des affirmations.
+1. Collecte de pistes depuis des flux RSS/Atom configurables.
+2. Ouverture et vérification des sources originales ; classement des affirmations.
 3. Script et storyboard structurés.
 4. Fournisseur vidéo interchangeable (Agnes candidat à tester).
 5. Narration, montage FFmpeg et sous-titres.
@@ -32,7 +32,25 @@ copy .env.example .env
 python -m observateur_actif doctor
 ```
 
-La commande `doctor` vérifie l'environnement. La commande `validate-project chemin/vers/projet.json` valide un projet documentaire JSON sans appeler de service externe.
+La commande `doctor` vérifie l'environnement. `research-rss` collecte des pistes dans les flux configurés. `validate-project chemin/vers/projet.json` valide un projet documentaire JSON sans appeler de service externe.
+
+
+## Collecter des pistes documentaires
+
+Le fichier `config/research_feeds.json` contient les flux RSS/Atom à consulter. Tu peux ajouter ou retirer des éditeurs en modifiant cette liste.
+
+```bash
+observateur research-rss
+```
+
+Le résultat est écrit dans `projects/research_leads.json`. Chaque élément porte le statut `lead_unverified` : un titre RSS ou un résumé ne constitue jamais une preuve. Il faut ouvrir la publication originale, vérifier les affirmations, dater les informations et recouper avec d'autres sources indépendantes avant de rédiger le documentaire.
+
+Pour utiliser un autre fichier ou choisir le résultat :
+```bash
+observateur research-rss --feeds config/research_feeds.json --output projects/pistes.json
+```
+
+Les URL de flux peuvent changer selon les éditeurs ; si un flux échoue, remplace son URL par celle publiée dans la page officielle de l'éditeur. Le collecteur ne contourne aucun paywall et ne considère pas automatiquement un éditeur comme fiable pour toutes les affirmations.
 
 ## Configuration
 Copier `.env.example` vers `.env`. Ne jamais publier le fichier `.env`, les clés API ou les jetons YouTube.
