@@ -6,5 +6,13 @@
   {
     "publisher": "UNESCO",
     "url": "https://www.unesco.org/en/rss.xml"
+  },
+  {
+    "publisher": "BBC Afrique",
+    "url": "https://feeds.bbci.co.uk/afrique/rss.xml"
+  },
+  {
+    "publisher": "Smithsonian Magazine — History",
+    "url": "https://www.smithsonianmag.com/rss/history/"
   }
 ]
