@@ -196,9 +196,10 @@ DOCUMENTS SOURCÉS :
     total_seconds = sum(scene.duration_seconds for scene in project.scenes)
     if any(scene.duration_seconds > 12 for scene in project.scenes):
         raise ScriptWriterError("Chaque scène doit durer au maximum 12 secondes pour correspondre au moteur vidéo.")
-    if total_seconds < 600 or total_seconds > 900:
+    target_seconds = project.target_duration_minutes * 60
+    if total_seconds < 600 or total_seconds > 900 or not target_seconds * 0.9 <= total_seconds <= target_seconds * 1.1:
         raise ScriptWriterError(
-            f"Durée storyboard incohérente : {total_seconds} secondes ; viser 600 à 900 secondes."
+            f"Durée storyboard incohérente : {total_seconds}s pour une cible de {target_seconds}s."
         )
     if len(project.scenes) < 40:
         raise ScriptWriterError("Storyboard trop court : au moins 40 scènes sont requises.")
