@@ -114,6 +114,10 @@ def draft_project(
         and str(doc.get("text", "")).strip()
         and str(doc.get("url", "")).startswith(("https://", "http://"))
     ]
+    if len(candidates) < 2:
+        raise ScriptWriterError(
+            "Au moins deux documents accessibles de deux éditeurs et domaines distincts sont requis."
+        )
     usable = sorted(
         (doc for doc in candidates if relevance(doc) > 0),
         key=relevance,
