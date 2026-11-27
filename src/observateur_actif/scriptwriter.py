@@ -10,8 +10,9 @@ import requests
 from observateur_actif.storyboard import DocumentaryProject
 
 
-DEFAULT_MODEL = "gemini-3.8-flash"
-API_ROOT = "https://generativelanguage.googleapis.com/v1beta/models"
+DEFAULT_MODEL = "agnes-2.5-flash"
+AGNES_CHAT_URL = "https://apihub.agnes-ai.com/v1/chat/completions"
+GEMINI_API_ROOT = "https://generativelanguage.googleapis.com/v1beta/models"
 
 
 class ScriptWriterError(RuntimeError):
@@ -28,16 +29,31 @@ def draft_project(
     *,
     topic: str = "",
     api_key: str | None = None,
-    model: str = DEFAULT_MODEL,
+    model: str | None = None,
 ) -> Path:
     """Créer un brouillon à partir d'au moins deux sources indépendantes.
 
     Le résultat reste toujours non approuvé : aucune publication ni génération
     vidéo ne peut être déclenchée avant revue humaine explicite.
     """
-    key = (api_key or os.getenv("GEMINI_API_KEY", "")).strip()
+    forced_provider = os.getenv("SCRIPT_PROVIDER", "").strip().lower()
+    gemini_key = (api_key or os.getenv("GEMINI_API_KEY", "")).strip()
+    agnes_key = os.getenv("AGNES_API_KEY", "").strip()
+    if model and model.startswith("gemini-"):
+        provider = "gemini"
+    elif model and model.startswith("agnes-"):
+        provider = "agnes"
+    elif forced_provider in {"agnes", "gemini"}:
+        provider = forced_provider
+    elif api_key or gemini_key:
+        provider = "gemini"
+    else:
+        provider = "agnes"
+    key = gemini_key if provider == "gemini" else agnes_key
     if not key:
-        raise ScriptWriterError("GEMINI_API_KEY absent.")
+        required = "GEMINI_API_KEY" if provider == "gemini" else "AGNES_API_KEY"
+        raise ScriptWriterError(f"{required} absent.")
+    selected_model = model or (DEFAULT_MODEL if provider == "agnes" else "gemini-3.8-flash")
     source_path = Path(source_documents_file)
     if not source_path.is_file():
         raise FileNotFoundError(f"Documents de recherche introuvables : {source_path}")
@@ -140,30 +156,46 @@ Retourne UNIQUEMENT un objet JSON valide de cette forme :
 DOCUMENTS SOURCÉS :
 {source_bundle}
 """
-    payload = {
-        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "responseMimeType": "application/json",
+    if provider == "agnes":
+        payload = {
+            "model": selected_model,
+            "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.25,
-            "maxOutputTokens": 12000,
-        },
-    }
+            "max_tokens": 16000,
+            "response_format": {"type": "json_object"},
+        }
+        endpoint = AGNES_CHAT_URL
+        headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    else:
+        payload = {
+            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "responseMimeType": "application/json",
+                "temperature": 0.25,
+                "maxOutputTokens": 16000,
+            },
+        }
+        endpoint = f"{GEMINI_API_ROOT}/{selected_model}:generateContent"
+        headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
     try:
         response = requests.post(
-            f"{API_ROOT}/{model}:generateContent",
-            headers={"x-goog-api-key": key, "Content-Type": "application/json"},
+            endpoint,
+            headers=headers,
             json=payload,
-            timeout=240,
+            timeout=300,
         )
         if not response.ok:
             detail = response.text[:1200]
-            raise ScriptWriterError(f"Gemini API HTTP {response.status_code}: {detail}")
+            raise ScriptWriterError(f"{provider.title()} API HTTP {response.status_code}: {detail}")
         data = response.json()
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        if provider == "agnes":
+            text = data["choices"][0]["message"]["content"]
+        else:
+            text = data["candidates"][0]["content"]["parts"][0]["text"]
     except ScriptWriterError:
         raise
     except (requests.RequestException, ValueError, KeyError, IndexError, TypeError) as exc:
-        raise ScriptWriterError(f"Réponse Gemini absente ou illisible : {exc}") from exc
+        raise ScriptWriterError(f"Réponse {provider.title()} absente ou illisible : {exc}") from exc
 
     cleaned = text.strip()
     cleaned = re.sub(r"^\`\`\`(?:json)?\s*", "", cleaned)
