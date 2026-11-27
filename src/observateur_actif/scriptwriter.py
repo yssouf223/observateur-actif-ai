@@ -103,7 +103,7 @@ def draft_project(
         topic_hits = sum(1 for keyword in strong_topics if keyword in combined)
         title_hits = sum(1 for keyword in strong_topics if keyword in title)
         region_hits = sum(1 for keyword in african_regions if keyword in combined)
-        excluded_hits = sum(1 for keyword in off_topic if re.search(rf"\\b{re.escape(keyword)}\\b", combined))
+        excluded_hits = sum(1 for keyword in off_topic if re.search(rf"\b{re.escape(keyword)}\b", combined))
         if topic_hits == 0 or region_hits == 0 or excluded_hits > 0:
             return 0
         return topic_hits * 3 + title_hits * 5 + region_hits * 2
