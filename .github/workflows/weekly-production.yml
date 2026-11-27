@@ -70,13 +70,13 @@ jobs:
           if not project.get("release_approved") or not project.get("release_reviewer") or not project.get("release_approved_at"):
               print("Projet non approuvé : aucune génération vidéo ni publication ne sera lancée.")
               with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-                  output.write("ready=false\\n")
+                  output.write("ready=false\n")
               sys.exit(0)
           scenes = project.get("scenes", [])
           if not scenes or any(not s.get("review_approved") or not s.get("reviewer") or not s.get("reviewed_at") for s in scenes):
               print("Des scènes ne sont pas approuvées : aucune génération vidéo ni publication ne sera lancée.")
               with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-                  output.write("ready=false\\n")
+                  output.write("ready=false\n")
               sys.exit(0)
           print(f"Projet approuvé : {project.get('title')} ({len(scenes)} scènes).")
           from datetime import datetime, timedelta, timezone
@@ -86,7 +86,7 @@ jobs:
           if target <= now:
               target += timedelta(days=7)
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-              output.write(f"publish_at={target.isoformat()}\\n")
+              output.write(f"publish_at={target.isoformat()}\n")
           PY
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
