@@ -1,4 +1,4 @@
-"""Brouillon de storyboard documentaire via Gemini API en mode JSON."""
+"""Brouillon de storyboard documentaire via Agnes ou Gemini en JSON."""
 
 import json
 import os
@@ -203,10 +203,10 @@ DOCUMENTS SOURCÉS :
     try:
         draft = json.loads(cleaned)
     except json.JSONDecodeError as exc:
-        raise ScriptWriterError(f"Gemini n'a pas renvoyé un JSON valide : {exc}") from exc
+        raise ScriptWriterError(f"{provider.title()} n'a pas renvoyé un JSON valide : {exc}") from exc
 
     if not isinstance(draft, dict) or not isinstance(draft.get("scenes"), list):
-        raise ScriptWriterError("Le brouillon Gemini ne contient pas de liste de scènes.")
+        raise ScriptWriterError(f"Le brouillon {provider.title()} ne contient pas de liste de scènes.")
     for index, scene in enumerate(draft["scenes"], start=1):
         scene["id"] = _slug_id(index)
         scene["review_approved"] = False
