@@ -382,11 +382,12 @@ def draft_project_command(
     output_file: str = typer.Option("projects/weekly_documentary.json", "--output", help="Storyboard JSON à relire."),
     topic: str = typer.Option("", "--topic", help="Sujet précis (facultatif)."),
     model: str | None = typer.Option(None, "--model", help="Modèle API (par défaut Agnes 2.5 Flash si Gemini n'est pas configuré)."),
+    topic_history_file: str = typer.Option("projects/topic_history.json", "--topic-history", help="Historique des sujets à éviter."),
 ) -> None:
     """Rédiger un storyboard documentaire à partir de sources publiques extraites."""
     try:
         console.print("Rédaction du brouillon avec Gemini ; les validations humaines restent désactivées…")
-        result = draft_project(sources_file, output_file, topic=topic, model=model)
+        result = draft_project(sources_file, output_file, topic=topic, model=model, topic_history_file=topic_history_file)
         console.print(f"[green]Brouillon créé : {result}[/green]")
         console.print("[yellow]Toutes les scènes et la publication restent non approuvées.[/yellow]")
         console.print("Vérifier les affirmations et les sources avant de renseigner les champs d'approbation.")
