@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from observateur_actif.quality import QualityError, inspect_video, write_quality_report
+from observateur_actif.quality import QualityError, inspect_video, inspect_clip_motion, write_quality_report
 
 
 def probe_result(width=1280, height=720, video_codec="h264", audio_codec="aac"):
@@ -69,3 +69,23 @@ def test_rejects_missing_subtitle_stream(tmp_path):
          patch("observateur_actif.quality.subprocess.run", return_value=Mock(stdout=json.dumps(data))):
         with pytest.raises(QualityError, match="piste de sous-titres"):
             inspect_video(video)
+
+
+def test_motion_check_accepts_a_clip_without_long_freezes(tmp_path):
+    clip = tmp_path / "moving.mp4"
+    clip.write_bytes(b"video")
+    completed = Mock(returncode=0, stderr="frame=300 fps=25")
+    with patch("observateur_actif.quality.shutil.which", return_value="/usr/bin/ffmpeg"), \
+         patch("observateur_actif.quality.subprocess.run", return_value=completed):
+        report = inspect_clip_motion(clip)
+    assert report["status"] == "motion_check_passed"
+
+
+def test_motion_check_rejects_a_static_clip(tmp_path):
+    clip = tmp_path / "still.mp4"
+    clip.write_bytes(b"video")
+    completed = Mock(returncode=0, stderr="lavfi.freezedetect.freeze_duration: 4.500")
+    with patch("observateur_actif.quality.shutil.which", return_value="/usr/bin/ffmpeg"), \
+         patch("observateur_actif.quality.subprocess.run", return_value=completed):
+        with pytest.raises(QualityError, match="Mouvement insuffisant"):
+            inspect_clip_motion(clip)
