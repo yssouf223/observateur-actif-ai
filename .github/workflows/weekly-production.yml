@@ -91,6 +91,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install '.[youtube]'
 
+      - name: Tester Edge-TTS et les repères de sous-titres avant les clips vidéo
+        if: steps.preflight.outputs.ready == 'true'
+        run: |
+          cat > /tmp/edge-tts-preflight.json <<'JSON'
+          {"title":"Prévalidation audio","target_duration_minutes":10,"scenes":[{"id":"audio-test","duration_seconds":5,"narration":"Ceci est un contrôle technique de la narration française et de ses sous-titres synchronisés.","video_prompt":"No video generation in this test.","motion_description":"No video generation in this test.","claim_status":"unconfirmed"}]}
+          JSON
+          observateur generate-audio /tmp/edge-tts-preflight.json --output /tmp/edge-tts-preflight.mp3 --subtitles /tmp/edge-tts-preflight.srt
+          test -s /tmp/edge-tts-preflight.mp3
+          test -s /tmp/edge-tts-preflight.srt
+          grep -q -- '-->' /tmp/edge-tts-preflight.srt
+
       - name: Générer les scènes, la voix off, les sous-titres et le montage
         if: steps.preflight.outputs.ready == 'true'
         run: observateur produce "$PROJECT_FILE" --output-dir output
