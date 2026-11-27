@@ -83,3 +83,29 @@ def test_pipeline_reuses_existing_generated_scene(tmp_path):
          patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), patch("observateur_actif.pipeline.write_quality_report", side_effect=lambda video, report: (Path(report).write_text(json.dumps({"duration_seconds": 600}), encoding="utf-8") or Path(report))):
         produce_project(project, tmp_path / "project.json", tmp_path / "out", api_key="key")
     assert gen.call_count == 49
+
+
+def test_pipeline_rejects_final_video_shorter_than_ten_minutes(tmp_path):
+    project = make_project()
+
+    def fake_speech(project, audio, subtitles):
+        Path(audio).write_bytes(b"audio")
+        Path(subtitles).write_text("srt", encoding="utf-8")
+        return Path(audio), Path(subtitles)
+
+    def fake_montage(project, audio, video, subtitles_file=None):
+        Path(video).write_bytes(b"video")
+        return Path(video)
+
+    def short_quality(video, report):
+        Path(report).parent.mkdir(parents=True, exist_ok=True)
+        Path(report).write_text(json.dumps({"duration_seconds": 500}), encoding="utf-8")
+        return Path(report)
+
+    with patch("observateur_actif.pipeline.generate_video"), \
+         patch("observateur_actif.pipeline.inspect_clip_motion", return_value={"status": "motion_check_passed"}), \
+         patch("observateur_actif.pipeline.generate_audio_with_subtitles", side_effect=fake_speech), \
+         patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), \
+         patch("observateur_actif.pipeline.write_quality_report", side_effect=short_quality):
+        with pytest.raises(ProductionError, match="Durée finale hors cible"):
+            produce_project(project, tmp_path / "project.json", tmp_path / "out", api_key="key")
