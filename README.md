@@ -182,3 +182,14 @@ observateur review-queue --input projects/claim_candidates.json --output project
 ```
 
 Le rapport regroupe chaque affirmation en attente, ses liens vers les sources, leur éditeur et une liste de contrôles à effectuer : contexte complet, dates, lieux, chiffres, indépendance des publications et catégorie éditoriale. Le rapport ne modifie pas le registre et n'approuve aucune affirmation. Après enquête, les décisions doivent être saisies dans le registre JSON puis contrôlées avec `validate-claims`. Une source extraite automatiquement est marquée non favorable par défaut ; le réviseur doit examiner le document et renseigner honnêtement les éléments de preuve avant de la considérer comme favorable.
+
+
+## Exporter la narration et les sous-titres
+
+À partir d'un projet JSON dont le storyboard est validé, générer un texte de voix off et un fichier de sous-titres SRT :
+
+```bash
+observateur export-narration projects/documentary.json --text output/narration.txt --subtitles output/subtitles.srt
+```
+
+Le texte rassemble les répliques dans l'ordre des scènes et rappelle la direction vocale prévue : voix française masculine, grave et posée. Le fichier SRT utilise les durées de chaque scène pour calculer les horodatages. Cet export prépare les fichiers pour une future étape de synthèse vocale ; il ne crée pas encore de voix audio et la synchronisation devra être ajustée après le montage réel.
