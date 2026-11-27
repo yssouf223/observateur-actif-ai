@@ -1,11 +1,15 @@
 [
   {
-    "publisher": "NASA",
-    "url": "https://www.nasa.gov/feed/"
+    "publisher": "Archaeology Magazine",
+    "url": "https://www.archaeology.org/feed"
   },
   {
-    "publisher": "UNESCO",
-    "url": "https://www.unesco.org/en/rss.xml"
+    "publisher": "The Conversation Africa",
+    "url": "https://theconversation.com/africa/articles.atom"
+  },
+  {
+    "publisher": "African Arguments",
+    "url": "https://africanarguments.org/feed/"
   },
   {
     "publisher": "BBC Afrique",
@@ -14,5 +18,9 @@
   {
     "publisher": "Smithsonian Magazine — History",
     "url": "https://www.smithsonianmag.com/rss/history/"
+  },
+  {
+    "publisher": "NASA",
+    "url": "https://www.nasa.gov/feed/"
   }
 ]
