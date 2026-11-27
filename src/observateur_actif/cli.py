@@ -19,6 +19,7 @@ from observateur_actif.source_fetcher import SourceFetchError, fetch_source, fet
 from observateur_actif.claim_extractor import extract_claim_candidates
 from observateur_actif.review_queue import write_review_queue
 from observateur_actif.narration import export_narration
+from observateur_actif.speech import SpeechError, generate_audio
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -179,6 +180,26 @@ def export_narration_command(
         console.print("[yellow]Aucun fichier audio n'est généré par cette commande.[/yellow]")
     except (FileNotFoundError, OSError, ValueError) as exc:
         console.print(f"[red]Export impossible : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("generate-audio")
+def generate_audio_command(
+    project_file: str = typer.Argument(..., help="Projet documentaire JSON."),
+    output_file: str = typer.Option("output/narration.mp3", "--output", help="Fichier MP3 de sortie."),
+    voice: str = typer.Option("fr-FR-HenriNeural", "--voice", help="Voix Microsoft Edge-TTS."),
+    rate: str = typer.Option("-8%", "--rate", help="Vitesse de parole, par exemple -8%."),
+    pitch: str = typer.Option("-8Hz", "--pitch", help="Hauteur de voix, par exemple -8Hz."),
+) -> None:
+    """Générer la voix off MP3 avec Edge-TTS (connexion Internet requise)."""
+    try:
+        project = load_project(project_file)
+        console.print(f"Génération audio avec {voice}…")
+        result = generate_audio(project, output_file, voice=voice, rate=rate, pitch=pitch)
+        console.print(f"[green]Narration MP3 créée : {result}[/green]")
+        console.print("[yellow]Vérifier la prononciation et recaler les sous-titres sur l'audio réel.[/yellow]")
+    except (FileNotFoundError, OSError, ValueError, SpeechError) as exc:
+        console.print(f"[red]Génération audio impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
