@@ -21,9 +21,9 @@ concurrency:
 
 jobs:
   draft:
-    name: Recherche publique et storyboard IA
+    name: Recherche publique et préparation éditoriale
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
       SCRIPT_PROVIDER: agnes
@@ -42,10 +42,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
 
-      - name: Vérifier l'accès au modèle de texte Agnes gratuit
+      - name: Vérifier si le modèle de rédaction est accessible
+        id: model
+        continue-on-error: true
         run: |
           if [ -z "$AGNES_API_KEY" ]; then
-            echo "::error::Le secret AGNES_API_KEY est absent."
+            echo "Clé Agnes absente : la recherche continuera sans génération IA."
             exit 1
           fi
           python - <<'PY'
@@ -60,22 +62,35 @@ jobs:
           models = payload.get("data", payload.get("models", []))
           names = {item.get("id") or item.get("name") for item in models if isinstance(item, dict)}
           if "agnes-2.5-flash" not in names:
-              raise SystemExit("La clé ne donne pas accès à agnes-2.5-flash.")
+              raise SystemExit("Le modèle agnes-2.5-flash n'est pas accessible avec cette clé.")
           print("Accès au modèle de texte Agnes 2.5 Flash confirmé.")
           PY
 
       - name: Collecter les pistes RSS
-        run: observateur research-rss --output projects/research_leads.json
-
-      - name: Ouvrir les articles originaux
-        run: observateur fetch-leads --input projects/research_leads.json --output projects/source_documents.json --limit 20
-
-      - name: Créer un brouillon documentaire avec Agnes
         run: |
           mkdir -p projects
+          observateur research-rss --output projects/research_leads.json
+
+      - name: Ouvrir les articles originaux
+        run: |
+          observateur fetch-leads --input projects/research_leads.json --output projects/source_documents.json --limit 20
+
+      - name: Créer un brouillon documentaire avec Agnes
+        id: draft
+        if: steps.model.outcome == 'success'
+        continue-on-error: true
+        run: |
           observateur draft-project --sources projects/source_documents.json --output projects/weekly_documentary.json --topic "$TOPIC"
 
-      - name: Mettre à jour l'historique des sujets pour éviter les répétitions
+      - name: Créer une file de vérification si le brouillon IA est indisponible
+        if: steps.draft.outcome != 'success'
+        run: |
+          echo "Pas de storyboard IA exploitable : préparation d'une revue des affirmations."
+          observateur extract-claims --input projects/source_documents.json --output projects/claim_candidates.json
+          observateur review-queue --input projects/claim_candidates.json --output projects/editorial_review.md
+
+      - name: Mettre à jour l'historique des sujets
+        if: steps.draft.outcome == 'success'
         run: |
           python - <<'PY'
           import json
@@ -98,8 +113,20 @@ jobs:
           print(f"Historique éditorial : {len(history)} sujet(s).")
           PY
 
-      - name: Exporter le dossier de revue éditoriale
+      - name: Exporter le dossier de revue du storyboard
+        if: steps.draft.outcome == 'success'
         run: observateur review-project projects/weekly_documentary.json --output projects/editorial_review.md
+
+      - name: Résumer le résultat de la recherche
+        if: always()
+        run: |
+          if [ -f projects/weekly_documentary.json ]; then
+            echo "Storyboard IA créé : à vérifier, non approuvé."
+          elif [ -f projects/claim_candidates.json ]; then
+            echo "Pistes et affirmations candidates préparées : aucune n'est déclarée vraie."
+          else
+            echo "La collecte n'a pas produit de dossier exploitable."
+          fi
 
       - name: Archiver les documents de recherche
         if: always()
@@ -109,36 +136,38 @@ jobs:
           path: |
             projects/research_leads.json
             projects/source_documents.json
+            projects/claim_candidates.json
             projects/weekly_documentary.json
             projects/editorial_review.md
             projects/topic_history.json
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Enregistrer le brouillon dans le dépôt
+      - name: Enregistrer les résultats dans le dépôt
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add projects/weekly_documentary.json projects/editorial_review.md projects/topic_history.json
+          git add -f projects/research_leads.json projects/source_documents.json projects/claim_candidates.json projects/weekly_documentary.json projects/editorial_review.md projects/topic_history.json 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo "Aucun changement de brouillon à enregistrer."
-          else
-            git commit -m "Prepare weekly documentary draft"
-            for attempt in 1 2 3; do
-              git fetch origin main
-              if ! git rebase origin/main; then
-                git rebase --abort || true
-                sleep $((attempt * 3))
-                continue
-              fi
-              if git push; then
-                echo "Brouillon enregistré dans main."
-                exit 0
-              fi
-              echo "Push refusé ; nouvelle tentative après synchronisation."
+            echo "Aucun nouveau fichier de recherche à enregistrer."
+            exit 0
+          fi
+          git commit -m "Update weekly research and editorial review"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
               git rebase --abort || true
               sleep $((attempt * 3))
-            done
-            echo "::error::Impossible d'enregistrer le brouillon après trois tentatives."
-            exit 1
-          fi
+              continue
+            fi
+            if git push; then
+              echo "Résultats de recherche enregistrés dans main."
+              exit 0
+            fi
+            echo "Push refusé ; nouvelle tentative après synchronisation."
+            git rebase --abort || true
+            sleep $((attempt * 3))
+          done
+          echo "::error::Impossible d'enregistrer les résultats après trois tentatives."
+          exit 1
