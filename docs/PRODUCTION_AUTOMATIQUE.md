@@ -27,7 +27,7 @@ Variables à configurer dans Settings > Secrets and variables > Actions > Variab
 
 Le client YouTube demande les autorisations OAuth `youtube.upload` et `youtube.readonly` et vérifie l'identifiant de chaîne configuré avant de lancer la génération vidéo. L'application Google Cloud doit avoir l'API YouTube Data activée et disposer d'un OAuth autorisé. Depuis le 2 novembre 2026, YouTube indique que les téléversements de projets API non vérifiés ne sont plus limités au mode privé. La programmation est envoyée avec `privacyStatus=private` et un `publishAt` futur, conformément aux règles YouTube. Voir [OAuth YouTube](https://developers.google.com/youtube/data/guides/authentication) et [ressource vidéo / publishAt](https://developers.google.com/youtube/data/reference/rest/v3/videos).
 
-Les workflows arrêtent le traitement si les variables de gratuité ne sont pas explicitement confirmées. Le code ne peut pas lire de façon fiable le solde ou le statut de facturation privé des comptes fournisseurs. Agnes publie actuellement une promotion gratuite temporaire pour Video 2.5 Flash en 720p, mais ses conditions et quotas peuvent changer ; la file partagée peut aussi renvoyer HTTP 503 « queue full ». Vérifier les conditions dans le [catalogue Agnes](https://github.com/AgnesAI-Labs/skills/blob/main/agnes-ai-models/references/model_catalog.md) et le [suivi des erreurs de file](https://github.com/AgnesAI-Labs/AgnesAI-Models/issues/142) avant chaque activation.
+Les workflows arrêtent le traitement si les variables de gratuité ne sont pas explicitement confirmées. Le code ne peut pas lire de façon fiable le solde ou le statut de facturation privé des comptes fournisseurs. Agnes publie actuellement une promotion gratuite temporaire pour Video 2.5 Flash en 1080p upscalé depuis des sources 720p, mais ses conditions et quotas peuvent changer ; la file partagée peut aussi renvoyer HTTP 503 « queue full ». Vérifier les conditions dans le [catalogue Agnes](https://github.com/AgnesAI-Labs/skills/blob/main/agnes-ai-models/references/model_catalog.md) et le [suivi des erreurs de file](https://github.com/AgnesAI-Labs/AgnesAI-Models/issues/142) avant chaque activation.
 
 ## Contrôle éditorial obligatoire
 
@@ -42,7 +42,7 @@ La production du samedi refuse un projet tant que chaque scène n'a pas un révi
 ## Résolution et formats
 
 - Les clips Agnes sont demandés en 720p.
-- FFmpeg assemble le documentaire en H.264/AAC, 1280×720, 25 fps.
+- FFmpeg assemble le documentaire en H.264/AAC, 1920×1080 (upscalé depuis des clips 1280×720, non natif), 25 fps.
 - Le SRT issu des événements temporels Edge-TTS est inclus comme piste sélectionnable.
 - La voix est normalisée par FFmpeg autour de -16 LUFS avec un plafond de -1,5 dBTP ; la musique facultative est mixée à bas niveau sous la narration.
 - FFmpeg applique `freezedetect` à chaque clip et bloque les séquences pratiquement immobiles de 3 secondes ou plus ; le rapport de production conserve le résultat par scène.
