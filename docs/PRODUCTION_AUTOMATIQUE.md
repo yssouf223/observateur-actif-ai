@@ -32,7 +32,7 @@ Les workflows arrêtent le traitement si les variables de gratuité ne sont pas 
 
 ## Contrôle éditorial obligatoire
 
-Le workflow du mercredi produit un brouillon et un dossier Markdown de revue qui rassemble les scènes, les narrations et les liens vers leurs sources. Le workflow du mercredi produit un brouillon. Il force toujours :
+Le workflow du mercredi produit un brouillon et un dossier Markdown de revue qui rassemble les scènes, les narrations et les liens vers leurs sources. Il force toujours :
 
 - `review_approved=false` pour chaque scène ;
 - `release_approved=false` pour le projet ;
