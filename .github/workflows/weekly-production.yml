@@ -1,6 +1,9 @@
 name: Production hebdomadaire Observateur Actif
 
 on:
+  push:
+    paths:
+      - '.github/workflows/weekly-production.yml'
   schedule:
     # Le vendredi à 20:00 UTC, pour laisser le temps de générer avant samedi 16:00 UTC.
     - cron: "0 20 * * 5"
