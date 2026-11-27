@@ -12,6 +12,9 @@ def make_project(approved=True):
     return DocumentaryProject.model_validate({
         "title": "Forêt mystérieuse",
         "target_duration_minutes": 10,
+        "release_approved": True,
+        "release_reviewer": "Rédaction",
+        "release_approved_at": "2026-11-27",
         "scenes": [
             {
                 "id": f"scene-{i:02d}", "duration_seconds": 12,
@@ -109,3 +112,13 @@ def test_pipeline_rejects_final_video_shorter_than_ten_minutes(tmp_path):
          patch("observateur_actif.pipeline.write_quality_report", side_effect=short_quality):
         with pytest.raises(ProductionError, match="Durée finale hors cible"):
             produce_project(project, tmp_path / "project.json", tmp_path / "out", api_key="key")
+
+
+def test_pipeline_refuses_project_without_release_approval(tmp_path):
+    project = make_project()
+    project.release_approved = False
+    project.release_reviewer = None
+    project.release_approved_at = None
+    with pytest.raises(ProductionError, match="documentaire entier doit être approuvé"):
+        produce_project(project, tmp_path / "project.json", tmp_path,
+                        api_key="secret")
