@@ -222,3 +222,15 @@ def test_draft_rejects_calcite_mistranslation_and_unsupported_bone_visual(tmp_pa
     with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
         with pytest.raises(ScriptWriterError, match="calcrete"):
             draft_project(sources, tmp_path / "project.json")
+
+
+def test_draft_rejects_visual_evidence_not_present_in_sources(tmp_path, monkeypatch):
+    sources = docs_file(tmp_path)
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    draft = valid_draft()
+    draft["scenes"][0]["video_prompt"] = "Camera slowly reveals a human bone fragment in the sand."
+    response = Mock(ok=True)
+    response.json.return_value = {"choices": [{"message": {"content": json.dumps(draft)}}]}
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        with pytest.raises(ScriptWriterError, match="invent(e|e) des os"):
+            draft_project(sources, tmp_path / "project.json")
