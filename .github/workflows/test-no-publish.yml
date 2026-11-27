@@ -1,6 +1,9 @@
 name: Test complet sans publication
 
 on:
+  push:
+    paths:
+      - ".github/workflows/test-no-publish.yml"
   workflow_dispatch:
     inputs:
       project_path:
@@ -18,6 +21,7 @@ concurrency:
 
 jobs:
   test:
+    if: github.event_name == 'workflow_dispatch'
     name: Génération privée et contrôle qualité
     runs-on: ubuntu-latest
     timeout-minutes: 350
