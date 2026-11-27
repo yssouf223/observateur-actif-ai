@@ -32,7 +32,7 @@ def _api_error(response: requests.Response) -> AgnesError:
 
 
 def _video_url(payload: dict) -> str | None:
-    candidate = payload.get("url")
+    candidate = payload.get("video_url") or payload.get("url")
     if not candidate and isinstance(payload.get("metadata"), dict):
         candidate = payload["metadata"].get("url")
     if isinstance(candidate, str) and candidate.startswith("https://"):
@@ -75,7 +75,6 @@ def generate_video(
         "seconds": str(seconds),
         "size": "720P",
         "aspect_ratio": aspect_ratio,
-        "n": 1,
     }
 
     try:
