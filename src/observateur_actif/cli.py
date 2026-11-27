@@ -355,6 +355,7 @@ def publish_youtube_command(
         description = (
             f"{project.title} — documentaire Observateur Actif. "
             "Les faits, hypothèses, témoignages et traditions sont distingués dans le récit. "
+            "Certaines images sont des reconstitutions générées par IA, pas des archives authentiques. "
             "Abonnez-vous à Observateur Actif pour découvrir nos prochains documentaires."
             + source_section
         )[:4900]
