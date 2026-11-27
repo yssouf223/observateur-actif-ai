@@ -110,9 +110,9 @@ RÈGLES IMPÉRATIVES :
 - Si une information n'est pas documentée, ne l'ajoute pas comme fait. Signale les limites.
 - Pas de dialogues fictifs, de citations reconstituées ni de scènes historiques présentées comme archives réelles.
 - Voix off en français, masculine grave, calme, journalistique, sans emphase artificielle.
-- Documentaire de 10 à 15 minutes, environ 1 300 à 1 700 mots de narration répartis sur 60 à 80 scènes.
+- Documentaire de 10 à 15 minutes, environ 1 300 à 1 700 mots de narration répartis sur 50 à 75 scènes.
 - Chaque scène doit avoir un prompt vidéo en anglais pour un plan réellement animé, avec mouvement physique/caméra clairement décrit ; aucun diaporama, aucune image fixe, aucun texte incrusté.
-- Les clips seront générés séparément en 4 à 12 secondes. Les scènes doivent donc prévoir des actions visuelles simples et cohérentes.
+- Chaque scène doit durer 10 à 12 secondes. Les scènes doivent donc prévoir des actions visuelles simples et cohérentes.
 - Le projet doit être un BROUILLON : review_approved=false partout, reviewer=null, reviewed_at=null, release_approved=false.
 - N'ajoute pas de source qui n'existe pas dans la liste.
 
