@@ -14,6 +14,8 @@ from observateur_actif.config import Settings
 from observateur_actif.video import AgnesError, generate_video
 from observateur_actif.montage import MontageError, assemble_documentary
 from observateur_actif.pipeline import ProductionError, produce_project
+from observateur_actif.quality import QualityError, write_quality_report
+from observateur_actif.youtube import YouTubePublishError, next_saturday_1600_utc, publish_video
 from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
 from observateur_actif.claim_review import load_claim_registry
@@ -308,6 +310,52 @@ def produce_command(
         console.print("[yellow]Le contrôle qualité final et la publication YouTube restent séparés.[/yellow]")
     except (FileNotFoundError, OSError, ValueError, ProductionError) as exc:
         console.print(f"[red]Production interrompue : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+
+@app.command("quality-check")
+def quality_check_command(
+    video_file: str = typer.Argument(..., help="Fichier MP4 à contrôler."),
+    report_file: str = typer.Option("output/quality_report.json", "--report", help="Rapport JSON."),
+) -> None:
+    """Contrôler codecs, résolution, durée et présence des flux audio/vidéo."""
+    try:
+        report = write_quality_report(video_file, report_file)
+        console.print(f"[green]Contrôle technique réussi : {report}[/green]")
+    except (OSError, QualityError) as exc:
+        console.print(f"[red]Contrôle qualité échoué : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("publish-youtube")
+def publish_youtube_command(
+    project_file: str = typer.Argument(..., help="Projet documentaire avec validation de publication."),
+    video_file: str = typer.Option("output/documentary.mp4", "--video", help="MP4 final contrôlé."),
+) -> None:
+    """Programmer la publication YouTube le samedi à 16 h UTC après approbation."""
+    try:
+        project = load_project(project_file)
+        if not project.release_approved or not project.release_reviewer or not project.release_approved_at:
+            raise YouTubePublishError(
+                "Publication bloquée : release_approved=true, release_reviewer et release_approved_at sont requis."
+            )
+        description = (
+            f"{project.title} — documentaire Observateur Actif. "
+            "Les faits, hypothèses, témoignages et traditions sont distingués dans le récit. "
+            "Abonnez-vous à Observateur Actif pour découvrir nos prochains documentaires."
+        )
+        result = publish_video(
+            video_file,
+            title=project.title,
+            description=description,
+            tags=["Observateur Actif", "documentaire", "mystères africains", "histoire africaine"],
+            publish_at=next_saturday_1600_utc(),
+        )
+        console.print(f"[green]Vidéo envoyée et programmée : {result['url']}[/green]")
+        console.print(f"Publication prévue : {result['publish_at']} (UTC)")
+    except (FileNotFoundError, OSError, ValueError, YouTubePublishError) as exc:
+        console.print(f"[red]Publication impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
