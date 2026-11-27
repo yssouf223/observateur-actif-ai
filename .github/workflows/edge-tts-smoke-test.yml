@@ -62,6 +62,13 @@ jobs:
           print(f"MP3 réel créé : {p} ({len(data)} octets)")
           PY
 
+      - name: Vérifier le MP3 et les sous-titres synchronisés
+        run: |
+          test -s output/edge-tts-test.mp3
+          test -s output/edge-tts-test.srt
+          grep -q -- '-->' output/edge-tts-test.srt
+          echo "MP3 et SRT WordBoundary présents."
+
       - name: Déposer le MP3 de test
         uses: actions/upload-artifact@v4
         with:
