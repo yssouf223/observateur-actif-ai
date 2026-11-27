@@ -55,6 +55,7 @@ def draft_project(
         and str(doc.get("text", "")).strip()
         and str(doc.get("url", "")).startswith(("https://", "http://"))
     ]
+    usable = usable[:8]
     sources = []
     source_texts = []
     seen_hosts = set()
@@ -85,7 +86,7 @@ def draft_project(
             "publisher": publisher,
             "url": doc["url"],
             "published_at": doc.get("published_at"),
-            "text": str(doc["text"])[:18000],
+            "text": str(doc["text"])[:10000],
         })
 
     if len(sources) < 2:
@@ -144,7 +145,7 @@ DOCUMENTS SOURCÉS :
         "generationConfig": {
             "responseMimeType": "application/json",
             "temperature": 0.25,
-            "maxOutputTokens": 30000,
+            "maxOutputTokens": 12000,
         },
     }
     try:
