@@ -234,3 +234,19 @@ def test_draft_rejects_visual_evidence_not_present_in_sources(tmp_path, monkeypa
     with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
         with pytest.raises(ScriptWriterError, match="invent(e|e) des os"):
             draft_project(sources, tmp_path / "project.json")
+
+
+def test_draft_rejects_near_duplicate_articles_from_different_domains(tmp_path, monkeypatch):
+    path = tmp_path / "duplicate_sources.json"
+    shared = "Archaeologists document ancient prehistoric rock art in the Sahara. " * 40
+    path.write_text(json.dumps([
+        {"fetch_status": "success", "url": "https://publisher-a.example/story",
+         "title": "Ancient Saharan rock art discovery", "publisher": "Publisher A",
+         "text": shared},
+        {"fetch_status": "success", "url": "https://publisher-b.example/story",
+         "title": "New discovery of ancient rock art in the Sahara", "publisher": "Publisher B",
+         "text": shared}
+    ]), encoding="utf-8")
+    monkeypatch.setenv("AGNES_API_KEY", "agnes-test-key")
+    with pytest.raises(ScriptWriterError, match="réellement indépendantes"):
+        draft_project(path, tmp_path / "project.json")
