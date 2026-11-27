@@ -49,6 +49,7 @@ def test_create_poll_download_flow(tmp_path):
     assert output.read_bytes() == b"fake-mp4"
     assert post.call_args.kwargs["json"]["model"] == MODEL
     assert post.call_args.kwargs["json"]["aspect_ratio"] == "16:9"
+    assert post.call_args.kwargs["json"]["n"] == 1
     assert get.call_args_list[0].kwargs["params"]["video_id"] == "video-123"
 
 
