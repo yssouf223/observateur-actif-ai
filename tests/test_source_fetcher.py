@@ -128,3 +128,20 @@ def test_fetch_leads_limit_is_bounded():
 
     with pytest.raises(ValueError, match="comprise entre 1 et 20"):
         fetch_leads([], limit=21)
+
+
+def test_fetch_leads_balances_publishers(tmp_path):
+    from observateur_actif.source_fetcher import SourceDocument, fetch_leads
+    leads = [
+        {"title": f"A{i}", "publisher": "A", "url": f"https://a.example/{i}"}
+        for i in range(4)
+    ] + [
+        {"title": f"B{i}", "publisher": "B", "url": f"https://b.example/{i}"}
+        for i in range(4)
+    ]
+    def fake_fetch(url):
+        return SourceDocument(url=url, title="Article", text="Texte", fetched_at="2026-11-27")
+    with patch("observateur_actif.source_fetcher.fetch_source", side_effect=fake_fetch):
+        results = fetch_leads(leads, limit=4)
+    assert len(results) == 4
+    assert [item["publisher"] for item in results] == ["A", "A", "B", "B"]
