@@ -48,31 +48,17 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          for name in AGNES_API_KEY YOUTUBE_CLIENT_ID YOUTUBE_CLIENT_SECRET YOUTUBE_REFRESH_TOKEN YOUTUBE_CHANNEL_ID; do
-            if [ -z "${!name}" ]; then
-              echo "::error::Secret requis absent : $name"
-              exit 1
-            fi
-          done
-          if [ "$AGNES_FREE_QUOTA_CONFIRMED" != "true" ]; then
-            echo "::error::Production arrêtée : confirme le quota Agnes gratuit via AGNES_FREE_QUOTA_CONFIRMED=true."
-            exit 1
-          fi
-          if [ "$EDGE_TTS_COMMERCIAL_RIGHTS_CONFIRMED" != "true" ]; then
-            echo "::error::Publication bloquée : droits d'utilisation commerciale de la voix Edge-TTS non confirmés."
-            exit 1
-          fi
           python - <<'PY'
           import json, os, sys
           path = os.environ["PROJECT_FILE"]
           with open(path, encoding="utf-8") as f:
               project = json.load(f)
+          scenes = project.get("scenes", [])
           if not project.get("release_approved") or not project.get("release_reviewer") or not project.get("release_approved_at"):
               print("Projet non approuvé : aucune génération vidéo ni publication ne sera lancée.")
               with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
                   output.write("ready=false\n")
               sys.exit(0)
-          scenes = project.get("scenes", [])
           if not scenes or any(not s.get("review_approved") or not s.get("reviewer") or not s.get("reviewed_at") for s in scenes):
               print("Des scènes ne sont pas approuvées : aucune génération vidéo ni publication ne sera lancée.")
               with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
@@ -88,6 +74,23 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
               output.write(f"publish_at={target.isoformat()}\n")
           PY
+          if grep -q '^ready=false$' "$GITHUB_OUTPUT"; then
+            exit 0
+          fi
+          for name in AGNES_API_KEY YOUTUBE_CLIENT_ID YOUTUBE_CLIENT_SECRET YOUTUBE_REFRESH_TOKEN YOUTUBE_CHANNEL_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Secret requis absent : $name"
+              exit 1
+            fi
+          done
+          if [ "$AGNES_FREE_QUOTA_CONFIRMED" != "true" ]; then
+            echo "::error::Production arrêtée : confirme le quota Agnes gratuit via AGNES_FREE_QUOTA_CONFIRMED=true."
+            exit 1
+          fi
+          if [ "$EDGE_TTS_COMMERCIAL_RIGHTS_CONFIRMED" != "true" ]; then
+            echo "::error::Publication bloquée : droits d'utilisation commerciale de la voix Edge-TTS non confirmés."
+            exit 1
+          fi
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
       - name: Installer Python
