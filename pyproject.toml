@@ -16,6 +16,12 @@ dependencies = [
   "edge-tts>=7.2,<8.0",
 ]
 
+[project.optional-dependencies]
+youtube = [
+  "google-api-python-client>=2.150,<3.0",
+  "google-auth>=2.35,<3.0",
+]
+
 [project.scripts]
 observateur = "observateur_actif.cli:app"
 
