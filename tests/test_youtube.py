@@ -50,7 +50,7 @@ def test_successful_upload_is_private_until_future_publish_time(tmp_path, monkey
 
     class FakeRequest:
         def next_chunk(self):
-            return None, {"id": "youtube-video-123"}
+            return None, {"id": "youtube-video-123", "status": {"privacyStatus": "private", "publishAt": captured["body"]["status"]["publishAt"]}}
 
     class FakeYouTube:
         def channels(self):
