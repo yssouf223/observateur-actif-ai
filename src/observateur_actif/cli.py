@@ -18,6 +18,7 @@ from observateur_actif.pipeline import ProductionError, produce_project
 from observateur_actif.quality import QualityError, write_quality_report
 from observateur_actif.youtube import YouTubePublishError, next_saturday_1600_utc, publish_video
 from observateur_actif.scriptwriter import ScriptWriterError, draft_project
+from observateur_actif.project_review import export_project_review
 from observateur_actif.project_io import load_project
 from observateur_actif.research import ResearchError, collect_feeds, load_feed_config, save_leads
 from observateur_actif.claim_review import load_claim_registry
@@ -382,6 +383,23 @@ def draft_project_command(
         console.print("Vérifier les affirmations et les sources avant de renseigner les champs d'approbation.")
     except (FileNotFoundError, OSError, ValueError, ScriptWriterError) as exc:
         console.print(f"[red]Création du brouillon impossible : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+
+@app.command("review-project")
+def review_project_command(
+    project_file: str = typer.Argument(..., help="Projet documentaire JSON à relire."),
+    output_file: str = typer.Option("projects/editorial_review.md", "--output", help="Dossier de revue Markdown."),
+) -> None:
+    """Exporter le storyboard, ses sources et ses statuts pour revue humaine."""
+    try:
+        project = load_project(project_file)
+        result = export_project_review(project, output_file)
+        console.print(f"[green]Dossier de revue créé : {result}[/green]")
+        console.print("[yellow]Aucune scène ni publication n'a été approuvée.[/yellow]")
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        console.print(f"[red]Export de revue impossible : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
