@@ -64,11 +64,14 @@ jobs:
           mkdir -p projects
           observateur draft-project --sources projects/source_documents.json --output projects/weekly_documentary.json --topic "$TOPIC"
 
+      - name: Exporter le dossier de revue éditoriale
+        run: observateur review-project projects/weekly_documentary.json --output projects/editorial_review.md
+
       - name: Enregistrer le brouillon dans le dépôt
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add projects/weekly_documentary.json
+          git add projects/weekly_documentary.json projects/editorial_review.md
           if git diff --cached --quiet; then
             echo "Aucun changement de brouillon à enregistrer."
           else
@@ -84,5 +87,6 @@ jobs:
             projects/research_leads.json
             projects/source_documents.json
             projects/weekly_documentary.json
+            projects/editorial_review.md
           if-no-files-found: error
           retention-days: 14
