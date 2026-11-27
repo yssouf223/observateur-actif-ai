@@ -194,6 +194,8 @@ DOCUMENTS SOURCÉS :
         raise ScriptWriterError(f"Le storyboard généré ne respecte pas le schéma : {exc}") from exc
 
     total_seconds = sum(scene.duration_seconds for scene in project.scenes)
+    if any(scene.duration_seconds > 12 for scene in project.scenes):
+        raise ScriptWriterError("Chaque scène doit durer au maximum 12 secondes pour correspondre au moteur vidéo.")
     if total_seconds < 600 or total_seconds > 900:
         raise ScriptWriterError(
             f"Durée storyboard incohérente : {total_seconds} secondes ; viser 600 à 900 secondes."
