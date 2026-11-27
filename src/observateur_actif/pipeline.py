@@ -34,6 +34,12 @@ def produce_project(
     """
     if not api_key.strip():
         raise ProductionError("Clé Agnes absente : génération vidéo impossible.")
+    if any(scene.duration_seconds < 4 or scene.duration_seconds > 12 for scene in project.scenes):
+        raise ProductionError("Chaque scène doit durer entre 4 et 12 secondes pour le fournisseur vidéo.")
+    planned_seconds = sum(scene.duration_seconds for scene in project.scenes)
+    target_seconds = project.target_duration_minutes * 60
+    if not target_seconds * 0.9 <= planned_seconds <= target_seconds * 1.1:
+        raise ProductionError(f"Durée storyboard incohérente : {planned_seconds}s pour une cible de {target_seconds}s.")
     unreviewed = [
         scene.id for scene in project.scenes
         if not scene.review_approved or not scene.reviewer or not scene.reviewed_at
@@ -59,7 +65,7 @@ def produce_project(
             generate_video(
                 scene.video_prompt.strip() + " " + scene.motion_description.strip(),
                 clip_path,
-                seconds=min(12, max(4, scene.duration_seconds)),
+                seconds=scene.duration_seconds,
                 aspect_ratio=project.aspect_ratio,
                 api_key=api_key,
             )
