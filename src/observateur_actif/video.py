@@ -76,6 +76,7 @@ def generate_video(
         "seconds": str(seconds),
         "size": "720P",
         "aspect_ratio": aspect_ratio,
+        "n": 1,
     }
 
     response = None
