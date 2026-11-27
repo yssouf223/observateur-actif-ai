@@ -26,6 +26,7 @@ jobs:
     timeout-minutes: 30
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_FREE_TIER_CONFIRMED: ${{ vars.GEMINI_FREE_TIER_CONFIRMED }}
       TOPIC: ${{ inputs.topic }}
     steps:
       - name: Récupérer le dépôt
@@ -45,6 +46,10 @@ jobs:
         run: |
           if [ -z "$GEMINI_API_KEY" ]; then
             echo "::error::Le secret GEMINI_API_KEY est absent."
+            exit 1
+          fi
+          if [ "$GEMINI_FREE_TIER_CONFIRMED" != "true" ]; then
+            echo "::error::Brouillon arrêté : confirme le palier Gemini gratuit via GEMINI_FREE_TIER_CONFIRMED=true."
             exit 1
           fi
 
