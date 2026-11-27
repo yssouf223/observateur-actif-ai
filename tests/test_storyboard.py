@@ -75,7 +75,6 @@ def test_non_16_9_project_is_rejected():
 
 def test_scene_duration_is_bounded():
     with pytest.raises(ValidationError):
-        make_scene()
         Scene(
             id="too-long",
             duration_seconds=30,
