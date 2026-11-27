@@ -17,6 +17,7 @@ from observateur_actif.research import ResearchError, collect_feeds, load_feed_c
 from observateur_actif.claim_review import load_claim_registry
 from observateur_actif.source_fetcher import SourceFetchError, fetch_source, fetch_leads
 from observateur_actif.claim_extractor import extract_claim_candidates
+from observateur_actif.review_queue import write_review_queue
 
 app = typer.Typer(help="Outils de préparation d'Observateur Actif AI.")
 console = Console()
@@ -143,6 +144,22 @@ def extract_claims_command(
         console.print("[yellow]Toutes les affirmations restent unconfirmed et pending ; revue humaine obligatoire.[/yellow]")
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         console.print(f"[red]Impossible d'extraire les affirmations : {exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+
+
+@app.command("review-queue")
+def review_queue_command(
+    input_file: str = typer.Option("projects/claim_candidates.json", "--input", help="Registre JSON des affirmations candidates."),
+    output_file: str = typer.Option("projects/editorial_review.md", "--output", help="Rapport Markdown pour la revue humaine."),
+) -> None:
+    """Créer un dossier de revue humaine des affirmations en attente."""
+    try:
+        destination = write_review_queue(input_file, output_file)
+        console.print(f"[green]Dossier de revue créé : {destination}[/green]")
+        console.print("Ouvrir chaque source originale et vérifier le contexte avant toute décision.")
+    except (OSError, ValueError) as exc:
+        console.print(f"[red]Impossible de créer la file de revue : {exc}[/red]")
         raise typer.Exit(code=1) from exc
 
 
