@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 from unittest.mock import patch
 
 import pytest
@@ -48,7 +49,7 @@ def test_pipeline_runs_video_voice_subtitles_and_montage(tmp_path):
 
     with patch("observateur_actif.pipeline.generate_video") as gen, \
          patch("observateur_actif.pipeline.generate_audio_with_subtitles", side_effect=fake_speech), \
-         patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), patch("observateur_actif.pipeline.write_quality_report", return_value=tmp_path / "output/quality_report.json"):
+         patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), patch("observateur_actif.pipeline.write_quality_report", side_effect=lambda video, report: (Path(report).write_text(json.dumps({"duration_seconds": 600}), encoding="utf-8") or Path(report))):
         result = produce_project(
             project, project_file, tmp_path / "output", api_key="test-key"
         )
@@ -77,6 +78,6 @@ def test_pipeline_reuses_existing_generated_scene(tmp_path):
     project.scenes[0].generated_video_path = str(clip)
     with patch("observateur_actif.pipeline.generate_video") as gen, \
          patch("observateur_actif.pipeline.generate_audio_with_subtitles", side_effect=fake_speech), \
-         patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), patch("observateur_actif.pipeline.write_quality_report", return_value=tmp_path / "out/quality_report.json"):
+         patch("observateur_actif.pipeline.assemble_documentary", side_effect=fake_montage), patch("observateur_actif.pipeline.write_quality_report", side_effect=lambda video, report: (Path(report).write_text(json.dumps({"duration_seconds": 600}), encoding="utf-8") or Path(report))):
         produce_project(project, tmp_path / "project.json", tmp_path / "out", api_key="key")
     assert gen.call_count == 49
