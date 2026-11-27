@@ -77,8 +77,9 @@ def test_motion_check_accepts_a_clip_without_long_freezes(tmp_path):
     clip = tmp_path / "moving.mp4"
     clip.write_bytes(b"video")
     completed = Mock(returncode=0, stderr="frame=300 fps=25")
+    probe = Mock(stdout="5.0")
     with patch("observateur_actif.quality.shutil.which", return_value="/usr/bin/ffmpeg"), \
-         patch("observateur_actif.quality.subprocess.run", return_value=completed):
+         patch("observateur_actif.quality.subprocess.run", side_effect=[completed, probe]):
         report = inspect_clip_motion(clip)
     assert report["status"] == "motion_check_passed"
 
@@ -86,9 +87,10 @@ def test_motion_check_accepts_a_clip_without_long_freezes(tmp_path):
 def test_motion_check_rejects_a_static_clip(tmp_path):
     clip = tmp_path / "still.mp4"
     clip.write_bytes(b"video")
-    completed = Mock(returncode=0, stderr="lavfi.freezedetect.freeze_duration: 4.500")
+    completed = Mock(returncode=0, stderr="lavfi.freezedetect.freeze_start: 0")
+    probe = Mock(stdout="4.5")
     with patch("observateur_actif.quality.shutil.which", return_value="/usr/bin/ffmpeg"), \
-         patch("observateur_actif.quality.subprocess.run", return_value=completed):
+         patch("observateur_actif.quality.subprocess.run", side_effect=[completed, probe]):
         with pytest.raises(QualityError, match="Mouvement insuffisant"):
             inspect_clip_motion(clip)
 
