@@ -10,7 +10,7 @@ Studio automatisé de documentaires vidéo pour la chaîne Observateur Actif.
 - Publication visée : chaque samedi à 16 h (heure du Mali, UTC+0), après contrôle qualité.
 
 ## État du projet
-Cette première version pose les fondations : configuration, format de projet, validation des scènes et diagnostic local. Le connecteur vidéo n'est pas encore activé : nous ne coderons pas d'URL d'API ni de paramètres Agnes supposés. Ils seront ajoutés après vérification de la documentation officielle et d'un test réel de l'API.
+Cette version comprend la configuration, le schéma de storyboard, le chargement et la validation de projets JSON, le client vidéo Agnes expérimental et les tests automatisés. La génération réelle reste dépendante de la disponibilité et des paramètres effectifs de l'API Agnes.
 
 ## Architecture
 1. Recherche et registre des sources.
@@ -32,7 +32,7 @@ copy .env.example .env
 python -m observateur_actif doctor
 ```
 
-Pour le moment, la commande `doctor` vérifie l'environnement. Elle ne génère pas encore de vidéo.
+La commande `doctor` vérifie l'environnement. La commande `validate-project chemin/vers/projet.json` valide un projet documentaire JSON sans appeler de service externe.
 
 ## Configuration
 Copier `.env.example` vers `.env`. Ne jamais publier le fichier `.env`, les clés API ou les jetons YouTube.
@@ -65,4 +65,4 @@ Aucun service payant ni aucune carte bancaire ne sont requis pour exécuter les 
 
 Ne jamais envoyer la clé API dans une conversation, un commit, une capture d'écran ou un fichier suivi par Git. Le fichier `.env` est exclu par `.gitignore`.
 
-Le moteur Flash gratuit renvoie du 720p. Les erreurs de file pleine (HTTP 503) sont signalées sans relance agressive. La génération réelle nécessite une clé valide et n'est pas simulée par les tests automatiques.
+Le client vidéo est configuré pour demander du 720p. En cas de réponse HTTP 503 indiquant explicitement que la file est pleine, il effectue au maximum deux nouvelles tentatives (30 puis 60 secondes). Les tests automatisés simulent l'API et ne prouvent pas qu'une génération réelle aboutira. Le coût et les quotas du fournisseur doivent être vérifiés dans le compte Agnes.
