@@ -1,42 +1,42 @@
 {
-  "title": "Les rives oubliées : cent haches de pierre au cœur du Kalahari",
+  "title": "Les rives oubliées : près de cent haches de pierre au cœur du Kalahari",
   "target_duration_minutes": 11,
   "aspect_ratio": "16:9",
   "language": "fr",
   "sources": [
     {
       "id": "source-1",
-      "title": "Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert | Science in Poland",
+      "title": "Polish archaeologists uncover nearly 100 ancient handaxes in remote Kalahari Desert",
       "url": "https://scienceinpoland.pl/en/news/news%2C115771%2Cpolish-archaeologists-uncover-nearly-100-ancient-handaxes-remote-kalahari-desert",
-      "publisher": "Science in Poland — History and Culture",
-      "published_at": null,
-      "accessed_at": "2026-11-27T12:11:52.976953+00:00",
-      "reliability_note": "Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine."
+      "publisher": "Science in Poland / PAP",
+      "published_at": "2026-11-24",
+      "accessed_at": "2026-11-27",
+      "reliability_note": "Compte rendu journalistique fondé sur les déclarations du professeur Mirosław Masojć, responsable de l'équipe. Source principale pour le nombre de pièces, leur attribution acheuléenne et les analyses en cours. Ne fournit pas de datation absolue des objets d'Okwa."
     },
     {
       "id": "source-2",
-      "title": "News - Acheulean Hand Axes Found in Kalahari Desert - Archaeology Magazine",
-      "url": "https://archaeology.org/news/2026/11/25/acheulean-handaxes-found-in-kalahari-desert/",
-      "publisher": "Archaeology Magazine",
+      "title": "Archeolodzy z naszego Uniwersytetu eksplorują Kalahari",
+      "url": "https://uwr.edu.pl/archeolodzy-z-naszego-uniwersytetu-eksploruja-kalahari/",
+      "publisher": "Université de Wrocław",
       "published_at": null,
-      "accessed_at": "2026-11-27T12:11:51.918477+00:00",
-      "reliability_note": "Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine."
+      "accessed_at": "2026-11-27",
+      "reliability_note": "Communication institutionnelle de l'université impliquée dans l'expédition. Source directe pour le travail de terrain, la vallée d'Okwa, les dépôts, les horizons acheuléens et les méthodes de datation envisagées."
     },
     {
       "id": "source-3",
-      "title": "A new fossil from South Africa offers clues to how giant plant-eating dinosaurs evolved",
-      "url": "https://theconversation.com/a-new-fossil-from-south-africa-offers-clues-to-how-giant-plant-eating-dinosaurs-evolved-297204",
-      "publisher": "The Conversation Africa",
-      "published_at": null,
-      "accessed_at": "2026-11-27T12:11:56.156689+00:00",
-      "reliability_note": "Texte extrait automatiquement ; source et contenu non vérifiés par une rédaction humaine."
+      "title": "Geologiczne spojrzenie na ślady społeczności aszelskich na Kalahari",
+      "url": "https://www.pgi.gov.pl/aktualnosci/display/17477-geologiczne-spojrzenie-na-slady-spolecznosci-aszelskich-na-kalahari.html",
+      "publisher": "Państwowy Instytut Geologiczny – PIB (Institut géologique national de Pologne)",
+      "published_at": "2026-10-19",
+      "accessed_at": "2026-11-27",
+      "reliability_note": "Communication de l'institut géologique participant aux recherches. Source institutionnelle complémentaire pour le contexte géologique, la vallée d'Okwa et l'objectif géoarchéologique. Ne confirme pas indépendamment le décompte des haches."
     }
   ],
   "scenes": [
     {
       "id": "scene-001",
       "duration_seconds": 12,
-      "narration": "Au sud de l'Afrique, un vaste désert de buissons dissimule une mémoire de pierre vieille d'un million et demi d'années. Le Kalahari retient des secrets que la végétation a protégés des regards.",
+      "narration": "Au sud de l'Afrique, dans le désert du Kalahari, des archéologues ont mis au jour près d'une centaine de haches de pierre. Elles sont associées à la tradition acheuléenne, mais leur âge précis reste à déterminer.",
       "video_prompt": "Aerial drone slowly descending over endless golden Kalahari bush, low haze, vast flat terrain stretching to horizon.",
       "motion_description": "Camera descends steadily from high altitude toward the flat bush landscape.",
       "claim_status": "unconfirmed",
@@ -105,7 +105,8 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
-        "source-2"
+        "source-2",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -121,7 +122,8 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
-        "source-2"
+        "source-2",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -131,13 +133,12 @@
     {
       "id": "scene-007",
       "duration_seconds": 12,
-      "narration": "La tradition acheuléenne, l'une des plus anciennes technologies de production d'outils en pierre connues, émerge en Afrique il y a environ un million sept cent mille ans.",
+      "narration": "La tradition acheuléenne, l'une des plus anciennes technologies de production d'outils en pierre connues, apparaît en Afrique il y a environ 1,7 million d'années. Cette ancienneté concerne la tradition dans son ensemble, pas encore les pièces d'Okwa.",
       "video_prompt": "Slow overhead top-down shot of a hand grinding a stone flake on flat rock, sparks of dust rising.",
       "motion_description": "Camera slowly orbits a hand grinding stone from above.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -147,13 +148,12 @@
     {
       "id": "scene-008",
       "duration_seconds": 12,
-      "narration": "Son expression la plus caractéristique est la hache de main, un outil de pierre de grande taille. La tradition persiste jusqu'à environ deux cent mille ans avant aujourd'hui.",
+      "narration": "Son expression la plus caractéristique est le biface, un grand outil de pierre façonné sur ses deux faces. La tradition acheuléenne a perduré sur une très longue période, jusqu'à environ 200 000 ans avant aujourd'hui.",
       "video_prompt": "Slow dolly-in on a large bifacial handaxe resting on ochre sand, shallow depth of field, warm light.",
       "motion_description": "Camera dollies in slowly toward the handaxe on sand.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -277,7 +277,8 @@
       "motion_description": "Camera advances steadily into a quarry exposing sediment layers.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -292,7 +293,8 @@
       "motion_description": "Camera tracks laterally along calcite quarry wall at eye level.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -308,7 +310,8 @@
       "claim_status": "unconfirmed",
       "source_ids": [
         "source-1",
-        "source-2"
+        "source-2",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -518,7 +521,7 @@
     {
       "id": "scene-032",
       "duration_seconds": 12,
-      "narration": "Le consensus scientifique situe l'émergence de l'acheuléen à environ un million sept cent mille ans. La période de persistance, jusqu'à deux cent mille ans, est largement documentée.",
+      "narration": "La tradition acheuléenne est généralement située entre environ 1,7 million et 200 000 ans avant aujourd'hui. Mais cette fourchette ne date pas les outils d'Okwa : leur chronologie locale doit encore être établie.",
       "video_prompt": "Slow forward dolly along a long timeline graphic projected on a dark laboratory wall.",
       "motion_description": "Camera dollies forward along a projected timeline graphic.",
       "claim_status": "unconfirmed",
@@ -570,7 +573,8 @@
       "motion_description": "Camera advances into a road-construction quarry with fresh layers.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -585,7 +589,8 @@
       "motion_description": "Camera tracks laterally along quarry wall with river deposits.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -600,7 +605,8 @@
       "motion_description": "Camera pushes in on conference table with maps and samples.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -615,7 +621,8 @@
       "motion_description": "Camera zooms out from sediment core to full lab bench.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -687,12 +694,12 @@
     {
       "id": "scene-043",
       "duration_seconds": 12,
-      "narration": "À ce stade, la datation absolue des haches de Okwa n'est pas encore publiée. L'analyse en cours à Cracovie permettra de préciser le calendrier de la séquence acheuléenne locale.",
+      "narration": "L'âge précis des haches d'Okwa n'est pas encore établi dans les informations publiées. Les chercheurs prévoient de construire la chronologie à l'aide de plusieurs méthodes indépendantes, dont l'OSL, le carbone 14, l'uranium-thorium et le béryllium 10.",
       "video_prompt": "Slow push-in on a radiocarbon dating instrument screen showing indeterminate results, camera advancing toward the monitor.",
       "motion_description": "Camera pushes in toward a dating instrument monitor.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-2"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -755,7 +762,8 @@
       "motion_description": "Camera pushes into calcite-cemented sediment surface texture.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -770,7 +778,8 @@
       "motion_description": "Camera dollies along freshly cut quarry road with stratified walls.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1"
+        "source-1",
+        "source-3"
       ],
       "review_approved": false,
       "reviewer": null,
@@ -810,7 +819,7 @@
     {
       "id": "scene-051",
       "duration_seconds": 12,
-      "narration": "Les près de cent haches constituent un corpus solide, mais la prospection du Kalahari reste largement incomplète. D'autres sites acheuléens attendent encore d'être découverts dans la brousse.",
+      "narration": "Près de cent haches ont été recueillies dans le Kalahari par l'équipe. Mais la prospection de cette région reste incomplète : la brousse dense rend l'exploration systématique difficile.",
       "video_prompt": "Slow aerial forward flight over unexplored dense bush, camera moving steadily toward a hidden valley.",
       "motion_description": "Aerial camera moves forward over unexplored dense bush.",
       "claim_status": "unconfirmed",
@@ -873,13 +882,12 @@
     {
       "id": "scene-055",
       "duration_seconds": 12,
-      "narration": "Au fond de la brousse du Kalahari, cent haches de pierre attendent la suite de leur histoire. Elles sont les té muets des premiers pas de l'humanité sur ce continent.",
+      "narration": "Au fond de la brousse du Kalahari, près d'une centaine de haches de pierre attendent la suite de leur histoire. Elles sont les témoins silencieux d'une présence humaine ancienne, dont l'âge précis reste à éclaircir.",
       "video_prompt": "Final slow dissolve to black over a wide static shot of the golden Kalahari under a setting sun.",
       "motion_description": "Wide static shot dissolving to black over setting sun.",
       "claim_status": "unconfirmed",
       "source_ids": [
-        "source-1",
-        "source-2"
+        "source-1"
       ],
       "review_approved": false,
       "reviewer": null,
