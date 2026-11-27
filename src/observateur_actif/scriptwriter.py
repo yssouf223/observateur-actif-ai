@@ -123,7 +123,7 @@ def draft_project(
         (doc for doc in candidates if relevance(doc) > 0),
         key=relevance,
         reverse=True,
-    )[:12]
+    )[:6]
     if len(usable) < 2:
         raise ScriptWriterError(
             "Aucun sujet de mystère historique ou archéologique africain ne dispose "
@@ -159,7 +159,7 @@ def draft_project(
             "publisher": publisher,
             "url": doc["url"],
             "published_at": doc.get("published_at"),
-            "text": str(doc["text"])[:10000],
+            "text": str(doc["text"])[:6000],
         })
 
     if len(sources) < 2:
