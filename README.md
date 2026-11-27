@@ -224,7 +224,7 @@ observateur generate-audio projects/documentary.json --output output/narration.m
 observateur assemble-video projects/documentary.json --narration output/narration.mp3 --subtitles output/narration.srt --output output/documentary.mp4
 ```
 
-Le montage concatène les clips dans l'ordre du storyboard, les normalise en 16:9 1280×720 à 25 images/s, ajoute la voix off et inclut le SRT comme piste de sous-titres sélectionnable. Une musique peut être ajoutée avec `--music chemin/vers/musique.mp3` ; elle est mixée à 12 % sous la voix. N'utiliser qu'un fichier dont les droits autorisent explicitement la diffusion et la monétisation. Aucune musique n'est téléchargée automatiquement.
+Le montage concatène les clips dans l'ordre du storyboard, les normalise en 16:9 1920×1080 (upscalé depuis des clips 1280×720, non natif) à 25 images/s, ajoute la voix off et inclut le SRT comme piste de sous-titres sélectionnable. Une musique peut être ajoutée avec `--music chemin/vers/musique.mp3` ; elle est mixée à 12 % sous la voix. N'utiliser qu'un fichier dont les droits autorisent explicitement la diffusion et la monétisation. Aucune musique n'est téléchargée automatiquement.
 
 **Limite de résolution :** les clips Agnes demandés actuellement sont en 720p. Le montage reste donc en 720p ; il ne prétend pas être un master natif 1080p. Cette commande assemble des clips déjà générés et ne résout pas la disponibilité de l'API Agnes. Les tests vérifient la construction de la commande FFmpeg, pas le rendu audiovisuel complet sur un vrai jeu de clips.
 
