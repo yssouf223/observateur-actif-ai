@@ -28,6 +28,7 @@ jobs:
       VIDEO_PROVIDER: agnes
       AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
       AGNES_FREE_QUOTA_CONFIRMED: ${{ vars.AGNES_FREE_QUOTA_CONFIRMED }}
+      EDGE_TTS_COMMERCIAL_RIGHTS_CONFIRMED: ${{ vars.EDGE_TTS_COMMERCIAL_RIGHTS_CONFIRMED }}
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
@@ -56,6 +57,10 @@ jobs:
           done
           if [ "$AGNES_FREE_QUOTA_CONFIRMED" != "true" ]; then
             echo "::error::Production arrêtée : confirme le quota Agnes gratuit via AGNES_FREE_QUOTA_CONFIRMED=true."
+            exit 1
+          fi
+          if [ "$EDGE_TTS_COMMERCIAL_RIGHTS_CONFIRMED" != "true" ]; then
+            echo "::error::Publication bloquée : droits d'utilisation commerciale de la voix Edge-TTS non confirmés."
             exit 1
           fi
           if [ "$YOUTUBE_API_PROJECT_VERIFIED" != "true" ]; then
