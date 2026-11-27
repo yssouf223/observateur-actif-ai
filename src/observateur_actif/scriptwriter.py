@@ -30,6 +30,7 @@ def draft_project(
     topic: str = "",
     api_key: str | None = None,
     model: str | None = None,
+    topic_history_file: str | Path = "projects/topic_history.json",
 ) -> Path:
     """Créer un brouillon à partir d'au moins deux sources indépendantes.
 
@@ -110,6 +111,16 @@ def draft_project(
             "Au moins deux documents accessibles de deux éditeurs et domaines distincts sont requis."
         )
 
+    history_path = Path(topic_history_file)
+    topic_history = []
+    if history_path.is_file():
+        try:
+            loaded_history = json.loads(history_path.read_text(encoding="utf-8"))
+            if isinstance(loaded_history, list):
+                topic_history = loaded_history[:100]
+        except json.JSONDecodeError as exc:
+            raise ScriptWriterError(f"Historique des sujets invalide : {exc}") from exc
+    history_text = json.dumps(topic_history, ensure_ascii=False)
     source_bundle = json.dumps(source_texts, ensure_ascii=False)
     prompt = f"""
 Tu es le rédacteur en chef et scénariste d'Observateur Actif, chaîne francophone
@@ -117,6 +128,9 @@ de documentaires d'enquête sur les mystères africains. Rédige un brouillon
 documentaire sérieux, cinématographique, rigoureux et non sensationnaliste.
 
 SUJET SOUHAITÉ : {topic or "Choisis le sujet le plus solide et le plus intéressant parmi les documents fournis."}
+
+SUJETS DÉJÀ ABORDÉS OU EXCLUS (NE PAS RÉUTILISER LE MÊME ÉVÉNEMENT, LIEU OU HISTOIRE, MÊME AVEC UN AUTRE TITRE) :
+{history_text}
 
 RÈGLES IMPÉRATIVES :
 - Utilise exclusivement les informations présentes dans les documents fournis.
