@@ -1,9 +1,6 @@
 name: Recherche et brouillon hebdomadaire
 
 on:
-  push:
-    paths:
-      - '.github/workflows/weekly-research-draft.yml'
   schedule:
     # Préparer le sujet du samedi chaque mercredi à 14:00 UTC.
     - cron: "0 14 * * 3"
