@@ -34,6 +34,11 @@ def produce_project(
     """
     if not api_key.strip():
         raise ProductionError("Clé Agnes absente : génération vidéo impossible.")
+    if not project.release_approved or not project.release_reviewer or not project.release_approved_at:
+        raise ProductionError(
+            "Arrêt éditorial : le documentaire entier doit être approuvé par un réviseur identifié "
+            "(release_approved, release_reviewer et release_approved_at)."
+        )
     if any(scene.duration_seconds < 4 or scene.duration_seconds > 12 for scene in project.scenes):
         raise ProductionError("Chaque scène doit durer entre 4 et 12 secondes pour le fournisseur vidéo.")
     planned_seconds = sum(scene.duration_seconds for scene in project.scenes)
