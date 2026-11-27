@@ -152,3 +152,22 @@ observateur fetch-leads --input projects/research_leads.json --output projects/s
 ```
 
 La limite est comprise entre 1 et 20 articles par exécution (5 par défaut). Les doublons d'URL sont ignorés. Chaque résultat indique `fetch_status` (`success` ou `failed`) et conserve les erreurs éventuelles. Les textes obtenus portent toujours le statut `source_text_unverified` : cette étape prépare le travail de vérification, elle ne valide aucun fait.
+
+
+## Extraire des phrases candidates à vérifier
+
+Après la lecture des articles, l'outil peut repérer des phrases factuelles potentielles dans les textes collectés :
+
+```bash
+observateur extract-claims --input projects/source_documents.json --output projects/claim_candidates.json --max-per-source 30
+```
+
+Cette extraction est déterministe et locale : elle n'appelle aucun modèle externe. Elle conserve les phrases candidates et leur source d'origine, avec les statuts `unconfirmed` et `pending`. La source d'où provient une phrase est enregistrée avec `supports_claim: false` : elle atteste que la publication contient cette phrase, mais ne compte pas comme corroboration indépendante pour déclarer l'affirmation vérifiée. Les phrases doivent être contrôlées dans leur contexte, puis recoupées avec des documents indépendants. Le moteur peut manquer des formulations ou sélectionner des phrases qui ne sont pas des affirmations pertinentes ; une revue humaine reste indispensable.
+
+Le registre produit peut être contrôlé avec :
+
+```bash
+observateur validate-claims projects/claim_candidates.json
+```
+
+Aucune phrase n'est automatiquement transformée en fait établi.
