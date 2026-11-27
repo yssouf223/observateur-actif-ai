@@ -101,6 +101,7 @@ def publish_video(
                 "privacyStatus": "private",
                 "publishAt": publish_at.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                 "selfDeclaredMadeForKids": False,
+                "containsSyntheticMedia": True,
             },
         }
         upload = MediaFileUpload(str(path), mimetype="video/mp4",
