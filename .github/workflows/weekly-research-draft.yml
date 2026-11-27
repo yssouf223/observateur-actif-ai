@@ -107,19 +107,8 @@ jobs:
       - name: Exporter le dossier de revue éditoriale
         run: observateur review-project projects/weekly_documentary.json --output projects/editorial_review.md
 
-      - name: Enregistrer le brouillon dans le dépôt
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add projects/weekly_documentary.json projects/editorial_review.md projects/topic_history.json
-          if git diff --cached --quiet; then
-            echo "Aucun changement de brouillon à enregistrer."
-          else
-            git commit -m "Prepare weekly documentary draft"
-            git push
-          fi
-
       - name: Archiver les documents de recherche
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: observateur-actif-weekly-research
@@ -128,5 +117,31 @@ jobs:
             projects/source_documents.json
             projects/weekly_documentary.json
             projects/editorial_review.md
-          if-no-files-found: error
+            projects/topic_history.json
+          if-no-files-found: warn
           retention-days: 14
+
+      - name: Enregistrer le brouillon dans le dépôt
+        if: always() && steps.preflight.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add projects/weekly_documentary.json projects/editorial_review.md projects/topic_history.json
+          if git diff --cached --quiet; then
+            echo "Aucun changement de brouillon à enregistrer."
+          else
+            git commit -m "Prepare weekly documentary draft"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main
+              if git push; then
+                echo "Brouillon enregistré dans main."
+                exit 0
+              fi
+              echo "Push refusé ; nouvelle tentative après synchronisation."
+              git rebase --abort || true
+              sleep $((attempt * 3))
+            done
+            echo "::error::Impossible d'enregistrer le brouillon après trois tentatives."
+            exit 1
+          fi
