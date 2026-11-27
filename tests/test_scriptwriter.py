@@ -1,0 +1,69 @@
+import json
+from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
+
+from observateur_actif.scriptwriter import ScriptWriterError, draft_project
+
+
+def docs_file(tmp_path):
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps([
+        {"fetch_status": "success", "url": "https://a.example.org/story",
+         "title": "A", "publisher": "Publisher A", "fetched_at": "2026-11-27",
+         "text": "A source text."},
+        {"fetch_status": "success", "url": "https://b.example.net/story",
+         "title": "B", "publisher": "Publisher B", "fetched_at": "2026-11-27",
+         "text": "Another source text."},
+    ]), encoding="utf-8")
+    return path
+
+
+def valid_draft():
+    return {
+        "title": "Mystère documentaire",
+        "target_duration_minutes": 10,
+        "scenes": [
+            {"id": f"scene-{i}", "duration_seconds": 15,
+             "narration": "Une phrase documentaire suffisamment longue.",
+             "video_prompt": "A cinematic moving camera shot.",
+             "motion_description": "The camera moves continuously through the scene.",
+             "claim_status": "unconfirmed", "source_ids": ["source-1"]}
+            for i in range(1, 41)
+        ]
+    }
+
+
+def test_draft_requires_two_independent_sources(tmp_path):
+    path = tmp_path / "sources.json"
+    path.write_text(json.dumps([{
+        "fetch_status": "success", "url": "https://a.example.org",
+        "publisher": "Publisher A", "text": "Source."
+    }]), encoding="utf-8")
+    with pytest.raises(ScriptWriterError, match="deux documents"):
+        draft_project(path, tmp_path / "project.json", api_key="test")
+
+
+def test_draft_project_forces_human_approval_off(tmp_path):
+    sources = docs_file(tmp_path)
+    draft = valid_draft()
+    draft["scenes"][0]["review_approved"] = True
+    draft["scenes"][0]["reviewer"] = "Model"
+    draft["scenes"][0]["reviewed_at"] = "2026-11-27"
+    response = Mock(ok=True)
+    response.json.return_value = {
+        "candidates": [{"content": {"parts": [{"text": json.dumps(draft)}]}}]
+    }
+    with patch("observateur_actif.scriptwriter.requests.post", return_value=response):
+        output = draft_project(sources, tmp_path / "project.json", api_key="test")
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert result["release_approved"] is False
+    assert result["scenes"][0]["review_approved"] is False
+    assert result["scenes"][0]["reviewer"] is None
+
+
+def test_draft_requires_gemini_key(tmp_path, monkeypatch):
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    with pytest.raises(ScriptWriterError, match="GEMINI_API_KEY"):
+        draft_project(docs_file(tmp_path), tmp_path / "project.json")
