@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from observateur_actif.montage import assemble_documentary
-from observateur_actif.quality import write_quality_report
+from observateur_actif.quality import inspect_clip_motion, write_quality_report
 from observateur_actif.speech import generate_audio_with_subtitles
 from observateur_actif.storyboard import DocumentaryProject
 from observateur_actif.video import generate_video
@@ -69,6 +69,7 @@ def produce_project(
                 aspect_ratio=project.aspect_ratio,
                 api_key=api_key,
             )
+        inspect_clip_motion(clip_path)
         scene.generated_video_path = str(clip_path)
         generated.append(clip_path)
         _save_project(project, project_path)
