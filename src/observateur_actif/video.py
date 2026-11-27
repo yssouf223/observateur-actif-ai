@@ -16,7 +16,9 @@ BASE_URL = "https://apihub.agnes-ai.com"
 MODEL = "agnes-video-2.5-flash"
 CREATE_TIMEOUT = 60
 DOWNLOAD_TIMEOUT = 120
-QUEUE_RETRY_DELAYS = (30, 60)
+QUEUE_RETRY_DELAYS = (60, 120)
+MIN_CREATE_INTERVAL_SECONDS = 60.0
+_LAST_CREATE_MONOTONIC: float | None = None
 
 
 class AgnesError(RuntimeError):
@@ -53,8 +55,7 @@ def generate_video(
 ) -> Path:
     """Générer un clip 720p et l'enregistrer localement.
 
-    Si Agnes refuse la création parce que sa file vidéo est pleine,
-    le client effectue deux nouvelles tentatives espacées de 30 puis 60 s.
+    Le client respecte une demande de création par minute (limite publique gratuite) et réessaie une file saturée après 60 puis 120 secondes.
     """
     key = (api_key or os.getenv("AGNES_API_KEY", "")).strip()
     if not key:
@@ -80,7 +81,16 @@ def generate_video(
     }
 
     response = None
+    global _LAST_CREATE_MONOTONIC
     for attempt in range(len(QUEUE_RETRY_DELAYS) + 1):
+        if _LAST_CREATE_MONOTONIC is not None:
+            wait = MIN_CREATE_INTERVAL_SECONDS - (
+                time.monotonic() - _LAST_CREATE_MONOTONIC
+            )
+            if wait > 0:
+                print(f"Limite Agnes gratuite : attente de {wait:.1f}s avant la prochaine demande vidéo.")
+                time.sleep(wait)
+        _LAST_CREATE_MONOTONIC = time.monotonic()
         try:
             response = requests.post(
                 f"{BASE_URL}/v1/videos",
