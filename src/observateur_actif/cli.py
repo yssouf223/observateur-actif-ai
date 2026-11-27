@@ -381,7 +381,7 @@ def draft_project_command(
     sources_file: str = typer.Option("projects/source_documents.json", "--sources", help="Documents de recherche extraits."),
     output_file: str = typer.Option("projects/weekly_documentary.json", "--output", help="Storyboard JSON à relire."),
     topic: str = typer.Option("", "--topic", help="Sujet précis (facultatif)."),
-    model: str = typer.Option("gemini-3.8-flash", "--model", help="Modèle Gemini Developer API."),
+    model: str | None = typer.Option(None, "--model", help="Modèle API (par défaut Agnes 2.5 Flash si Gemini n'est pas configuré)."),
 ) -> None:
     """Rédiger un storyboard documentaire à partir de sources publiques extraites."""
     try:
