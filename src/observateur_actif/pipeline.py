@@ -55,6 +55,7 @@ def produce_project(
     scenes_dir.mkdir(parents=True, exist_ok=True)
     project_path = Path(project_file)
     generated: list[Path] = []
+    motion_reports: list[dict] = []
 
     for scene in project.scenes:
         clip_path = scenes_dir / f"{scene.id}.mp4"
@@ -69,7 +70,7 @@ def produce_project(
                 aspect_ratio=project.aspect_ratio,
                 api_key=api_key,
             )
-        inspect_clip_motion(clip_path)
+        motion_reports.append(inspect_clip_motion(clip_path))
         scene.generated_video_path = str(clip_path)
         generated.append(clip_path)
         _save_project(project, project_path)
@@ -98,6 +99,7 @@ def produce_project(
         "video_resolution": "1280x720",
         "aspect_ratio": project.aspect_ratio,
         "clips": [str(path) for path in generated],
+        "motion_checks": motion_reports,
         "narration": str(narration_path),
         "subtitles": str(subtitles_path),
         "video": str(final_path),
